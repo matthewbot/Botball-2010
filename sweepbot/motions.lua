@@ -2,6 +2,7 @@ local task = require "cbclua.task"
 import "sweep"
 
 function activate()
+	print "Activating"
 	pitch(250, 400)
 	wait()
 	extend(400, 400)
@@ -11,6 +12,7 @@ function activate()
 end
 
 function palms_sweep()
+	print "Sweeping Palms"
 	pitch(850, 600)
 	extend(700, 700)
 	wait()
@@ -29,6 +31,7 @@ function palms_retract()
 end
 
 function botguy_sweep()
+	print "Murking Botguy"
 	pitch(900, 600)
 	extend(1000, 700)
 	wait()
@@ -37,6 +40,7 @@ function botguy_sweep()
 end
 
 function botguy_retract()
+	print "Raping Botguy"
 	pitch(400, 400)
 	extend(525, 400)
 	wait()
