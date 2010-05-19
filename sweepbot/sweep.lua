@@ -1,61 +1,51 @@
 import "config"
 
+local servoutils = require "mb.servoutils"
 local control = require "mb.control"
 local task = require "cbclua.task"
 
-local extend_open_pos	= 600
-local extend_close_pos 	= 1650
-local pitch_time		= 2.5
-
+ extend_open_pos	= 500
+ extend_close_pos 	= 2000
+ pitch_up_pos		= 800
+ pitch_down_pos		= 1500
 
 ---------------------
 -- Pitch Functions --
 ---------------------
 
-function pitch_speed(speed)
-	lpitch:mav(speed)
-	rpitch:mav(speed)
-end
+servoutils.build_functions{
+	servo = pitch_servo,
+	pitch_up = 800,
+	pitch_down = 1500
+}
 
-function pitch_up()
-	pitch_speed(1000)
-	task.sleep(pitch_time)
-	pitch_off()
-end
-
-function pitch_down()
-	if pitch_down_switch() then
-		pitch_speed(-1000)
-		task.wait_while(pitch_down_switch)
-		pitch_reset()
+function pitch(pos, speed)
+	local position = pitch_down_pos - pos / 1000 * (pitch_down_pos - pitch_up_pos)
+	
+	if speed == nil then
+		pitch_servo:setpos(position)
 	else
-		pitch_reset()
+		pitch_servo:setpos_speed(position, speed)
 	end
 end
 	
 function pitch_off()
-	lpitch:off()
-	rpitch:off()
+	pitch_servo:disable()
 end
 
 function pitch_reset()
-	if pitch_down_switch() then
-		pitch_speed(-1000)
-		task.wait_while(pitch_down_switch)
-	end
-	pitch_speed(1000)
-	task.sleep(0.5)
-	pitch_off()
-	task.sleep(.2)
-	pitch_speed(-300)
-	task.wait_while(pitch_down_switch)
-	task.sleep(.6)
-	pitch_off()
+	pitch(0)
 end
-	
+
 ----------------------
 -- Extend Functions --
 ----------------------
+
+servoutils.build_functions{
+	servo = extend_servo,
+	extend_open = 800,
+	extend_close = 1500
+}
 
 function extend(pos, speed)
 	local position = extend_close_pos - pos / 1000 * (extend_close_pos - extend_open_pos)
@@ -67,14 +57,6 @@ function extend(pos, speed)
 	end
 end
 
-function extend_open()
-	extend(1000, 550)
-end
-
-function extend_close()
-	extend(0, 550)
-end
-	
 function extend_off()
 	extend_servo:disable()
 end
@@ -82,33 +64,12 @@ end
 function extend_reset()
 	extend(0)
 end
-	
--------------	
--- Fligger --
--------------
-
-function fligger(pos, speed)
-	if speed then
-		fligger_servo:setpos_speed(pos, speed)
-	else
-		fligger_servo:setpos(pos)
-	end
-end
-
-function fligger_up()
-	fligger(50)
-end
-
-function fligger_down()
-	fligger(1000, 500)
-end
 
 ---------------------
 -- Sweep Functions --
 ---------------------
 
 function init() 
-	fligger_up()
 	sweep_reset()
 end
 

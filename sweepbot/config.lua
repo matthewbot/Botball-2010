@@ -10,16 +10,12 @@ local motorutils 	= require "mb.motorutils"
 ldrive 	= motorutils.JerkFixMotor{0}
 rdrive 	= motorutils.JerkFixMotor{3}
 
-lpitch 	= motorutils.JerkFixMotor{1}
-rpitch 	= motorutils.JerkFixMotor{2}
-
 ------------
 -- Servos --
 ------------
 
-extend_servo 	= servoutils.SpeedControlServo{1}
-
-fligger_servo 	= servoutils.SpeedControlServo{2}
+extend_servo 	= servoutils.SpeedControlServo{2}
+pitch_servo 	= servoutils.SpeedControlServo{1}
 
 ------------
 -- Vision --
