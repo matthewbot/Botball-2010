@@ -27,5 +27,5 @@ green_channel = vision.Channel(0)
 -- Sensors --
 -------------
 
-pitch_down_switch 	= cbc.DigitalSensor{14}
-Pitch_up_switch 	= cbc.DigitalSensor{2}
+lrange = cbc.AnalogSensor{0, float = true}
+rrange = cbc.AnalogSensor{1, float = true}

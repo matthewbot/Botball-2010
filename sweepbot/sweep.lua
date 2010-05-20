@@ -57,7 +57,7 @@ servoutils.build_functions{
 
 function extend(pos, speed)
 	local position = extend_close_pos - pos / 1000 * (extend_close_pos - extend_open_pos)
-	
+
 	if speed == nil then
 		extend_servo:setpos(position)
 	else
@@ -102,8 +102,8 @@ end
 function palms_sweep()
 	print "Sweeping Palms"
 	extend(200, 500)
-	task.sleep(.2)
-	pitch(1000, 700)
+	task.sleep(.3)
+	pitch(1000, 600)
 	extend(850, 700)
 	servo_wait()
 	extend(600, 700)
@@ -112,8 +112,8 @@ end
 
 function palms_retract()
 	print "Retracting Palms"
-	extend(300, 280)
-	pitch(400, 400)
+	extend(300, 230)
+	pitch(350, 400)
 	servo_wait()
 	pitch(0, 700)
 	extend(0, 700)

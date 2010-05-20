@@ -3,7 +3,7 @@ import "drive"
 import "sweep"
 
 
-
+local task = require "cbclua.task"
 local vision = require "cbclua.vision"
 local math = require "math"
 
@@ -33,4 +33,25 @@ function face_poms()
 	else
 		drive_lturn(turntime, 200)
 	end	
+end
+
+
+function follow_wall()
+	while true do
+		local left, right = read_ranges()
+		if not left and not right then
+			drive_motors(50, 300)
+		elseif left and not right then
+			drive_motors(400, 400)
+		else
+			drive_motors(300, 50)
+		end
+		task.sleep(0.01)
+	end
+end
+
+function read_ranges()
+	local left = lrange() > 250
+	local right = rrange() > 250
+	return left, right
 end
