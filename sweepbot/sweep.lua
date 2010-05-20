@@ -4,10 +4,10 @@ local servoutils = require "mb.servoutils"
 local control = require "mb.control"
 local task = require "cbclua.task"
 
- extend_open_pos	= 500
- extend_close_pos 	= 2000
- pitch_up_pos		= 800
- pitch_down_pos		= 1500
+extend_open_pos		= 500
+extend_close_pos 	= 2000
+pitch_up_pos		= 1050
+pitch_down_pos		= 0
 
 ---------------------
 -- Pitch Functions --
@@ -15,8 +15,8 @@ local task = require "cbclua.task"
 
 servoutils.build_functions{
 	servo = pitch_servo,
-	pitch_up = 800,
-	pitch_down = 1500
+	pitch_up = pitch_up_pos,
+	pitch_down = pitch_down_pos
 }
 
 function pitch(pos, speed)
@@ -33,8 +33,16 @@ function pitch_off()
 	pitch_servo:disable()
 end
 
+function pitch_wait()
+	pitch_servo:wait()
+end
+
 function pitch_reset()
-	pitch(0)
+	if pitch_servo:getpos() == -1 then
+		pitch_down()
+	else
+		pitch(0, 500)
+	end
 end
 
 ----------------------
@@ -43,8 +51,8 @@ end
 
 servoutils.build_functions{
 	servo = extend_servo,
-	extend_open = 800,
-	extend_close = 1500
+	extend_open = extend_open_pos,
+	extend_close = extend_close_pos,
 }
 
 function extend(pos, speed)
@@ -61,8 +69,16 @@ function extend_off()
 	extend_servo:disable()
 end
 
+function extend_wait()
+	extend_servo:wait()
+end
+
 function extend_reset()
-	extend(0)
+	if extend_servo:getpos() == -1 then
+		extend_close()
+	else
+		extend(0, 500)
+	end
 end
 
 ---------------------
@@ -70,59 +86,51 @@ end
 ---------------------
 
 function init() 
-	sweep_reset()
+	reset()
 end
 
-function sweep_reset()
+function reset()
 	pitch_reset()
 	extend_reset()
 end
 
-function first_palms_sweep()
-	control.time_sequence{
-		{0, extend, 300, 500},
-		{0.5, pitch_speed, 1000},
-		{1.5, extend, 1000, 400},
-		{2, pitch_speed, 550},
-		{3.3, extend, 920},
-		{3.6, pitch_off}
-	}
+function servo_wait()
+	extend_wait()
+	pitch_wait()
 end
 
-function first_palms_retract()
-	control.time_sequence{
-		{0, extend, 200, 500},
-		{0.5, pitch_speed, -200},
-		{5, pitch_off},
-		{5.2, extend, 400, 500}
-	}
-	sweep_reset()
+function palms_sweep()
+	print "Sweeping Palms"
+	extend(200, 500)
+	task.sleep(.2)
+	pitch(1000, 700)
+	extend(850, 700)
+	servo_wait()
+	extend(600, 700)
+
+end
+
+function palms_retract()
+	print "Retracting Palms"
+	extend(300, 280)
+	pitch(400, 400)
+	servo_wait()
+	pitch(0, 700)
+	extend(0, 700)
 end
 
 function botguy_sweep()
-	control.time_sequence{
-		{0, extend, 500, 600},
-		{0.7, pitch_speed, 1000},
-		{1.5, extend, 700, 700}, 
-		{2.1, pitch_speed, 500},
-		{2.5, pitch_off},
-		{2.5, extend, 350, 500},
-		{2.75, pitch_speed, -1000},
-		{3.5, pitch_off}
-	}
-	
-	
+	print "Sweeping Botguy"
+	extend(200, 500)
+	task.sleep(.2)
+	pitch(1000, 700)
+	extend(1000, 700)
+	servo_wait()
+	extend(700, 700)
 end
 
 function botguy_retract()
-
-	sweep_reset()
-end
-
-function second_palms_sweep()
-end
-
-function second_palms_retract()
-
-	sweep_reset()
+	print "Retracting Botguy"
+	pitch(400, 400)
+	
 end
