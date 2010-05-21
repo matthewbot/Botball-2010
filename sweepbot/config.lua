@@ -14,8 +14,8 @@ rdrive 	= motorutils.JerkFixMotor{3}
 -- Servos --
 ------------
 
-extend_servo 	= servoutils.SpeedControlServo{2}
-pitch_servo 	= servoutils.SpeedControlServo{1}
+extend_servo 	= servoutils.RescaleServo{2, start_pos=2000, end_pos=500}
+pitch_servo 	= servoutils.RescaleServo{1, start_pos=0, end_pos=1050}
 
 ------------
 -- Vision --
