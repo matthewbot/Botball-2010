@@ -89,6 +89,32 @@ function update_taskfunc()
 	end
 end
 
+--[[ RescaleServo ]]--
+RescaleServo = create_class("RescaleServo", SpeedControlServo)
+
+function RescaleServo:construct(args)
+	SpeedControlServo.construct(self, args)
+	self.start_pos = args.start_pos
+	self.end_pos = args.end_pos
+end
+
+function RescaleServo:scalepos(pos)
+	return self.start_pos - pos / 1000 * (self.start_pos - self.end_pos)
+end
+
+function RescaleServo:setpos(pos)
+	SpeedControlServo.setpos(self, self:scalepos(pos))
+end
+
+function RescaleServo:setpos_speed(pos, speed)
+	SpeedControlServo.setpos_speed(self, self:scalepos(pos), speed)
+end
+
+function RescaleServo:getpos()
+	local pos = SpeedControlServo.getpos(self)
+	return (1000 * (self.start_pos - pos)) / (self.start_pos - self.end_pos)
+end
+
 --[[ build_functions ]]--
 
 function build_functions(buildargs)
