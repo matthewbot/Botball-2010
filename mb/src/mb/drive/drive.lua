@@ -133,6 +133,10 @@ function Drive:stop()
 	self:setSpeed(0, 0)
 end
 
+function Drive:wait()
+	return self.queue:wait()
+end
+
 -- Util functions --
 
 function Drive:getSpeed(args)

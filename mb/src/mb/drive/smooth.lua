@@ -86,8 +86,8 @@ function SmoothWaitDistanceCommand:alterQueue(queue)
 	
 	if is_a(topcommand, SmoothSetSpeedCommand) then
 		local time = topcommand.stoptime
-		self.ldist = self.ldist - (.5 * topcommand.laccel * time * time + topcommand.lstartspeed * time)
-		self.rdist = self.rdist - (.5 * topcommand.raccel * time * time + topcommand.rstartspeed * time)
+		self.ldist = self.ldist - math.abs(.5 * topcommand.laccel * time * time + topcommand.lstartspeed * time)
+		self.rdist = self.rdist - math.abs(.5 * topcommand.raccel * time * time + topcommand.rstartspeed * time)
 	end
 end
 
@@ -115,6 +115,8 @@ function SmoothSetSpeedDistanceCommand:construct(left, right, accel, ldist, rdis
 end
 
 function SmoothSetSpeedDistanceCommand:prepare(topstate)
+	topstate.lspeed = self.left
+	topstate.rspeed = self.right
 end
 
 function SmoothSetSpeedDistanceCommand:alterQueue(queue)
@@ -126,8 +128,8 @@ function SmoothSetSpeedDistanceCommand:run(drivetrain)
 	local laccel, raccel, stoptime = calc_accels_stoptime(ldeltaspeed, rdeltaspeed, self.accel)
 	
 	--distance until we start accelerating or deaccelerating
-	local lstartdist = self.ldist - (.5*math.abs(laccel)*stoptime*stoptime + math.abs(lstartspeed)*stoptime)
-	local rstartdist = self.rdist - (.5*math.abs(raccel)*stoptime*stoptime + math.abs(rstartspeed)*stoptime)
+	local lstartdist = self.ldist - math.abs(.5*laccel*stoptime*stoptime + lstartspeed*stoptime)
+	local rstartdist = self.rdist - math.abs(.5*raccel*stoptime*stoptime + rstartspeed*stoptime)
 	
 	local lstartenc, rstartenc = drivetrain:getEncoders()
 	while true do
@@ -139,20 +141,25 @@ function SmoothSetSpeedDistanceCommand:run(drivetrain)
 		end
 	end
 	
+	local laccelenc, raccelenc = drivetrain:getEncoders()
 	while true do
 		drivetrain:waitEncoders()
 		
 		local lenc, renc = drivetrain:getEncoders()
-		local lperc = math.abs((lenc - (lstartdist+lstartenc)) / (self.ldist - lstartdist))
-		local rperc = math.abs((renc - (rstartdist+rstartenc)) / (self.rdist - rstartdist))
-		local lspeed = lstartspeed + ldeltaspeed * lperc
-		local rspeed = rstartspeed + rdeltaspeed * rperc
-	
-		drivetrain:drive(lspeed, rspeed)
-		
-		if math.abs(lenc - lstartenc) > self.ldist-.03 or math.abs(renc - rstartenc) > self.rdist-.03 then
+		local trav = (lenc - laccelenc)
+		local ltemp = 2*laccel*trav + lstartspeed*lstartspeed
+		local lspeed = math.sqrt(math.abs(ltemp))
+		if (ltemp < 0 and lstartspeed > 0) or (ltemp > 0 and lstartspeed < 0) then
 			break
 		end
+		
+		local rtemp = 2*raccel*trav + rstartspeed*rstartspeed
+		local rspeed = math.sqrt(math.abs(rtemp))
+		if (rtemp < 0 and rstartspeed > 0) or (rtemp > 0 and rstartspeed < 0) then
+			break
+		end
+	
+		drivetrain:drive(lspeed, rspeed)
 	end
 	
 	drivetrain:drive(self.left, self.right)
@@ -195,3 +202,4 @@ function calc_accels_stoptime(leftdelta, rightdelta, accel)
 	
 	return leftaccel, rightaccel, stoptime
 end
+

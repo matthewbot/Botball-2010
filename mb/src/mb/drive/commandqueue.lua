@@ -16,7 +16,7 @@ function CommandQueue:add(command)
 	
 	local altered = false
 	if #self.queue > 0 then
-		altered = command:alterQueue(self.queue)
+		altered = command:alter_queue(self.queue)
 	end
 	
 	if not altered then
@@ -29,6 +29,12 @@ end
 function CommandQueue:clear()
 	self.queue = { }
 	task.stop(self.task)
+end
+
+function CommandQueue:wait()
+	while #self.queue > 0 do
+		self.sig:wait()
+	end
 end
 
 function CommandQueue:start_task()
@@ -47,6 +53,8 @@ function CommandQueue:run()
 		local command = table.remove(self.queue, 1)
 		command:run(self.drivetrain)
 	end
+	
+	self.sig:notify_all()
 end
 
 -- Simple commands --
@@ -57,7 +65,10 @@ function InlineCommand:construct(func)
 	self.func = func
 end
 
-function InlineCommand:alterQueue(command)
+function InlineCommand:prepare(topstate)
+end
+
+function InlineCommand:alter_queue(command)
 end
 
 function InlineCommand:run(drivetrain)
@@ -70,7 +81,10 @@ function SleepCommand:construct(time)
 	self.time = time
 end
 
-function SleepCommand:alterQueue(queue)
+function SleepCommand:prepare(topstate)
+end
+
+function SleepCommand:alter_queue(queue)
 	local topcommand = queue[#queue]
 	if is_a(topcommand, SleepCommand) then
 		topcommand.time = self.time + topcommand.time

@@ -43,6 +43,13 @@ function BangBangWaitDistanceCommand:prepare(topstate)
 end
 
 function BangBangWaitDistanceCommand:alterQueue(queue)
+	local topcommand = queue[#queue]
+	
+	if is_a(topcommand, BangBangWaitDistanceCommand) then
+		topcommand.ldist = topcommand.ldist + self.ldist
+		topcommand.rdist = topcommand.rdist + self.rdist
+		return true
+	end
 end
 
 function BangBangWaitDistanceCommand:run(drivetrain)

@@ -10,7 +10,6 @@ function MotorDriveTrain:construct(args)
 	self.lticks = assert(args.ticks, "Missing ticks argument!")
 	self.rticks = self.lticks * (args.rmult or 1)
 	self.wb = assert(args.wb, "Missing wb argument")
-	self.encdelay = args.encdelay or 1/40
 	
 	self.lspeed, self.rspeed = 0, 0
 end
@@ -59,7 +58,7 @@ function MotorDriveTrain:getEncoders()
 end
 
 function MotorDriveTrain:waitEncoders()
-	task.sleep(self.encdelay)
+	task.yield()
 end
 
 function MotorDriveTrain:getSpeeds()
