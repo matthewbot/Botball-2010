@@ -36,18 +36,25 @@ function face_poms()
 end
 
 
-function follow_wall()
-	while true do
-		local left, right = read_ranges()
-		if not left and not right then
-			drive_motors(50, 300)
-		elseif left and not right then
-			drive_motors(400, 400)
-		else
-			drive_motors(300, 50)
+function follow_wall_time(time)
+	task.timeout(time, function()
+		while true do
+			local left, right = read_ranges()
+			if not left and not right then
+				drive_motors(50, 300)
+			elseif left and not right then
+				drive_motors(400, 400)
+			else
+				drive_motors(300, 50)
+			end
+			task.sleep(0.01)
 		end
-		task.sleep(0.01)
-	end
+	end)
+	drive_stop()
+end
+
+function follow_wall_sensor()
+	
 end
 
 function read_ranges()
