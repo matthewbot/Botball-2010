@@ -30,3 +30,4 @@ green_channel = vision.Channel(0)
 
 lrange = cbc.AnalogSensor{0, float = true}
 rrange = cbc.AnalogSensor{1, float = true}
+wall_bumper = cbc.DigitalSensor{15}

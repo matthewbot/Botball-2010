@@ -36,40 +36,65 @@ function face_poms()
 end
 
 
+function read_ranges()
+	local left = lrange() > 550
+	local right = rrange() > 550
+	return left, right
+end
+
+function follow_wall()
+	local left, right = read_ranges()
+	if not left and not right then
+		drive_motors(50, 300)
+	elseif left and not right then
+		drive_motors(400, 400)
+	else
+		drive_motors(300, 50)
+	end
+	task.sleep(0.01)
+end
+
 function follow_wall_time(time)
 	task.timeout(time, function()
 		while true do
-			local left, right = read_ranges()
-			if not left and not right then
-				drive_motors(50, 300)
-			elseif left and not right then
-				drive_motors(400, 400)
-			else
-				drive_motors(300, 50)
-			end
-			task.sleep(0.01)
+			follow_wall()
 		end
 	end)
 	drive_stop()
 end
 
 function follow_wall_sensor()
-	while true do
-		local left, right = read_ranges()
-		if not left and not right then
-			drive_motors(50, 300)
-		elseif left and not right then
-			drive_motors(400, 400)
-		else
-			drive_motors(300, 50)
-		end
-		task.sleep(0.01)
+	while not wall_bumper() do
+		follow_wall()
 	end
 	drive_stop()
 end
 
-function read_ranges()
-	local left = lrange() > 550
-	local right = rrange() > 550
-	return left, right
+
+function drive_bump()
+	while not wall_bumper() do
+		drive_motors(50, 50)
+	end
+	drive_stop()
+end
+
+function final_palm_lineup()
+	drive_motors(0, -300)
+	task.sleep(.3)
+	drive_motors(-300, 0)
+	task.sleep(.3)
+	drive_stop()
+	
+--[[	drive_motors(-300, -300)
+	task.sleep(.3)
+	drive_stop()
+	local left, right = read_ranges()
+	while not right do
+		drive_motors(0, 200)
+		left, right = read_ranges()
+		task.sleep(.01)
+	end
+	drive_motors(100, 0)
+	task.sleep(.5)
+	drive_stop() ]]
 end

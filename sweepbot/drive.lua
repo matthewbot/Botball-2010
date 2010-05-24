@@ -1,5 +1,7 @@
 import "config"
 
+local task = require "cbclua.task"
+
 ---------------------
 -- Drive Functions --
 ---------------------
