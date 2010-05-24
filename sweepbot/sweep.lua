@@ -70,7 +70,7 @@ function reset()
 	else
 		pitch_off()
 		extend_off()
-		error("Not safe to reset sweep while active! Please reset manually.", 2)
+		error("Not safe to reset sweep while active! Please reset manually and reset again.", 2)
 	end
 end
 
