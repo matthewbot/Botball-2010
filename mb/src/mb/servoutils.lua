@@ -21,7 +21,10 @@ function SpeedControlServo:setpos(pos)
 end
 
 function SpeedControlServo:setpos_speed(stoppos, speed)
-	local startpos = self:getpos()
+	local startpos = Servo.getpos(self)
+	if startpos == -1 then
+		error("Attempt to call setpos_speed on disabled servo!", 2)
+	end
 	
 	if stoppos < startpos then
 		speed = -speed
@@ -112,6 +115,7 @@ end
 
 function RescaleServo:getpos()
 	local pos = SpeedControlServo.getpos(self)
+	if pos == -1 then return -1 end
 	return (1000 * (self.start_pos - pos)) / (self.start_pos - self.end_pos)
 end
 
