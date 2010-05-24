@@ -25,7 +25,7 @@ function palms_retract()
 	extend(300, 460)
 	pitch(200, 800)
 	wait()
-	pitch(150, 400)
+	pitch(100, 350)
 	extend(400, 400)
 	wait()
 end
@@ -46,4 +46,16 @@ function botguy_retract()
 	wait()
 	pitch(150, 400)
 	extend(400, 400)
+end
+
+function palms()
+	palms_sweep()
+	task.sleep(2)
+	palms_retract()
+end
+
+function botguy()
+	botguy_sweep()
+	task.sleep(2)
+	palms_retract()
 end

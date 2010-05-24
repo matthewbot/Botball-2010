@@ -54,11 +54,22 @@ function follow_wall_time(time)
 end
 
 function follow_wall_sensor()
-	
+	while true do
+		local left, right = read_ranges()
+		if not left and not right then
+			drive_motors(50, 300)
+		elseif left and not right then
+			drive_motors(400, 400)
+		else
+			drive_motors(300, 50)
+		end
+		task.sleep(0.01)
+	end
+	drive_stop()
 end
 
 function read_ranges()
-	local left = lrange() > 250
-	local right = rrange() > 250
+	local left = lrange() > 550
+	local right = rrange() > 550
 	return left, right
 end

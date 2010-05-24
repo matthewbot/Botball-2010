@@ -9,6 +9,7 @@ local motorutils 	= require "mb.motorutils"
 
 ldrive 	= motorutils.JerkFixMotor{0}
 rdrive 	= motorutils.JerkFixMotor{3}
+dumper = motorutils.JerkFixMotor{1}
 
 ------------
 -- Servos --
