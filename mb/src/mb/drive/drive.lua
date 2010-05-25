@@ -1,4 +1,3 @@
-local commandqueue = require "mb.drive.commandqueue"
 local util = require "cbclua.util"
 local task = require "cbclua.task"
 local math = require "math"
@@ -7,149 +6,138 @@ Drive = create_class "Drive"
 
 function Drive:construct(args)
 	self.drivetrain = assert(args.drivetrain, "Missing argument drivetrain")
-	self.style = assert(args.style, "Missing argument style")
-	self.topspeed = args.topspeed or 10
-	
-	self.queue = commandqueue.CommandQueue(self.drivetrain)
+	self.style = assert(args.style, "Missing style argument")
+	self.topvel = args.topvel or 10
 end
 
 function Drive:fd(args)
-	local speed = self:getSpeed(args)
-	local inches = args.inches
-	local stop_func = args.stop_func
+	local vel = self:parse_velocity(args)
+	local style = args.style or self.style
 
-	self:setSpeed(speed, speed)
+	local inches = args.inches
 	if inches then
-		self:waitDistance(inches, inches)
-		self:stop()
-	elseif stop_func then
-		self:waitFunc(stop_func)
-		self:stop()
+		style:set_vel_dist(self.drivetrain, vel, inches, vel, inches, args)
+		return
 	end
+	
+	style:set_vel(self.drivetrain, vel, vel)
+	
+	self:wait_time(args)
 end
 
 function Drive:bk(args)
-	args.speed = -self:getSpeed(args)
+	if args.inches then
+		args.inches = -args.inches
+	end
+	self:flip_velocity(args)
 	
 	return self:fd(args)
 end
 
 function Drive:lturn(args)
-	local speed = self:getSpeed(args)
-	local rad = self:getRad(args)
-	local stop_func = args.stop_func
+	local vel = self:parse_velocity(args)
+	local style = args.style or self.style
 	
-	self:setSpeed(-speed, speed)
-	
+	local rad = self:parse_radians(args)
 	if rad then
-		local inches = rad * self.drivetrain:getWheelBase()/2
-		self:waitDistance(inches, inches)
-		self:stop()
-	elseif stop_func then
-		self:waitFunc(stop_func)
-		self:stop()
+		local inches = rad * self.drivetrain:get_wheel_base()/2
+		style:set_vel_dist(self.drivetrain, -vel, inches, vel, inches, args)
+		return
 	end
+	
+	style:set_vel(self.drivetrain, -vel, vel)
+	
+	self:wait_time(args)
 end
 
 function Drive:rturn(args)
-	args.speed = -self:getSpeed(args)
+	self:flip_velocity(args)
 	
 	return self:lturn(args)
 end
 
-function Drive:steer(dir, speed)
-	local lmult, rmult
+function Drive:lpiv(args)
+	local vel = self:parse_velocity(args)
+	local style = args.style or self.style
 	
-	if dir >= 0 then
-		lmult = 1
-		rmult = 1-dir*2
-	else
-		lmult = 1+dir*2
-		rmult = 1
-	end
-	
-	self:setSpeed(lmult*speed, rmult*speed)
-end
-
---[[function Drive:lpiv(args)
-	local speed = args.speed or 1000
-	
-	local rad
-	if args.rad then
-		rad = args.rad
-	elseif args.degrees then
-		rad = math.rad(args.degrees)
-	end
-	
+	local rad = self:parse_radians(args)
 	if rad then
-		if rad > 0 then
-			self:drive_dist(-speed, -rad * self:get_wheelbase(), 0, args)
-		else
-			self:drive_dist(speed, -rad * self:get_wheelbase(), 0, args)
-		end
-	else
-		self:drive(speed, 0, args)
+		local inches = rad * self.drivetrain:get_wheel_base()
+		style:set_vel_dist(self.drivetrain, vel, inches, 0, 0, args)
+		return
 	end
+	
+	style:set_vel(self.drivetrain, vel, 0, args)
+
+	self:wait_time(args)
 end
 
 function Drive:rpiv(args)
-	local speed = args.speed or 1000
-
-	local rad
-	if args.rad then
-		rad = args.rad
-	elseif args.degrees then
-		rad = math.rad(args.degrees)
+	local vel = self:parse_velocity(args)
+	local style = args.style or self.style
+	
+	local rad = self:parse_radians(args)
+	if rad then
+		local inches = rad * self.drivetrain:get_wheel_base()
+		style:set_vel_dist(self.drivetrain, 0, 0, vel, inches, args)
+		return
 	end
 	
-	if rad then
-		if rad > 0 then
-			self:drive_dist(0, rad * self:get_wheelbase(), speed, args)
-		else
-			self:drive_dist(0, rad * self:get_wheelbase(), -speed, args)
-		end
-	else
-		self:drive(0, speed, args)
-	end
+	style:set_vel(self.drivetrain, 0, vel, args)
+
+	self:wait_time(args)
 end
 
-function Drive:scooch(xdist)
+function Drive:scooch(args)
+	local vel = self:parse_velocity(args)
+	local xdist = assert(args.xdist, "Missing argument xdist to scooch method")
+
 	local wb = self:get_wheelbase()
 
 	local rad = -math.acos((math.abs(xdist) - wb)/-wb)
 	
 	if xdist > 0 then
-		self:lpiv{rad = rad}
-		self:rpiv{rad = rad}
+		self:lpiv{rad = rad, vel = vel}
+		self:rpiv{rad = rad, vel = vel}
 	else
-		self:rpiv{rad = rad}
-		self:lpiv{rad = rad}
+		self:rpiv{rad = rad, vel = vel}
+		self:lpiv{rad = rad, vel = vel}
 	end
 	
 	return math.abs(math.sin(rad)*wb)
-end]]
+end
 
 function Drive:stop()
-	self:setSpeed(0, 0)
+	self.drivetrain:drive(0, 0)
 end
 
 function Drive:wait()
 	return self.queue:wait()
 end
 
+function Drive:off()
+	self.drivetrain:off()
+end
+
 -- Util functions --
 
-function Drive:getSpeed(args)
+function Drive:parse_velocity(args)
 	if args.speed then
-		return args.speed
-	elseif args.power then
-		return args.topspeed * args.power / 100
+		return args.speed / 1000 * self.topvel
+	elseif args.vel then
+		return args.vel
 	else
-		return self.topspeed
+		return self.topvel
 	end
 end
 
-function Drive:getRad(args)
+function Drive:flip_velocity(args)
+	local vel = self:parse_velocity(args)
+	args.vel = -vel
+	args.speed = nil
+end
+
+function Drive:parse_radians(args)
 	if args.degrees then
 		return math.rad(args.degrees)
 	elseif args.radians then
@@ -157,28 +145,25 @@ function Drive:getRad(args)
 	end
 end
 
--- Low level API --
-
-function Drive:off()
-	self.queue:clear()
-	self.drivetrain:drive(0, 0)
+function Drive:wait_time(args)
+	local wait = args.wait
+	if wait then	
+		task.wait(wait)
+		self:stop()
+		return
+	end
+	
+	local wait_while = args.wait_while
+	if wait_while then
+		task.wait_while(wait_while)
+		self:stop()
+		return
+	end
+	
+	local time = args.time
+	if time then
+		task.sleep(time)
+		self:stop()
+		return
+	end
 end
-
-function Drive:setSpeed(lspeed, rspeed)
-	self.queue:add(self.style:setSpeed(lspeed, rspeed))
-end
-
-function Drive:waitDistance(ldist, rdist)
-	self.queue:add(self.style:waitDistance(ldist, rdist))
-end
-
-function Drive:waitTime(time)
-	self.queue:add(commandqueue.SleepCommand(time))
-end
-
-function Drive:waitFunc(func)
-	self.queue:add(commandqueue.InlineCommand(function ()
-		return task.wait(func)
-	end))
-end
-

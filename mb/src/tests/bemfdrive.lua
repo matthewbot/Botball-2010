@@ -15,7 +15,7 @@ drivetrain = drivemod.MotorDriveTrain{
 
 drive = drivemod.Drive{
 	drivetrain = drivetrain,
-	style = drivemod.Smooth{accel=15}
+	style = drivemod.BangBang()
 }
 
 function drive_error(inches, speed)

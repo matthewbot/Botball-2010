@@ -29,9 +29,16 @@ function MotorDriveTrain:drive(lspeed, rspeed)
 	end
 end
 
-function MotorDriveTrain:driveDist(lspeed, ldist, rspeed, rdist)
-	assert(ldist > 0, "negative ldist!")
-	assert(rdist > 0, "negative rdist!")
+function MotorDriveTrain:drive_dist(lspeed, ldist, rspeed, rdist)
+	lspeed = math.abs(lspeed)
+	rspeed = math.abs(rspeed)
+		
+	if ldist < 0 then
+		lspeed = -lspeed
+	end
+	if rdist < 0 then
+		rspeed = -rspeed
+	end
 
 	self.lspeed, self.rspeed = lspeed, rspeed
 
@@ -47,21 +54,27 @@ function MotorDriveTrain:driveDist(lspeed, ldist, rspeed, rdist)
 	else
 		self.rmot:mrp(rspeed, rdist)
 	end
+
+	self.lmot:wait()
+	self.rmot:wait()
+	
+	self.lmot:off()
+	self.rmot:off()
 end
 
-function MotorDriveTrain:getWheelBase()
+function MotorDriveTrain:get_wheel_base()
 	return self.wb
 end
 
-function MotorDriveTrain:getEncoders()
+function MotorDriveTrain:get_encoders()
 	return self.lmot:getpos() / self.lticks, self.rmot:getpos() / self.rticks
 end
 
-function MotorDriveTrain:waitEncoders()
+function MotorDriveTrain:wait_encoders()
 	task.yield()
 end
 
-function MotorDriveTrain:getSpeeds()
+function MotorDriveTrain:get_speeds()
 	return self.lspeed, self.rspeed
 end
 
