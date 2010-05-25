@@ -15,16 +15,20 @@ drivetrain = drivemod.MotorDriveTrain{
 
 drive = drivemod.Drive{
 	drivetrain = drivetrain,
+	style = drivemod.Smooth{}
+}
+
+bdrive = drivemod.Drive{
+	drivetrain = drivetrain,
 	style = drivemod.BangBang()
 }
 
 function drive_error(inches, speed)
-	local lenc, renc = drivetrain:getEncoders()
+	local lenc, renc = drivetrain:get_encoders()
 	
 	drive:fd{inches=inches, speed=speed}
-	drive:wait()
 	
-	local lnewenc, rnewenc = drivetrain:getEncoders()
+	local lnewenc, rnewenc = drivetrain:get_encoders()
 	
 	print("Distance error", inches - (lnewenc - lenc), inches - (rnewenc - renc))
 	print("Veer error", (lnewenc - lenc) - (rnewenc - renc), (rnewenc - renc) - (lnewenc - lenc))

@@ -15,6 +15,7 @@ function MotorDriveTrain:construct(args)
 end
 
 function MotorDriveTrain:drive(lspeed, rspeed)
+	print("drive", lspeed, rspeed)
 	self.lspeed, self.rspeed = lspeed, rspeed
 
 	lspeed = math.round(lspeed * self.lticks)
