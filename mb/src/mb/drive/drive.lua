@@ -107,12 +107,9 @@ function Drive:scooch(args)
 	return math.abs(math.sin(rad)*wb)
 end
 
-function Drive:stop()
-	self.drivetrain:drive(0, 0)
-end
-
-function Drive:wait()
-	return self.queue:wait()
+function Drive:stop(args)
+	local style = args.style or self.style
+	style:set_vel(self.drivetrain, 0, 0)
 end
 
 function Drive:off()
@@ -149,21 +146,21 @@ function Drive:wait_time(args)
 	local wait = args.wait
 	if wait then	
 		task.wait(wait)
-		self:stop()
+		self:stop(args)
 		return
 	end
 	
 	local wait_while = args.wait_while
 	if wait_while then
 		task.wait_while(wait_while)
-		self:stop()
+		self:stop(args)
 		return
 	end
 	
 	local time = args.time
 	if time then
 		task.sleep(time)
-		self:stop()
+		self:stop(args)
 		return
 	end
 end
