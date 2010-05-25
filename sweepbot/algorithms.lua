@@ -1,6 +1,6 @@
 import "config"
 import "drive"
-import "sweep"
+import "arm"
 
 
 local task = require "cbclua.task"
