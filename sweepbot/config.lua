@@ -9,8 +9,8 @@ local drivemod      = require "mb.drive"
 ------------
 
 ldrive 	= motorutils.JerkFixMotor{0, pid={d=0}}
-rdrive 	= motorutils.JerkFixMotor{3, pid={d=0}}
-dumper_motor = motorutils.JerkFixMotor{1}
+rdrive 	= motorutils.JerkFixMotor{1, pid={d=0}}
+dumper_motor = motorutils.JerkFixMotor{2}
 
 print("blah", ldrive, rdrive)
 drivetrain = drivemod.MotorDriveTrain{

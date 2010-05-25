@@ -2,28 +2,29 @@ import "config"
 
 local task = require "cbclua.task"
 
-local power = 40
-
 local dump_time = .5
-local speed = 70
+local power = 70
+
+local dumped = false
 
 function init()
 	reset()
 end
 
 function reset()
-	dumper_motor:setpwm(speed)
+	dumper_motor:setpwm(power)
 	local prevpos = dumper_motor:getpos()
 	while true do
-		task.sleep(.01)
+		task.sleep(.05)
 		local pos = dumper_motor:getpos()
-		if pos - prevpos < 5 then break end
+		if pos - prevpos < 3 then break end
 		prevpos = pos
 	end
 	
 	dumper_motor:off()
 	task.sleep(.2)
 	dumper_motor:mrp(0, 1)
+	dumped = false
 end
 
 function off()
@@ -31,7 +32,9 @@ function off()
 end
 
 function dump()
-	dumper_motor:setpwm(-speed)
+	if dumped then error("Dumper has been dumped! Reset first!") end
+	dumper_motor:setpwm(-power)
 	task.sleep(dump_time)
 	dumper_motor:off()
+	dumped = true
 end

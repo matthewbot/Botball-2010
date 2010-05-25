@@ -14,5 +14,6 @@ function main()
 	algorithms.follow_wall_sensor()
 	algorithms.final_palm_lineup()
 	sweep.botguy()
+	drive:bk{speed=200, inches=2}
 	sweep.palms()
 end

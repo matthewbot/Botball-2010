@@ -77,7 +77,7 @@ end
 function final_palm_lineup()
 	drive:bk{speed=200, inches=1}
 	drive:scooch{xdist=-.5, dir="bk"}
-	drive:fd{speed=200, inches=.5}
+	drive:fd{wait=wall_bumper, speed=200}
 	drive:off()
 	
 	
@@ -93,4 +93,8 @@ function final_palm_lineup()
 	drive_motors(100, 0)
 	task.sleep(.5)
 	drive_stop() ]]
+end
+
+function wall_lineup_bumpers()
+	
 end
