@@ -1,54 +1,56 @@
 local cbc = require "cbclua.cbc"
 
---[[ JerkFixMotor ]]--
+--[[ FixMotor ]]--
 -- Fixes integral windup jerks when changing directions
 -- clears physical motor counters between every BEMF command to insure integrator is reset
 -- maintains accurate logical motor counters
 
 local Motor = cbc.Motor -- superclass abbreviation
-JerkFixMotor = create_class("JerkFixMotor", Motor)
+FixMotor = create_class("FixMotor", Motor)
 
 local weirdfactor = .88235
 dualtoggle = false
 
-function JerkFixMotor:construct(args)
+function FixMotor:construct(args)
 	Motor.construct(self, args)
 	self.realpos = Motor.getpos(self)
 	Motor.clearpos(self)
 end
 
-function JerkFixMotor:getpos()
+function FixMotor:getpos()
 	return self.realpos + Motor.getpos(self)
 end
 
-function JerkFixMotor:clearpos()
+function FixMotor:clearpos()
 	self.realpos = 0
 	return Motor.clearpos(self)
 end
 
-function JerkFixMotor:update_realpos()
+function FixMotor:update_realpos()
 	self.realpos = self.realpos + Motor.getpos(self)
 	return Motor.clearpos(self)
 end
 
-function JerkFixMotor:mav(speed)
-	self:update_realpos()
+function FixMotor:mav(speed)
 	return Motor.mav(self, speed*weirdfactor)
 end
 
-function JerkFixMotor:mrp(speed, pos)
-	self:update_realpos()
+function FixMotor:mrp(speed, pos)
 	return Motor.mrp(self, speed*weirdfactor, pos)
 end
 
-function JerkFixMotor:mtp(speed, pos)
+function FixMotor:off()
 	self:update_realpos()
+	return Motor.off(self)
+end
+
+function FixMotor:mtp(speed, pos)
 	pos = pos - self.realpos
 	return Motor.mtp(self, speed*weirdfactor, pos)
 end
 
-function JerkFixMotor:dual_mav(speed, othermot, otherspeed)
-	if not is_a(othermot, JerkFixMotor) then
+function FixMotor:dual_mav(speed, othermot, otherspeed)
+	if not is_a(othermot, FixMotor) then
 		return false
 	end
 	
@@ -66,12 +68,12 @@ function JerkFixMotor:dual_mav(speed, othermot, otherspeed)
 	return true
 end
 
-function JerkFixMotor:mav_direct(speed)
+function FixMotor:mav_direct(speed)
 	return Motor.mav(self, speed*weirdfactor)
 end
 
-function JerkFixMotor:dual_mrp(speed, dist, othermot, otherspeed, otherdist)
-	if not is_a(othermot, JerkFixMotor) then
+function FixMotor:dual_mrp(speed, dist, othermot, otherspeed, otherdist)
+	if not is_a(othermot, FixMotor) then
 		return false
 	end
 	
@@ -87,12 +89,12 @@ function JerkFixMotor:dual_mrp(speed, dist, othermot, otherspeed, otherdist)
 	end
 end
 
-function JerkFixMotor:mrp_direct(speed, dist)
+function FixMotor:mrp_direct(speed, dist)
 	return Motor.mrp(self, speed, dist)
 end
 	
-function JerkFixMotor:dual_mtp(speed, dist, othermot, otherspeed, otherdist)
-	if not is_a(othermot, JerkFixMotor) then
+function FixMotor:dual_mtp(speed, dist, othermot, otherspeed, otherdist)
+	if not is_a(othermot, FixMotor) then
 		return false
 	end
 	
@@ -110,7 +112,7 @@ function JerkFixMotor:dual_mtp(speed, dist, othermot, otherspeed, otherdist)
 	end
 end
 
-function JerkFixMotor:mtp_direct(speed, dist)
+function FixMotor:mtp_direct(speed, dist)
 	return Motor.mtp(self, speed, dist)
 end
 
@@ -146,7 +148,7 @@ end
 
 --[[ dual_ motor commands ]]--
 -- Attempts to perform motor commands at the exact same instant
--- Only works with JerkFixMotor, and does all motor counter manipulation before the commands
+-- Only works with FixMotor, and does all motor counter manipulation before the commands
 -- to get rid of a slight startup delay
 
 function dual_mav(mot1, speed1, mot2, speed2)

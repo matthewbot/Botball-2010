@@ -5,8 +5,8 @@ local util = require "cbclua.util"
 local task = require "cbclua.task"
 local timer = require "cbclua.timer"
 
-lmot = motorutils.JerkFixMotor{0}
-rmot = motorutils.JerkFixMotor{3}
+lmot = motorutils.FixMotor{0}
+rmot = motorutils.FixMotor{3}
 
 drivetrain = drivemod.MotorDriveTrain{
 	lmot = lmot,
