@@ -20,7 +20,7 @@ function Drive:fd(args)
 		return
 	end
 	
-	style:set_vel(self.drivetrain, vel, vel)
+	style:set_vel(self.drivetrain, vel, vel, args)
 	
 	self:wait_time(args)
 end
@@ -45,7 +45,7 @@ function Drive:lturn(args)
 		return
 	end
 	
-	style:set_vel(self.drivetrain, -vel, vel)
+	style:set_vel(self.drivetrain, -vel, vel, args)
 	
 	self:wait_time(args)
 end
@@ -109,7 +109,7 @@ end
 
 function Drive:stop(args)
 	local style = args.style or self.style
-	style:set_vel(self.drivetrain, 0, 0)
+	style:set_vel(self.drivetrain, 0, 0, args)
 end
 
 function Drive:off()
