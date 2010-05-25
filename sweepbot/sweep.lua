@@ -57,12 +57,12 @@ end
 
 function palms()
 	palms_sweep()
-	task.sleep(2)
+	task.sleep(.2)
 	palms_retract()
 end
 
 function botguy()
 	botguy_sweep()
-	task.sleep(2)
-	palms_retract()
+	task.sleep(.2)
+	botguy_retract()
 end
