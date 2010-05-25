@@ -3,7 +3,7 @@ import "sweep"
 
 function activate()
 	print "Activating"
-	pitch(250, 400)
+	pitch(350, 400)
 	wait()
 	extend(400, 400)
 	wait()
