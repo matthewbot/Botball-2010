@@ -59,14 +59,14 @@ function follow_wall_time(time)
 			follow_wall()
 		end
 	end)
-	bdrive:stop()
+	drive:stop{}
 end
 
 function follow_wall_sensor()
 	while not wall_bumper() do
 		follow_wall()
 	end
-	bdrive:stop()
+	drive:off()
 end
 
 
@@ -75,7 +75,11 @@ function drive_bump()
 end
 
 function final_palm_lineup()
-	drive:pivot{xdist=-2, dir="bk"}
+	drive:bk{speed=200, inches=1}
+	drive:scooch{xdist=-.5, dir="bk"}
+	drive:fd{wait=wall_bumper, speed=200}
+	drive:off()
+	
 	
 --[[	drive_motors(-300, -300)
 	task.sleep(.3)
@@ -89,4 +93,8 @@ function final_palm_lineup()
 	drive_motors(100, 0)
 	task.sleep(.5)
 	drive_stop() ]]
+end
+
+function wall_lineup_bumpers()
+	
 end

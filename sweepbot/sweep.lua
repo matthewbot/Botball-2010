@@ -12,14 +12,12 @@ function activate()
 	wait()
 end
 
-
 function init()
 	reset()
 	activate()
 end
 
 function palms_sweep()
-	print "Sweeping Palms"
 	pitch(850, 600)
 	extend(700, 700)
 	wait()
@@ -28,7 +26,6 @@ function palms_sweep()
 end
 
 function palms_retract()
-	print "Retracting Palms"
 	extend(300, 460)
 	pitch(200, 800)
 	wait()
@@ -38,7 +35,6 @@ function palms_retract()
 end
 
 function botguy_sweep()
-	print "Murking Botguy"
 	pitch(900, 600)
 	extend(1000, 700)
 	wait()
@@ -47,7 +43,6 @@ function botguy_sweep()
 end
 
 function botguy_retract()
-	print "Raping Botguy"
 	pitch(400, 400)
 	extend(525, 400)
 	wait()
@@ -57,12 +52,12 @@ end
 
 function palms()
 	palms_sweep()
-	task.sleep(2)
+	task.sleep(.2)
 	palms_retract()
 end
 
 function botguy()
 	botguy_sweep()
-	task.sleep(2)
-	palms_retract()
+	task.sleep(.2)
+	botguy_retract()
 end

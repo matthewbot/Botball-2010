@@ -10,10 +10,10 @@ local sweep = require "sweep"
 
 	
 function main()
-	sweep.palms_sweep()
-	sweep.palms_retract()
+	sweep.palms()
 	algorithms.follow_wall_sensor()
 	algorithms.final_palm_lineup()
-	sweep.palms_sweep()
-	sweep.palms_retract()
+	sweep.botguy()
+	drive:bk{speed=200, inches=2}
+	sweep.palms()
 end
