@@ -2,14 +2,29 @@ local cbc 			= require "cbclua.cbc"
 local vision 		= require "cbclua.vision"
 local servoutils 	= require "mb.servoutils"
 local motorutils 	= require "mb.motorutils"
+local drivemod      = require "mb.drive"
 
 ------------
 -- Motors --
 ------------
 
-ldrive 	= motorutils.JerkFixMotor{0}
-rdrive 	= motorutils.JerkFixMotor{3}
+ldrive 	= motorutils.JerkFixMotor{0, pid={d=0}}
+rdrive 	= motorutils.JerkFixMotor{3, pid={d=0}}
 dumper_motor = motorutils.JerkFixMotor{1}
+
+print("blah", ldrive, rdrive)
+drivetrain = drivemod.MotorDriveTrain{
+	lmot = ldrive,
+	rmot = rdrive,
+	ticks = 100,
+	rmult = 1,
+	wb = 7
+}
+drive = drivemod.Drive{
+	drivetrain = drivetrain,
+	style = drivemod.Smooth{accel=10},
+	topvel = 3,
+}
 
 ------------
 -- Servos --

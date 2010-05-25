@@ -8,6 +8,9 @@ local cbc = require "cbclua.cbc"
 local Motor = cbc.Motor -- superclass abbreviation
 JerkFixMotor = create_class("JerkFixMotor", Motor)
 
+local weirdfactor = .88235
+dualtoggle = false
+
 function JerkFixMotor:construct(args)
 	Motor.construct(self, args)
 	self.realpos = Motor.getpos(self)
@@ -30,18 +33,18 @@ end
 
 function JerkFixMotor:mav(speed)
 	self:update_realpos()
-	return Motor.mav(self, speed)
+	return Motor.mav(self, speed*weirdfactor)
 end
 
 function JerkFixMotor:mrp(speed, pos)
 	self:update_realpos()
-	return Motor.mrp(self, speed, pos)
+	return Motor.mrp(self, speed*weirdfactor, pos)
 end
 
 function JerkFixMotor:mtp(speed, pos)
 	self:update_realpos()
 	pos = pos - self.realpos
-	return Motor.mtp(self, speed, pos)
+	return Motor.mtp(self, speed*weirdfactor, pos)
 end
 
 function JerkFixMotor:dual_mav(speed, othermot, otherspeed)
@@ -51,14 +54,20 @@ function JerkFixMotor:dual_mav(speed, othermot, otherspeed)
 	
 	self:update_realpos()
 	othermot:update_realpos()
-	Motor.mav(self, speed)
-	othermot:mav_direct(otherspeed)
+	dualtoggle = not dualtoggle
+	if dualtoggle then
+		Motor.mav(self, speed*weirdfactor)
+		othermot:mav_direct(otherspeed)
+	else
+		othermot:mav_direct(otherspeed)
+		Motor.mav(self, speed*weirdfactor)
+	end
 	
 	return true
 end
 
 function JerkFixMotor:mav_direct(speed)
-	return Motor.mav(self, speed)
+	return Motor.mav(self, speed*weirdfactor)
 end
 
 function JerkFixMotor:dual_mrp(speed, dist, othermot, otherspeed, otherdist)
@@ -68,8 +77,14 @@ function JerkFixMotor:dual_mrp(speed, dist, othermot, otherspeed, otherdist)
 	
 	self:update_realpos()
 	othermot:update_realpos()
-	Motor.mrp(speed, dist)
-	othermot:mrp_direct(self, otherspeed, otherdist)
+	dualtoggle = not dualtoggle
+	if dualtoggle then
+		Motor.mrp(speed, dist)
+		othermot:mrp_direct(self, otherspeed, otherdist)
+	else
+		othermot:mrp_direct(self, otherspeed, otherdist)	
+		Motor.mrp(speed, dist)
+	end
 end
 
 function JerkFixMotor:mrp_direct(speed, dist)
@@ -85,8 +100,14 @@ function JerkFixMotor:dual_mtp(speed, dist, othermot, otherspeed, otherdist)
 	othermot:update_realpos()
 	dist = dist - self.realpos
 	otherdist = otherdist - othermot.realpos
-	Motor.mtp(self, speed, dist)
-	othermot:mtp_direct(otherspeed, otherdist)
+	dualtoggle = not dualtoggle
+	if dualtoggle then
+		Motor.mtp(speed, dist)
+		othermot:mtp_direct(self, otherspeed, otherdist)
+	else
+		othermot:mtp_direct(self, otherspeed, otherdist)	
+		Motor.mtp(speed, dist)
+	end
 end
 
 function JerkFixMotor:mtp_direct(speed, dist)

@@ -1,5 +1,4 @@
 import "config"
-import "drive"
 import "sweep"
 
 
@@ -29,9 +28,9 @@ function face_poms()
 	
 	local turntime = math.abs(poms) * turntime_constant
 	if poms > 0 then
-		drive_rturn(turntime, 200)
+		drive:rturn{time=turntime, speed=200}
 	else
-		drive_lturn(turntime, 200)
+		drive:lturn{time=turntime, speed=200}
 	end	
 end
 
@@ -45,11 +44,11 @@ end
 function follow_wall()
 	local left, right = read_ranges()
 	if not left and not right then
-		drive_motors(50, 300)
+		drivetrain:drive(.5, 3) -- TODO add arcs!!!
 	elseif left and not right then
-		drive_motors(400, 400)
+		drivetrain:drive(4, 4)
 	else
-		drive_motors(300, 50)
+		drivetrain:drive(3, .5)
 	end
 	task.sleep(0.01)
 end
@@ -60,30 +59,23 @@ function follow_wall_time(time)
 			follow_wall()
 		end
 	end)
-	drive_stop()
+	bdrive:stop()
 end
 
 function follow_wall_sensor()
 	while not wall_bumper() do
 		follow_wall()
 	end
-	drive_stop()
+	bdrive:stop()
 end
 
 
 function drive_bump()
-	while not wall_bumper() do
-		drive_motors(50, 50)
-	end
-	drive_stop()
+	drive:fd{wait=wall_bumper, speed=100}
 end
 
 function final_palm_lineup()
-	drive_motors(0, -300)
-	task.sleep(.3)
-	drive_motors(-300, 0)
-	task.sleep(.3)
-	drive_stop()
+	drive:pivot{xdist=-2, dir="bk"}
 	
 --[[	drive_motors(-300, -300)
 	task.sleep(.3)

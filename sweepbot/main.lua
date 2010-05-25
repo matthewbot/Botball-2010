@@ -1,5 +1,4 @@
 import "config"
-import "drive"
 
 local cbc = require "cbclua.cbc"
 local task = require "cbclua.task"

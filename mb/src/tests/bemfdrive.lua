@@ -3,9 +3,10 @@ local motorutils = require "mb.motorutils"
 local cbc = require "cbclua.cbc"
 local util = require "cbclua.util"
 local task = require "cbclua.task"
+local timer = require "cbclua.timer"
 
-lmot = cbc.Motor{0}
-rmot = cbc.Motor{3}
+lmot = motorutils.JerkFixMotor{0}
+rmot = motorutils.JerkFixMotor{3}
 
 drivetrain = drivemod.MotorDriveTrain{
 	lmot = lmot,
@@ -52,5 +53,28 @@ function find_top_speeds()
 	
 	print("Top speeds", lend - lstart, rend - rstart)
 end
+
+function mav_accuracy_test(speed, pid)
+	if pid then
+		lmot:set_pid(pid)
+		rmot:set_pid(pid)
+	end
 	
+	lmot:mav(speed)
+	rmot:mav(speed)
+	task.sleep(.3)
+	local lstart, rstart = lmot:getpos(), rmot:getpos()
+	local tstart = timer.seconds()
+	task.sleep(4)
+	local lend, rend = lmot:getpos(), rmot:getpos()
+	local tend = timer.seconds()
+	lmot:off()
+	rmot:off()
 	
+	print("Distance", (lend - lstart) / (tend - tstart), (rend - rstart) / (tend - tstart))
+end
+
+function clearpos() 
+	lmot:clearpos()
+	rmot:clearpos()
+end

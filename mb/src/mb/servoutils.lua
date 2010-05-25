@@ -1,9 +1,8 @@
 local cbc = require "cbclua.cbc"
 local task = require "cbclua.task"
 local timer = require "cbclua.timer"
-local set = require "set"
 
-local active_servos = set.new{}
+local active_servos = {}
 
 --[[ SpeedControlServo ]]--
 
@@ -16,7 +15,7 @@ function SpeedControlServo:construct(args)
 end
 
 function SpeedControlServo:setpos(pos)
-	set.remove(active_servos, self)
+	active_servos[self] = nil
 	return Servo.setpos(self, pos)
 end
 
@@ -34,13 +33,13 @@ function SpeedControlServo:setpos_speed(stoppos, speed)
 	self.starttime = timer.seconds()
 	self.stoppos = stoppos
 	self.speed = speed
-	set.insert(active_servos, self)
+	active_servos[self] = true
 	
 	start_update_task()
 end
 
 function SpeedControlServo:wait()
-	while set.member(active_servos, self) do
+	while active_servos[self] do
 		self.signal:wait()
 	end
 end
@@ -57,7 +56,7 @@ function SpeedControlServo:update()
 	end
 	
 	if done then
-		set.remove(active_servos, self)
+		active_servos[self] = nil
 		newpos = self.stoppos
 		self.signal:notify_all()
 	end
@@ -81,7 +80,7 @@ function update_taskfunc()
 		task.sleep(1/40)
 		
 		local updated = false
-		for servo in set.elements(active_servos) do
+		for servo in pairs(active_servos) do
 			servo:update()
 			updated = true
 		end
