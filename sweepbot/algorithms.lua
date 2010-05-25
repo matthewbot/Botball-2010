@@ -1,5 +1,5 @@
 import "config"
-import "sweep"
+import "arm"
 
 
 local task = require "cbclua.task"
