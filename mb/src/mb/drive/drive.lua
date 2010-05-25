@@ -121,7 +121,7 @@ function Drive:stop(args)
 end
 
 function Drive:off()
-	self.drivetrain:off()
+	self.drivetrain:drive(0, 0)
 end
 
 -- Util functions --

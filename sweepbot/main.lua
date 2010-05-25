@@ -10,10 +10,9 @@ local sweep = require "sweep"
 
 	
 function main()
-	sweep.palms_sweep()
-	sweep.palms_retract()
+	sweep.palms()
 	algorithms.follow_wall_sensor()
 	algorithms.final_palm_lineup()
-	sweep.palms_sweep()
-	sweep.palms_retract()
+	sweep.botguy()
+	sweep.palms()
 end

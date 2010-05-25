@@ -4,15 +4,15 @@ local task = require "cbclua.task"
 
 local power = 40
 
-local dump_time = 1.6
-local speed = -200
+local dump_time = .5
+local speed = 70
 
 function init()
 	reset()
 end
 
 function reset()
-	dumper_motor:setpwm(70)
+	dumper_motor:setpwm(speed)
 	local prevpos = dumper_motor:getpos()
 	while true do
 		task.sleep(.01)
@@ -31,6 +31,7 @@ function off()
 end
 
 function dump()
-	dumper_motor:setpwm(-70)
-	task.sleep(.5)
+	dumper_motor:setpwm(-speed)
+	task.sleep(dump_time)
+	dumper_motor:off()
 end
