@@ -30,8 +30,8 @@ function MotorDriveTrain:drive(lspeed, rspeed)
 end
 
 function MotorDriveTrain:drive_dist(lspeed, ldist, rspeed, rdist)
-	lspeed = math.abs(lspeed)
-	rspeed = math.abs(rspeed)
+	assert(math.sgn(lspeed) == math.sgn(ldist), "Distance and speed must be the same sign!")
+	assert(math.sgn(rspeed) == math.sgn(rdist), "Distance and speed must be the same sign!")
 		
 	if ldist < 0 then
 		lspeed = -lspeed

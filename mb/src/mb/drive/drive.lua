@@ -51,6 +51,11 @@ function Drive:lturn(args)
 end
 
 function Drive:rturn(args)
+	if args.degrees then
+		args.degrees = -args.degrees
+	elseif args.rad then
+		args.rad = -args.rad
+	end
 	self:flip_velocity(args)
 	
 	return self:lturn(args)
