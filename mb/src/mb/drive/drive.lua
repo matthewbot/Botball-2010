@@ -7,7 +7,7 @@ Drive = create_class "Drive"
 function Drive:construct(args)
 	self.drivetrain = assert(args.drivetrain, "Missing argument drivetrain")
 	self.style = assert(args.style, "Missing style argument")
-	self.topvel = args.topvel or 10
+	self.topvel = args.topvel or 5
 end
 
 function Drive:fd(args)
@@ -41,7 +41,7 @@ function Drive:lturn(args)
 	local rad = self:parse_radians(args)
 	if rad then
 		local inches = rad * self.drivetrain:get_wheel_base()/2
-		style:set_vel_dist(self.drivetrain, -vel, inches, vel, inches, args)
+		style:set_vel_dist(self.drivetrain, -vel, -inches, vel, inches, args)
 		return
 	end
 	
@@ -63,7 +63,7 @@ function Drive:lpiv(args)
 	local rad = self:parse_radians(args)
 	if rad then
 		local inches = rad * self.drivetrain:get_wheel_base()
-		style:set_vel_dist(self.drivetrain, vel, inches, 0, 0, args)
+		style:set_vel_dist(self.drivetrain, math.keepsgn(vel, inches), inches, 0, 0, args)
 		return
 	end
 	
@@ -79,7 +79,7 @@ function Drive:rpiv(args)
 	local rad = self:parse_radians(args)
 	if rad then
 		local inches = rad * self.drivetrain:get_wheel_base()
-		style:set_vel_dist(self.drivetrain, 0, 0, vel, inches, args)
+		style:set_vel_dist(self.drivetrain, 0, 0, math.keepsgn(vel, inches), inches, args)
 		return
 	end
 	
@@ -92,9 +92,12 @@ function Drive:scooch(args)
 	local vel = self:parse_velocity(args)
 	local xdist = assert(args.xdist, "Missing argument xdist to scooch method")
 
-	local wb = self:get_wheelbase()
+	local wb = self.drivetrain:get_wheel_base()
 
-	local rad = -math.acos((math.abs(xdist) - wb)/-wb)
+	local rad = math.acos((math.abs(xdist) - wb)/-wb)
+	if args.dir == "bk" then
+		rad = -rad
+	end
 	
 	if xdist > 0 then
 		self:lpiv{rad = rad, vel = vel}
@@ -104,7 +107,7 @@ function Drive:scooch(args)
 		self:lpiv{rad = rad, vel = vel}
 	end
 	
-	return math.abs(math.sin(rad)*wb)
+	return math.sin(rad)*wb
 end
 
 function Drive:stop(args)
@@ -137,8 +140,8 @@ end
 function Drive:parse_radians(args)
 	if args.degrees then
 		return math.rad(args.degrees)
-	elseif args.radians then
-		return args.radians
+	elseif args.rad then
+		return args.rad
 	end
 end
 

@@ -9,7 +9,6 @@ function Smooth:construct(args)
 end
 
 function Smooth:set_vel(drivetrain, lendspeed, rendspeed, args)
-	print("endspeed", lendspeed, rendspeed)
 	local lstartspeed, rstartspeed = drivetrain:get_speeds()
 	local ldeltaspeed = lendspeed - lstartspeed
 	local rdeltaspeed = rendspeed - rstartspeed
@@ -28,46 +27,55 @@ function Smooth:set_vel(drivetrain, lendspeed, rendspeed, args)
 end
 
 function Smooth:set_vel_dist(drivetrain, ltravspeed, ldist, rtravspeed, rdist, args)
+	assert(math.sgn(ltravspeed) == math.sgn(ldist), "Distance and speed must be the same sign!")
+	assert(math.sgn(rtravspeed) == math.sgn(rdist), "Distance and speed must be the same sign!")
+
 	local lstartenc, rstartenc = drivetrain:get_encoders()
 	self:set_vel(drivetrain, ltravspeed, rtravspeed, args)
-	
-	print("dist", ldist, rdist)
 	
 	local accel = args.accel or self.accel
 	local laccel, raccel, stoptime = calc_accels_stoptime(-ltravspeed, -rtravspeed, accel)
 	local ldeacceldist = ldist - (.5*laccel*stoptime*stoptime + ltravspeed*stoptime)
 	local rdeacceldist = rdist - (.5*raccel*stoptime*stoptime + rtravspeed*stoptime)
 	
-	print("deacceldist", ldeacceldist, rdeacceldist)
-	
 	while true do
 		drivetrain:wait_encoders()
 		
 		local lenc, renc = drivetrain:get_encoders()
-		if math.abs(lenc - lstartenc) > math.abs(ldeacceldist) or math.abs(renc - rstartenc) > math.abs(rdeacceldist) then
+		if ltravspeed ~= 0 and math.abs(lenc - lstartenc) > math.abs(ldeacceldist) then
+			break
+		end
+		if rtravspeed ~= 0 and math.abs(renc - rstartenc) > math.abs(rdeacceldist) then
 			break
 		end
 	end
 	
-	print("Deaccel")
 	local ldeaccelenc, rdeaccelenc = drivetrain:get_encoders()
 	control.cycle(50, function (tdelta)
 		local lenc, renc = drivetrain:get_encoders()
 		
-		local ltrav = (lenc - ldeaccelenc)
-		local ltemp = 2*laccel*ltrav + ltravspeed*ltravspeed
-		if ltemp < 0 then return true end
-		local lspeed = math.keepsgn(math.sqrt(ltemp), ltravspeed)
+		local lspeed
+		if ltravspeed ~= 0 then
+			local ltrav = (lenc - ldeaccelenc)
+			local ltemp = 2*laccel*ltrav + ltravspeed*ltravspeed
+			if ltemp < 0 then return true end
+			lspeed = math.keepsgn(math.sqrt(ltemp), ltravspeed)
+		else
+			lspeed = 0
+		end
 
-		local rtrav = (renc - rdeaccelenc)
-		local rtemp = 2*raccel*rtrav + rtravspeed*rtravspeed
-		if rtemp < 0 then return true end
-		local rspeed = math.keepsgn(math.sqrt(rtemp), rtravspeed)
+		local rspeed
+		if rtravspeed ~= 0 then
+			local rtrav = (renc - rdeaccelenc)
+			local rtemp = 2*raccel*rtrav + rtravspeed*rtravspeed
+			if rtemp < 0 then return true end
+			rspeed = math.keepsgn(math.sqrt(rtemp), rtravspeed)
+		else
+			rspeed = 0
+		end
 		
-		print("temp", ltemp, rtemp)
 		drivetrain:drive(lspeed, rspeed)
 	end)
-	print("Done")
 	drivetrain:drive(0, 0)
 end
 
