@@ -12,18 +12,17 @@ ldrive 	= motorutils.FixMotor{0}
 rdrive 	= motorutils.FixMotor{3}
 dumper_motor = motorutils.FixMotor{1}
 
-print("blah", ldrive, rdrive)
 drivetrain = drivemod.MotorDriveTrain{
 	lmot = ldrive,
 	rmot = rdrive,
-	ticks = 100,
-	rmult = 1,
-	wb = 7
+	ticks = 92,
+	rmult = 1.03,
+	wb = 7.2
 }
 drive = drivemod.Drive{
 	drivetrain = drivetrain,
 	style = drivemod.Smooth{accel=10},
-	topvel = 3,
+	topvel = 7,
 }
 
 ------------

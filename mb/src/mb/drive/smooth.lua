@@ -42,15 +42,17 @@ function Smooth:set_vel_dist(drivetrain, ltravspeed, ldist, rtravspeed, rdist, a
 		drivetrain:wait_encoders()
 		
 		local lenc, renc = drivetrain:get_encoders()
-		if ltravspeed ~= 0 and math.abs(lenc - lstartenc) > math.abs(ldeacceldist) then
-			break
-		end
-		if rtravspeed ~= 0 and math.abs(renc - rstartenc) > math.abs(rdeacceldist) then
-			break
+		if ltravspeed ~= 0 and rtravspeed ~= 0 then
+			local amt = math.abs((lenc - lstartenc) / ldeacceldist) + math.abs((renc - rstartenc) / rdeacceldist)
+			if amt >= 2 then break end
+		elseif ltravspeed ~= 0 then
+			if math.abs(lenc - lstartenc) > math.abs(ldeacceldist) then break end
+		else
+			if math.abs(renc - rstartenc) > math.abs(rdeacceldist) then break end
 		end
 	end
 	
-	local ldeaccelenc, rdeaccelenc = drivetrain:get_encoders()
+	local ldeaccelenc, rdeaccelenc = lstartenc + ldeacceldist, rstartenc + rdeacceldist
 	control.cycle(50, function (tdelta)
 		local lenc, renc = drivetrain:get_encoders()
 		
