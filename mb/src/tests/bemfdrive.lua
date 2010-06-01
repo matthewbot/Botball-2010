@@ -18,12 +18,14 @@ drivetrain = drivemod.MotorDriveTrain{
 
 drive = drivemod.Drive{
 	drivetrain = drivetrain,
-	style = drivemod.Smooth{}
+	style = drivemod.Smooth{},
+	topvel = 7
 }
 
 bdrive = drivemod.Drive{
 	drivetrain = drivetrain,
-	style = drivemod.BangBang()
+	style = drivemod.BangBang(),
+	topvel = 7
 }
 
 function drive_error(inches, speed)
