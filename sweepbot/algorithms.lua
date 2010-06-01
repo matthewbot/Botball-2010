@@ -63,7 +63,7 @@ function follow_wall_time(time)
 end
 
 function follow_wall_sensor()
-	while not wall_bumper() do
+	while not rwall_bumper() do
 		follow_wall()
 	end
 	drive:off()
@@ -71,13 +71,13 @@ end
 
 
 function drive_bump()
-	drive:fd{wait=wall_bumper, speed=100}
+	drive:fd{wait=rwall_bumper, speed=100}
 end
 
 function final_palm_lineup()
 	drive:bk{speed=200, inches=1}
 	drive:scooch{xdist=-1.5, dir="bk"}
-	drive:fd{wait=wall_bumper, speed=200}
+	drive:fd{wait=rwall_bumper, speed=200}
 	drive:off()
 	
 	
@@ -95,6 +95,53 @@ function final_palm_lineup()
 	drive_stop() ]]
 end
 
+function either_bumper()
+	return lwall_bumper() or rwall_bumper()
+end
+
+function both_bumpers()
+	return lwall_bumper() and rwall_bumper()
+end
+
 function wall_lineup_bumpers()
-	
+	local first = true
+	while true do
+		if first then
+			first = false
+			bdrive:fd{speed=400}
+		else
+			bdrive:fd{speed=200}
+		end
+		task.wait(either_bumper)
+		local lbump, rbump = lwall_bumper(), rwall_bumper()
+		if (lbump and not rbump) or (rbump and not lbump) then -- either bumper but not both
+			task.wait(both_bumpers, .1)
+			lbump, rbump = lwall_bumper(), rwall_bumper()
+		end
+		
+		if lbump and rbump then
+			break
+		elseif lbump then
+			bdrive:lpiv{speed=-200, wait_while=lwall_bumper}
+		elseif rbump then
+			bdrive:rpiv{speed=-200, wait_while=rwall_bumper}
+		end
+	end
+	bdrive:stop{}
+end
+
+function drive_wall_follow()
+	task.timeout(time, function()
+		while true do
+			dist = wall_range()
+			if dist < 150 and dist > 100 then
+				drivetrain:drive(4, 4)
+			elseif dist > 150 then
+				drivetrain:drive(4, 3)
+			else
+				drivetrain:drive(3, 4)
+			end
+			task.sleep(0.01)
+		end
+	end)
 end

@@ -25,6 +25,12 @@ drive = drivemod.Drive{
 	topvel = 7,
 }
 
+bdrive = drivemod.Drive{
+	drivetrain = drivetrain,
+	style = drivemod.BangBang(),
+	topvel = 7,
+}
+
 ------------
 -- Servos --
 ------------
@@ -44,4 +50,6 @@ green_channel = vision.Channel(0)
 
 lrange = cbc.AnalogSensor{0, float = true}
 rrange = cbc.AnalogSensor{1, float = true}
-wall_bumper = cbc.DigitalSensor{15}
+wall_range = cbc.AnalogSensor{3, float = true}
+lwall_bumper = cbc.DigitalSensor{14}
+rwall_bumper = cbc.DigitalSensor{15}
