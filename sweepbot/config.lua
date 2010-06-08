@@ -19,10 +19,25 @@ drivetrain = drivemod.MotorDriveTrain{
 	rmult = 1.03,
 	wb = 7.2
 }
+
+fdrivetrain = drivemod.MotorDriveTrain{
+	lmot = ldrive,
+	rmot = rdrive,
+	ticks = 92,
+	rmult = .97,
+	wb = 7.2
+}
+
 drive = drivemod.Drive{
 	drivetrain = drivetrain,
 	style = drivemod.Smooth{accel=10},
 	topvel = 7,
+}
+
+fdrive = drivemod.Drive{
+	drivetrain = fdrivetrain,
+	style = drivemod.Smooth{accel=20},
+	topvel = 10,
 }
 
 bdrive = drivemod.Drive{
