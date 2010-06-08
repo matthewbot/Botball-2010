@@ -3,7 +3,7 @@ import "config"
 
 function init()
 	close()
-	updown_servo(100)
+	down{speed="full"}
 end
 
 servoutils.build_functions{
@@ -17,7 +17,7 @@ servoutils.build_functions{
 servoutils.build_functions{
 	servo = updown_servo,
 	default_speed = 600,
-	up = 1400,
-	lifted = 600,
-	down = 100,
+	up = 400,
+	lifted = 1500,
+	down = 1900,
 }

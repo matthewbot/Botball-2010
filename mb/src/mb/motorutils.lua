@@ -81,11 +81,11 @@ function FixMotor:dual_mrp(speed, dist, othermot, otherspeed, otherdist)
 	othermot:update_realpos()
 	dualtoggle = not dualtoggle
 	if dualtoggle then
-		Motor.mrp(speed, dist)
-		othermot:mrp_direct(self, otherspeed, otherdist)
+		Motor.mrp(self, speed, dist)
+		othermot:mrp_direct(otherspeed, otherdist)
 	else
-		othermot:mrp_direct(self, otherspeed, otherdist)	
-		Motor.mrp(speed, dist)
+		othermot:mrp_direct(otherspeed, otherdist)	
+		Motor.mrp(self, speed, dist)
 	end
 end
 

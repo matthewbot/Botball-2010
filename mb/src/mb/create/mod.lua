@@ -6,7 +6,6 @@ local userprgm = require "cbclua.userprgm"
 local string = require "string"
 
 export "mb.create.state" -- has left_motor, right_motor, and sensors
-export "mb.create.drive" -- has Drive class
 
 set_packet_rate = tasks.set_packet_rate
 get_packet_rate = tasks.get_packet_rate -- make one function from tasks visible
