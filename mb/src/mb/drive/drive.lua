@@ -100,7 +100,7 @@ function Drive:scooch(args)
 
 	local wb = self.drivetrain:get_wheel_base()
 
-	local rad = math.acos((math.abs(xdist) - wb)/-wb)/2
+	local rad = math.acos((math.abs(xdist/2) - wb)/-wb)
 	if args.dir == "bk" then
 		rad = -rad
 	end
