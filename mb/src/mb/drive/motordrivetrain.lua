@@ -60,6 +60,8 @@ function MotorDriveTrain:drive_dist(lspeed, ldist, rspeed, rdist)
 	
 	self.lmot:off()
 	self.rmot:off()
+	
+	self.lspeed, self.rspeed = 0, 0
 end
 
 function MotorDriveTrain:get_wheel_base()
