@@ -9,13 +9,14 @@ Smooth = create_class "Smooth"
 
 function Smooth:construct(args)
 	self.accel = args.accel or 10
+	self.turnaccel = args.turnaccel or self.accel
 end
 
 function Smooth:set_vel(drivetrain, lendspeed, rendspeed, args)
 	local lstartspeed, rstartspeed = drivetrain:get_speeds()
 	local ldeltaspeed = lendspeed - lstartspeed
 	local rdeltaspeed = rendspeed - rstartspeed
-	local accel = args.accel or self.accel
+	local accel = self:get_accel(lendspeed, rendspeed)
 	local laccel, raccel, stoptime = calc_accels_stoptime(ldeltaspeed, rdeltaspeed, accel)
 	
 	local starttime = timer.seconds()
@@ -33,14 +34,18 @@ function Smooth:set_vel(drivetrain, lendspeed, rendspeed, args)
 	drivetrain:drive(lendspeed, rendspeed)
 end
 
+local recalc_speeds
+
 function Smooth:set_vel_dist(drivetrain, ltravspeed, ldist, rtravspeed, rdist, args)
 	assert(math.sgn(ltravspeed) == math.sgn(ldist), "Distance and speed must be the same sign!")
 	assert(math.sgn(rtravspeed) == math.sgn(rdist), "Distance and speed must be the same sign!")
+	local accel = self:get_accel(ltravspeed, rtravspeed)
+
+	ltravspeed, rtravspeed = recalc_speeds(ltravspeed, ldist, rtravspeed, rdist, accel)
 
 	local lstartenc, rstartenc = drivetrain:get_encoders()
 	self:set_vel(drivetrain, ltravspeed, rtravspeed, args)
-	
-	local accel = args.accel or self.accel
+
 	local laccel, raccel, stoptime = calc_accels_stoptime(-ltravspeed, -rtravspeed, accel)
 	local ldeacceldist = ldist - (.5*laccel*stoptime*stoptime + ltravspeed*stoptime)
 	local rdeacceldist = rdist - (.5*raccel*stoptime*stoptime + rtravspeed*stoptime)
@@ -85,6 +90,30 @@ function Smooth:set_vel_dist(drivetrain, ltravspeed, ldist, rtravspeed, rdist, a
 		task.yield()
 	end
 	drivetrain:drive(0, 0)
+end
+
+function Smooth:get_accel(ltravspeed, rtravspeed)
+	if math.sgn(ltravspeed) ~= math.sgn(rtravspeed) then
+		return self.turnaccel
+	else
+		return self.accel
+	end
+end
+
+function recalc_speeds(ltravspeed, ldist, rtravspeed, rdist, accel)
+	local laccel, raccel, stoptime = calc_accels_stoptime(ltravspeed, rtravspeed, accel)
+	local lacceldist = .5*laccel*stoptime*stoptime
+	local racceldist = .5*raccel*stoptime*stoptime
+	
+	local lmaxtrav, rmaxtrav = ldist/2.1, rdist/2.1
+	if math.abs(lacceldist) < math.abs(lmaxtrav) and math.abs(racceldist) < math.abs(rmaxtrav) then
+		return ltravspeed, rtravspeed
+	end
+	
+	stoptime = math.sqrt(2 * math.min(lmaxtrav/laccel, rmaxtrav/raccel))
+	ltravspeed = laccel*stoptime
+	rtravspeed = raccel*stoptime
+	return ltravspeed, rtravspeed
 end
 
 function calc_accels_stoptime(leftdelta, rightdelta, accel)
