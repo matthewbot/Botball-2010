@@ -10,7 +10,7 @@ local pi = math.pi
 local twopi = 2*pi
 
 function Odometry:construct(args)
-	self.drive = assert(args.drive, "Missing drive argument to Odometry constructor")
+	self.drivetrain = assert(args.drivetrain, "Missing drive argument to Odometry constructor")
 	self.x = args.x or 0
 	self.y = args.y or 0
 	self.dir = args.dir or 0
@@ -68,13 +68,12 @@ function Odometry:wait()
 end
 
 function Odometry:update_task()
-	local drive = self.drive
-	local prev_l, prev_r = drive:read_encoders()
+	local prev_l, prev_r = self.drivetrain:get_encoders()
 
 	while true do
-		drive:wait_encoders()
+		self.drivetrain:wait_encoders()
 		
-		local l, r = drive:read_encoders()
+		local l, r = self.drivetrain:get_encoders()
 		local delta_l = l - prev_l
 		local delta_r = r - prev_r
 		
@@ -83,7 +82,7 @@ function Odometry:update_task()
 		end
 		
 		local dist = (delta_l + delta_r) / 2
-		self.dir = self.dir + (delta_r - delta_l) / drive:get_wheelbase()
+		self.dir = self.dir + (delta_r - delta_l) / self.drivetrain:get_wheel_base()
 		
 		while self.dir >= twopi do
 			self.dir = self.dir - twopi
