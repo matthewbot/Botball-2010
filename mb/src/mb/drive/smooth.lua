@@ -106,7 +106,7 @@ function recalc_speeds(ltravspeed, ldist, rtravspeed, rdist, accel)
 	local racceldist = .5*raccel*stoptime*stoptime
 	
 	local lmaxtrav, rmaxtrav = ldist/2.1, rdist/2.1
-	if math.abs(lacceldist) < math.abs(lmaxtrav) and math.abs(racceldist) < math.abs(rmaxtrav) then
+	if math.abs(lacceldist) <= math.abs(lmaxtrav) and math.abs(racceldist) <= math.abs(rmaxtrav) then
 		return ltravspeed, rtravspeed
 	end
 	
