@@ -104,6 +104,7 @@ function both_bumpers()
 end
 
 function wall_lineup_bumpers()
+	print "running into wall"
 	local first = true
 	while true do
 		if first then
@@ -127,6 +128,7 @@ function wall_lineup_bumpers()
 			bdrive:rpiv{speed=-200, wait_while=rwall_bumper}
 		end
 	end
+	print "hit wall"
 	bdrive:stop{}
 end
 
