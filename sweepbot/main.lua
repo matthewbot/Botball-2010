@@ -17,8 +17,7 @@ function main()
 	task.async(init)
 	drive:bk{inches=27}
 	drive:rturn{degrees=90}
-	drive:bk{inches=32}
-	drive:bk{inches=3}
+	drive:bk{inches=36}
 	drive:fd{inches=4.5}
 	drive:lturn{degrees=98}
 	drive:fd{inches=12}
@@ -29,7 +28,7 @@ function main()
 	drive:lturn{degrees=98}
 	drive:bk{inches=6}
 	drive:fd{inches=1}
-	bdrive:scooch{xdist=2, speed=300}
+	bdrive:scooch{xdist=4, speed=300}
 	drive:fd{inches=10}
 	drive:lturn{degrees=40}
 	arm.extend(400, 400)
