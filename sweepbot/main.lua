@@ -28,17 +28,23 @@ function main()
 	drive:bk{inches=6}
 	drive:fd{inches=1}
 	bdrive:scooch{xdist=4, speed=300}
-	drive:fd{inches=10}
-	drive:lturn{degrees=40}
-	arm.extend(400, 400)
-	drive:bk{inches=3.5}
+	drive:fd{inches=9}
+	drive:lturn{degrees=45}
+	arm.extend(400, 600)
+	drive:bk{inches=2.5}
+	--------------
+	-- Sweeping --
+	--------------
 	sweep.palms()
 	algorithms.follow_wall_sensor()
 	algorithms.final_palm_lineup()
 	sweep.botguy()
 	drive:bk{speed=200, inches=2}
 	sweep.palms()
---[[	drive:bk{inches=20}
+	---------------
+	-- Returning --
+	---------------
+	drive:bk{inches=16}
 	drive:rturn{degrees=40}
 	drive:bk{inches=10}
 	drive:bk{inches=2, speed=400}
@@ -51,5 +57,6 @@ function main()
 	drive:rturn{degrees=90}
 	drive:bk{inches=27}
 	dumper.dump()
-	]]
+	drive:fd{inches=4}
+	dumper.reset()
 end
