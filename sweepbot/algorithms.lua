@@ -78,7 +78,7 @@ function final_palm_lineup()
 	drive:bk{speed=200, inches=1}
 	drive:scooch{xdist=-1.5, dir="bk"}
 	drive:fd{wait=rwall_bumper, speed=200}
-	drive:bk{inches=2}
+	drive:bk{inches=3}
 	drive:off()
 	
 	
@@ -150,7 +150,7 @@ function drive_wall_follow()
 end
 
 function drive_wall()
-	drive:fd{speed=200}
+	drive:fd{}
 	task.wait(either_bumper)
-	drive:stop{}
+	drive:off()
 end

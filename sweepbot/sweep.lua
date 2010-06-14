@@ -46,8 +46,8 @@ function botguy_retract()
 	pitch(400, 400)
 	extend(525, 400)
 	wait()
-	pitch(150, 400)
-	extend(400, 400)
+	pitch(150, 300)
+	extend(400, 300)
 end
 
 function palms()

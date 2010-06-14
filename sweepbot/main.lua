@@ -20,9 +20,8 @@ function main()
 	drive:bk{inches=36}
 	drive:fd{inches=4.5}
 	drive:lturn{degrees=98}
-	drive:fd{inches=12}
-	drive:stop{}
-	algorithms.wall_lineup_bumpers()
+	drive:fd{}
+	algorithms.drive_wall()
 	drive:bk{inches=1.25}
 	arm.extend(550, 400)
 	drive:lturn{degrees=98}
