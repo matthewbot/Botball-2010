@@ -122,7 +122,6 @@ function recalc_speeds(ltravspeed, ldist, rtravspeed, rdist, accel)
 	stoptime = math.sqrt(2 * tmp)
 	ltravspeed = laccel*stoptime
 	rtravspeed = raccel*stoptime
-	print("Recalc", ltravspeed, rtravspeed)
 	return ltravspeed, rtravspeed
 end
 
