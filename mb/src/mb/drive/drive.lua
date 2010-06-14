@@ -8,6 +8,7 @@ function Drive:construct(args)
 	self.drivetrain = assert(args.drivetrain, "Missing argument drivetrain")
 	self.style = assert(args.style, "Missing style argument")
 	self.topvel = args.topvel or 5
+	self.topvel_turn = args.topvel_turn or self.topvel
 end
 
 function Drive:fd(args)
@@ -35,7 +36,7 @@ function Drive:bk(args)
 end
 
 function Drive:lturn(args)
-	local vel = self:parse_velocity(args)
+	local vel = self:parse_velocity(args, true)
 	local style = args.style or self.style
 	
 	local rad = self:parse_radians(args)
@@ -62,7 +63,7 @@ function Drive:rturn(args)
 end
 
 function Drive:lpiv(args)
-	local vel = self:parse_velocity(args)
+	local vel = self:parse_velocity(args, true)
 	local style = args.style or self.style
 	
 	local rad = self:parse_radians(args)
@@ -78,7 +79,7 @@ function Drive:lpiv(args)
 end
 
 function Drive:rpiv(args)
-	local vel = self:parse_velocity(args)
+	local vel = self:parse_velocity(args, true)
 	local style = args.style or self.style
 	
 	local rad = self:parse_radians(args)
@@ -126,13 +127,13 @@ end
 
 -- Util functions --
 
-function Drive:parse_velocity(args)
+function Drive:parse_velocity(args, turn)
 	if args.speed then
 		return args.speed / 1000 * self.topvel
 	elseif args.vel then
 		return args.vel
 	else
-		return self.topvel
+		return (turn and self.topvel_turn or self.topvel)
 	end
 end
 
