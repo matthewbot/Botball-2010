@@ -20,27 +20,27 @@ function main()
 	drive:bk{inches=32}
 	drive:bk{inches=3}
 	drive:fd{inches=4.5}
-	drive:lturn{degrees=90}
-	drive:fd{inches=13}
+	drive:lturn{degrees=98}
+	drive:fd{inches=12}
 	drive:stop{}
-	algorithms.drive_wall()
+	algorithms.wall_lineup_bumpers()
 	drive:bk{inches=1.25}
 	arm.extend(550, 400)
-	drive:lturn{degrees=90}
+	drive:lturn{degrees=98}
 	drive:bk{inches=6}
 	drive:fd{inches=1}
-	drive:scooch{xdist=2, speed=300}
+	bdrive:scooch{xdist=2, speed=300}
 	drive:fd{inches=10}
 	drive:lturn{degrees=40}
 	arm.extend(400, 400)
-	drive:bk{inches=3}
+	drive:bk{inches=3.5}
 	sweep.palms()
---[[	algorithms.follow_wall_sensor()
+	algorithms.follow_wall_sensor()
 	algorithms.final_palm_lineup()
 	sweep.botguy()
 	drive:bk{speed=200, inches=2}
 	sweep.palms()
-	drive:bk{inches=20}
+--[[	drive:bk{inches=20}
 	drive:rturn{degrees=40}
 	drive:bk{inches=10}
 	drive:bk{inches=2, speed=400}
