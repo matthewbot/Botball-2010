@@ -39,3 +39,6 @@ door_servo 	= servoutils.RescaleServo{1, start_pos = 400, end_pos = 1350}
 -------------
 -- Sensors --
 -------------
+
+out_sensor = cbc.DigitalSensor{8}
+in_sensor = cbc.DigitalSensor{9}

@@ -3,38 +3,58 @@ import "config"
 local task = require "cbclua.task"
 local servoutils = require "mb.servoutils"
 
-local sleep_time = 1.3
+local time_close = 1.8
+
+local extended = false
 
 function init()
 	open()
-	extend_motor:mrp(1000) --dont know the exact position	
+	task.sleep(0.1)
+	retract_full()
 end
 
 function retract(time)
-	time = time or sleep_time
+	time = time or time_close
 	extend_motor:bk()
-	task.sleep(sleep_time)
+	task.wait_while(in_sensor, time)
+	extend_motor:off()
+end
+
+function retract_full()
+	extend_motor:bk()
+	task.wait_while(in_sensor)
 	extend_motor:off()
 end
 
 function extend(time)
-    time = time or sleep_time
+    time = time or time_close
 	extend_motor:fd()
-	task.sleep(sleep_time)
+	task.wait_while(out_sensor, time)
+	extend_motor:off()
+end
+
+function extend_full()
+	extend_motor:fd()
+	task.wait_while(out_sensor)
 	extend_motor:off()
 end
 
 servoutils.build_functions{
 	servo = door_servo,
 	close = 0,
-	open = 1000
+	close_half = 600,
+	open = 1150
 }
 
 
 --prototypes
 function capture()
-	extend()
+	drive:fd{inches = 16}
+	extend_full()
+	close_half()
+	drive:bk{inches = 2.9}
 	close()
+	task.sleep(0.1)
 	retract()
 end
 

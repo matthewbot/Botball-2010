@@ -110,9 +110,19 @@ function recalc_speeds(ltravspeed, ldist, rtravspeed, rdist, accel)
 		return ltravspeed, rtravspeed
 	end
 	
-	stoptime = math.sqrt(2 * math.min(lmaxtrav/laccel, rmaxtrav/raccel))
+	local tmp
+	if laccel ~= 0 and raccel ~= 0 then
+		tmp = math.min(lmaxtrav/laccel, rmaxtrav/raccel)
+	elseif laccel ~= 0 then
+		tmp = lmaxtrav/laccel
+	else
+		tmp = rmaxtrav/raccel
+	end
+		
+	stoptime = math.sqrt(2 * tmp)
 	ltravspeed = laccel*stoptime
 	rtravspeed = raccel*stoptime
+	print("Recalc", ltravspeed, rtravspeed)
 	return ltravspeed, rtravspeed
 end
 
