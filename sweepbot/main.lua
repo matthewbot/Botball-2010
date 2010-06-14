@@ -22,8 +22,8 @@ function main()
 	drive:fd{inches=4.5}
 	drive:lturn{degrees=90}
 	drive:fd{inches=13}
-	drive:off()
-	algorithms.wall_lineup_bumpers()
+	drive:stop{}
+	algorithms.drive_wall()
 	drive:bk{inches=1.25}
 	arm.extend(550, 400)
 	drive:lturn{degrees=90}
@@ -39,5 +39,19 @@ function main()
 	algorithms.final_palm_lineup()
 	sweep.botguy()
 	drive:bk{speed=200, inches=2}
-	sweep.palms() ]]
+	sweep.palms()
+	drive:bk{inches=20}
+	drive:rturn{degrees=40}
+	drive:bk{inches=10}
+	drive:bk{inches=2, speed=400}
+	drive:fd{inches=4}
+	drive:rturn{degrees=90}
+	drive:bk{inches=13}
+	drive:rturn{degrees=90}
+	drive:bk{inches=3, speed=400}
+	drive:fd{inches=32}
+	drive:rturn{degrees=90}
+	drive:bk{inches=27}
+	dumper.dump()
+	]]
 end

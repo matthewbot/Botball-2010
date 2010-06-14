@@ -147,3 +147,9 @@ function drive_wall_follow()
 		end
 	end)
 end
+
+function drive_wall()
+	drive:fd{speed=200}
+	task.wait(either_bumper)
+	drive:stop{}
+end

@@ -16,8 +16,8 @@ drivetrain = drivemod.MotorDriveTrain{
 	lmot = ldrive,
 	rmot = rdrive,
 	ticks = 92,
-	rmult = 1.03,
-	wb = 7.2
+	rmult = 1.02,
+	wb = 6.9
 }
 
 fdrivetrain = drivemod.MotorDriveTrain{
