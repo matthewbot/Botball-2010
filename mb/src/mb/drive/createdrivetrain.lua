@@ -3,40 +3,61 @@ local task = require "cbclua.task"
  
 CreateDriveTrain = create_class("CreateDriveTrain")
  
-local ticks_per_inch = 198
+local ticks_per_inch = 195
 local mm_per_inch = 25.4
  
 function CreateDriveTrain:construct(args)
 	self.wb = args.wb or 10.15
+	self.flip = args.flip or false
 end
  
-function CreateDriveTrain:drive(lspeed, rspeed)
-	lspeed = lspeed*mm_per_inch
-	rspeed = rspeed*mm_per_inch
+function CreateDriveTrain:drive(lvel, rvel)
+	local lspeed, rspeed
+	if not self.flip then
+		lspeed = lvel*mm_per_inch
+		rspeed = rvel*mm_per_inch
+	else
+		lspeed = -rvel*mm_per_inch
+		rspeed = -lvel*mm_per_inch
+	end
 	create.left_motor:set_speed(lspeed)
 	create.right_motor:set_speed(rspeed)
 end
 
-function CreateDriveTrain:drive_dist(lspeed, ldist, rspeed, rdist)
-	lspeed = lspeed*mm_per_inch
-	rspeed = rspeed*mm_per_inch
-	ldist = ldist*ticks_per_inch
-	rdist = rdist*ticks_per_inch
+function CreateDriveTrain:drive_dist(lvel, ltrav, rvel, rtrav)
+	local lspeed, ldist, rspeed, rdist
+
+	if not self.flip then
+		lspeed = lvel*mm_per_inch
+		rspeed = rvel*mm_per_inch
+		ldist = ltrav*ticks_per_inch
+		rdist = rtrav*ticks_per_inch
+	else
+		lspeed = -rvel*mm_per_inch
+		rspeed = -lvel*mm_per_inch
+		ldist = -rtrav*ticks_per_inch
+		rdist = -ltrav*ticks_per_inch
+	end
+	
+	local lenc, renc = create.get_encoders()
 	
 	if ldist ~= 0 then
-		create.left_motor:set_speed_offpos(lspeed, ldist)
+		create.left_motor:set_speed_offpos(lspeed, ldist+lenc)
 		if rspeed ~= 0 then
 			create.right_motor:set_speed_sync(rspeed, create.left_motor)
 		end
 	else
-		create.right_motor:set_speed_offpos(rspeed, rdist)
+		create.right_motor:set_speed_offpos(rspeed, rdist+renc)
 		if lspeed ~= 0 then
 			create.left_motor:set_speed_sync(rspeed, create.right_motor)
 		end
 	end
+	
+	create.left_motor:wait()
+	create.right_motor:wait()
 end
  
-function CreateDriveTrain:get_wheelbase()
+function CreateDriveTrain:get_wheel_base()
 	return self.wb
 end
 
