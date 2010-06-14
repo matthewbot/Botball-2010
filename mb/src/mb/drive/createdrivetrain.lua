@@ -3,7 +3,7 @@ local task = require "cbclua.task"
  
 CreateDriveTrain = create_class("CreateDriveTrain")
  
-local ticks_per_inch = 198
+local ticks_per_inch = 195
 local mm_per_inch = 25.4
  
 function CreateDriveTrain:construct(args)
@@ -36,7 +36,7 @@ function CreateDriveTrain:drive_dist(lspeed, ldist, rspeed, rdist)
 	end
 end
  
-function CreateDriveTrain:get_wheelbase()
+function CreateDriveTrain:get_wheel_base()
 	return self.wb
 end
 
