@@ -12,7 +12,11 @@ function init()
 	sweep.init()
 	dumper.init()
 end
-	
+
+function b()
+	cbc.beep()
+end	
+
 function main()
 	task.async(init)
 	drive:bk{inches=27}
@@ -39,25 +43,25 @@ function main()
 	algorithms.follow_wall_sensor()
 	algorithms.final_palm_lineup()
 	sweep.botguy()
-	drive:bk{speed=200, inches=2}
+	drive:bk{speed=200, inches=1}
 	sweep.palms()
 	---------------
 	-- Returning --
 	---------------
-	drive:bk{inches=16}
+	drive:bk{inches=14}
 	drive:rturn{degrees=45}
-	drive:bk{inches=11}
+	drive:bk{inches=13}
 	drive:bk{inches=3, speed=400}
 	drive:fd{inches=4}
 	drive:rturn{degrees=90}
 	drive:bk{inches=14}
 	drive:rturn{degrees=90}
-	drive:bk{inches=6, speed=400}
-	drive:fd{inches=32}
+	drive:bk{inches=8, speed=500}
+	drive:fd{inches=34}
 	drive:lturn{degrees=98}
-	drive:fd{inches=36}
+	drive:fd{inches=34}
 	dumper.dump()
-	drive:fd{inches=2}
+	drive:fd{inches=4}
 	dumper.reset()
 	drive:rturn{degrees=90}
 end
