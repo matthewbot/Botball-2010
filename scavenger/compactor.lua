@@ -3,9 +3,7 @@ import "config"
 local task = require "cbclua.task"
 local servoutils = require "mb.servoutils"
 
-local time_close = 1.8
-
-local extended = false
+local time_to_close = 1.8
 
 function init()
 	open()
@@ -14,7 +12,7 @@ function init()
 end
 
 function retract(time)
-	time = time or time_close
+	time = time or time_to_close
 	extend_motor:bk()
 	task.wait_while(in_sensor, time)
 	extend_motor:off()
@@ -27,7 +25,7 @@ function retract_full()
 end
 
 function extend(time)
-    time = time or time_close
+    time = time or time_to_close
 	extend_motor:fd()
 	task.wait_while(out_sensor, time)
 	extend_motor:off()
@@ -48,17 +46,25 @@ servoutils.build_functions{
 
 
 --prototypes
-function capture()
-	drive:fd{inches = 16}
+function capture_open()
 	extend_full()
-	close_half()
-	drive:bk{inches = 2.9}
-	close()
-	task.sleep(0.1)
+	close_half({speed = 600, wait = true})
+end
+
+function capture_close()
+	close({wait = true})
+	task.sleep(0.5)
 	retract()
+end
+
+function capture()
+	drive:fd{inches = 10}
+	capture_open()
+	drive:bk{inches = 3.9}
+	capture_close()
 end
 
 function release()
 	open()
-	drive:bk{inches = 6}
+	drive:bk{inches = 3}
 end

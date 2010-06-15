@@ -8,23 +8,40 @@ local drivemod      = require "mb.drive"
 -- Motors --
 ------------
 
-ldrive 	= motorutils.FixMotor{0}
-rdrive 	= motorutils.FixMotor{3}
+ldrive 	= motorutils.FixMotor{3}
+rdrive 	= motorutils.FixMotor{0}
 
 extend_motor = motorutils.FixMotor{2}
 
-drivetrain = drivemod.MotorDriveTrain{
+sdrivetrain = drivemod.MotorDriveTrain{
+	lmot = ldrive,
+	rmot = rdrive,
+	ticks = 97,
+	rmult = 1.01,
+	wb = 7.3
+}
+sdrive = drivemod.Drive{
+	drivetrain = sdrivetrain,
+	style = drivemod.Smooth{accel=15},
+	topvel = 8,
+}
+
+--[[
+bdrivetrain = drivemod.MotorDriveTrain{
 	lmot = ldrive,
 	rmot = rdrive,
 	ticks = 97,
 	rmult = .99,
 	wb = 7.3
 }
-drive = drivemod.Drive{
-	drivetrain = drivetrain,
-	style = drivemod.Smooth{accel=10},
-	topvel = 7,
+bdrive = drivemod.Drive{
+	drivetrain = bdrivetrain,
+	style = drivemod.BangBang(),
+	topvel = 8,
+	topvel_turn = 1.9
 }
+]]--
+
 
 ------------
 -- Servos --
