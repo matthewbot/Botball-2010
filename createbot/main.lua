@@ -4,12 +4,18 @@ local claw = require "claw"
 import "config"
 
 function main()
-	create.connect()
+	create.connect_verbose()
 	claw.init()
 	
 	startarc(2.3, 19)
 	drive:bk{inches=2.4, vel=3}
 	first_cleanduck_grab()
+	
+	drive:bk{inches=20}
+	drive:lturn{degrees=90}
+	drive:bk{inches=8}
+	claw.down{wait=true}
+	claw.open()
 end
 
 function startarc(diff, dist)
