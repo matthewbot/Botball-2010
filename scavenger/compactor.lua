@@ -3,7 +3,8 @@ import "config"
 local task = require "cbclua.task"
 local servoutils = require "mb.servoutils"
 
-local time_to_close = 1.8
+local time_half = 1.8
+local time_full = 15
 
 function init()
 	open()
@@ -12,28 +13,28 @@ function init()
 end
 
 function retract(time)
-	time = time or time_to_close
+	time = time or time_half
 	extend_motor:bk()
-	task.wait_while(in_sensor, time)
+	task.wait_while(out_sensor, time)
 	extend_motor:off()
 end
 
 function retract_full()
 	extend_motor:bk()
-	task.wait_while(in_sensor)
+	task.wait_while(out_sensor)
 	extend_motor:off()
 end
 
 function extend(time)
-    time = time or time_to_close
+    time = time or time_half
 	extend_motor:fd()
-	task.wait_while(out_sensor, time)
+	task.wait_while(in_sensor, time)
 	extend_motor:off()
 end
 
 function extend_full()
 	extend_motor:fd()
-	task.wait_while(out_sensor)
+	task.wait_while(in_sensor)
 	extend_motor:off()
 end
 
@@ -46,22 +47,53 @@ servoutils.build_functions{
 
 
 --prototypes
-function capture_open()
+function capture_open_botguy()
 	extend_full()
 	close_half({speed = 600, wait = true})
 end
 
-function capture_close()
+function capture_open_tribbles(waqt)
+	extend_full()
+	close()
+	retract(waqt)
+end
+
+function capture_close_botguy()
 	close({wait = true})
 	task.sleep(0.5)
 	retract()
 end
 
-function capture()
+function capture_close_tribbles()
+	open()
+	drive:lturn{degrees = 25}
+	capture_open_tribbles(0.9)
+	
+	open()
+	drive:rturn{degrees = 50}
+	capture_open_tribbles(0.9)
+	
+	open()
+	drive:lturn{degrees = 25}
+	capture_open_tribbles(time_full)
+end
+
+function capture(what)
 	drive:fd{inches = 10}
-	capture_open()
+	
+	if what = "botguy" then
+		capture_open_botguy()
+	elseif what = "tribbles" then
+		capture_open_tribbles()
+	end
+	
 	drive:bk{inches = 3.9}
-	capture_close()
+	
+	if what = "botguy" then
+		capture_close_botguy()
+	elseif what = "tribbles" then
+		capture_close_tribbles()
+	end
 end
 
 function release()
