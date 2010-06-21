@@ -63,7 +63,11 @@ end
 
 function CreateDriveTrain:get_encoders()
 	local lenc, renc = create.get_encoders()
-	return lenc / ticks_per_inch, renc / ticks_per_inch
+	if self.flip then
+		return -renc / ticks_per_inch, -lenc / ticks_per_inch
+	else
+		return lenc / ticks_per_inch, renc / ticks_per_inch
+	end
 end
 
 function CreateDriveTrain:wait_encoders()
