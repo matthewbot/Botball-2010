@@ -40,18 +40,28 @@ function main()
 	-- Sweeping --
 	--------------
 	sweep.palms()
+	drive:fd{inches=1}
+	sweep.palms()
 	algorithms.follow_wall_sensor()
 	algorithms.final_palm_lineup()
 	sweep.botguy()
 	drive:bk{speed=200, inches=1}
 	sweep.palms()
+	drive:fd{inches=1}
+	sweep.palms()
 	---------------
 	-- Returning --
 	---------------
-	drive:bk{inches=14}
-	drive:rturn{degrees=45}
 	drive:bk{inches=13}
-	drive:bk{inches=3, speed=400}
+	drive:rturn{degrees=20}
+	drive:bk{inches=4}
+	drive:rturn{degrees=25}
+	drive:bk{inches=6}
+	drive:rturn{degrees=20}
+	drive:bk{inches=4}
+	drive:lturn{degrees=20}
+	drive:bk{inches=7}
+	drive:bk{inches=4, speed=400}
 	drive:fd{inches=4}
 	drive:rturn{degrees=90}
 	drive:bk{inches=14}
@@ -60,6 +70,8 @@ function main()
 	drive:fd{inches=34}
 	drive:lturn{degrees=98}
 	drive:fd{inches=34}
+	algorithms.wall_lineup_bumpers()
+	drive:bk{inches=8}
 	dumper.dump()
 	drive:fd{inches=4}
 	dumper.reset()
