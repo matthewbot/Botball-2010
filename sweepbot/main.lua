@@ -18,7 +18,7 @@ function b()
 end	
 
 function main()
-	task.async(init)
+--[[	task.async(init)
 	drive:bk{inches=27}
 	drive:rturn{degrees=90}
 	drive:bk{inches=36}
@@ -40,28 +40,36 @@ function main()
 	-- Sweeping --
 	--------------
 	sweep.palms()
-	drive:fd{inches=1}
-	sweep.palms()
+	drive:fd{inches=1.5}
+	sweep.palms()]]
 	algorithms.follow_wall_sensor()
 	algorithms.final_palm_lineup()
 	sweep.botguy()
-	drive:bk{speed=200, inches=1}
+	task.sleep(.5) -- is needed?
+	dumper.shake()
+	drive:bk{speed=200, inches=1.5}
 	sweep.palms()
-	drive:fd{inches=1}
+	drive:fd{inches=1.5}
 	sweep.palms()
 	---------------
 	-- Returning --
 	---------------
-	drive:bk{inches=13}
-	drive:rturn{degrees=20}
+	task.async(function ()
+		arm.extend(800, 500)
+		arm.pitch(400, 500)
+	end)
 	drive:bk{inches=4}
-	drive:rturn{degrees=25}
-	drive:bk{inches=6}
+	drive:lturn{degrees=45}
+	drive:bk{inches=14}
+	drive:bk{inches=2, speed=400}
+	drive:fd{inches=5}
+	drive:rturn{degrees=90}
+	drive:bk{inches=14}
 	drive:rturn{degrees=20}
-	drive:bk{inches=4}
+	drive:bk{inches=2}
 	drive:lturn{degrees=20}
-	drive:bk{inches=7}
-	drive:bk{inches=4, speed=400}
+	drive:bk{inches=5}
+	drive:bk{inches=2, speed=400}
 	drive:fd{inches=4}
 	drive:rturn{degrees=90}
 	drive:bk{inches=14}
@@ -69,11 +77,12 @@ function main()
 	drive:bk{inches=8, speed=500}
 	drive:fd{inches=34}
 	drive:lturn{degrees=98}
-	drive:fd{inches=34}
+	drive:fd{inches=37}
 	algorithms.wall_lineup_bumpers()
-	drive:bk{inches=8}
+	drive:bk{inches=7}
 	dumper.dump()
-	drive:fd{inches=4}
+	drive:fd{inches=5}
 	dumper.reset()
 	drive:rturn{degrees=90}
+	drive:bk{inches=2}
 end

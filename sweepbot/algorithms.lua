@@ -77,23 +77,9 @@ end
 function final_palm_lineup()
 	drive:bk{speed=200, inches=1}
 	drive:scooch{xdist=-1, dir="bk"}
-	drive:fd{wait=rwall_bumper, speed=200}
-	drive:bk{inches=1.5}
+	drive:fd{wait=rwall_bumper, speed=400}
+	drive:bk{inches=1}
 	drive:off()
-	
-	
---[[	drive_motors(-300, -300)
-	task.sleep(.3)
-	drive_stop()
-	local left, right = read_ranges()
-	while not right do
-		drive_motors(0, 200)
-		left, right = read_ranges()
-		task.sleep(.01)
-	end
-	drive_motors(100, 0)
-	task.sleep(.5)
-	drive_stop() ]]
 end
 
 function either_bumper()
@@ -154,3 +140,11 @@ function drive_wall()
 	task.wait(either_bumper)
 	drive:off()
 end
+
+function lineup_first_palm_sweep()
+	drive:bk{speed=200}
+	task.wait(platform_range_sensor)
+	drive:stop{}
+	error "gimme a distance u idiot!!!"
+end
+	

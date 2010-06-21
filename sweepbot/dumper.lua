@@ -22,13 +22,24 @@ function reset()
 	end
 	
 	dumper_motor:off()
-	task.sleep(.2)
+	task.sleep(.03)
 	dumper_motor:mrp(0, 1)
 	dumped = false
 end
 
 function off()
 	dumper_motor:off()
+end
+
+function shake()
+	local times = 0
+	while times < 5 do
+		dumper_motor:setpwm(-power)
+		task.sleep(.05)
+		dumper_motor:setpwm(power)
+		task.sleep(.1)
+		times = times + 1
+	end
 end
 
 function dump()
