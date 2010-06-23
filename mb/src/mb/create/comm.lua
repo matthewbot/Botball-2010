@@ -86,12 +86,11 @@ function play_script()
 		PlayScript
 	)
 	
-	task.sleep(.2)
+	task.sleep(.5)
 	port:clear()
 	
-	repeat
-		port:write(Sensors, OIMode) -- This is to wait until the script ends
-	until port:wait(1, .05)
+	port:write(Sensors, OIMode) -- This is to wait until the script ends
+	port:wait(1, .2)
 	
 	local header = port:read(1):byte(1)
 	if header ~= 3 then

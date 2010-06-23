@@ -81,6 +81,7 @@ function Motor:set_speed_offpos(speed, offpos)
 	self.offpos = math.floor(offpos)
 	self.sync = nil
 	self.stop = false
+	print("set_speed_offpos", offpos)
 end
 
 function Motor:set_speed_sync(speed, sync)
