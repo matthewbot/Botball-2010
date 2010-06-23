@@ -13,15 +13,15 @@ rdrive 	= motorutils.FixMotor{0}
 
 extend_motor = motorutils.FixMotor{2}
 
-sdrivetrain = drivemod.MotorDriveTrain{
+drivetrain = drivemod.MotorDriveTrain{
 	lmot = ldrive,
 	rmot = rdrive,
 	ticks = 97,
 	rmult = 1.01,
 	wb = 7.3
 }
-sdrive = drivemod.Drive{
-	drivetrain = sdrivetrain,
+drive = drivemod.Drive{
+	drivetrain = drivetrain,
 	style = drivemod.Smooth{accel=15},
 	topvel = 8,
 }
@@ -57,5 +57,8 @@ door_servo 	= servoutils.RescaleServo{1, start_pos = 400, end_pos = 1350}
 -- Sensors --
 -------------
 
-out_sensor = cbc.DigitalSensor{8}
-in_sensor = cbc.DigitalSensor{9}
+in_sensor = cbc.DigitalSensor{8} --if true, it is retracted
+out_sensor = cbc.DigitalSensor{9} --if true, it is extended
+
+lrange = cbc.AnalogSensor{2, float = true} --rangefinder on the left side of the robot
+rrange = cbc.AnalogSensor{1, float = true} --rangefinder on the right side of the robot
