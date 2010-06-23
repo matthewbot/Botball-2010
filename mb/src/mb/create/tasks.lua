@@ -20,7 +20,7 @@ local reconnect_task
 
 -- Private State
 
-local desired_packet_rate = 30
+local desired_packet_rate = 10
 local packet_rate = 0
 local packet_ctr = 0
 local started = false
