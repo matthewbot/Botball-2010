@@ -21,4 +21,5 @@ bdrive = drivemod.Drive{
 
 launch_motor = motorutils.FixMotor{1}
 spool_motor = motorutils.FixMotor{2}
+sponge_motor = motorutils.FixMotor{3, pid = {i=.3, d=0}}
 
