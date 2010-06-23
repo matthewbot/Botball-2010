@@ -1,2 +1,2 @@
 CodeFolder src
-CodeFolder cbclua/cmods
+CodeFolder %arch/cmods
