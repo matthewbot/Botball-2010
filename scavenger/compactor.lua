@@ -4,7 +4,7 @@ local task = require "cbclua.task"
 local servoutils = require "mb.servoutils"
 
 local time_half = 1.8
-local time_full = 15
+local time_full = 25
 
 function init()
 	open()
@@ -65,33 +65,35 @@ function capture_close_botguy()
 end
 
 function capture_close_tribbles()
-	open()
 	drive:lturn{degrees = 25}
-	capture_open_tribbles(0.9)
-	
+	drive:fd{inches = 2, speed =500}
 	open()
+	capture_open_tribbles(1.2)
+	
 	drive:rturn{degrees = 50}
-	capture_open_tribbles(0.9)
-	
+	drive:fd{inches = 2, speed =500}
 	open()
+	capture_open_tribbles(1.2)
+	
 	drive:lturn{degrees = 25}
+	open()
 	capture_open_tribbles(time_full)
 end
 
 function capture(what)
 	drive:fd{inches = 10}
 	
-	if what = "botguy" then
+	if what == "botguy" then
 		capture_open_botguy()
-	elseif what = "tribbles" then
+	elseif what == "tribbles" then
 		capture_open_tribbles()
 	end
 	
 	drive:bk{inches = 3.9}
 	
-	if what = "botguy" then
+	if what == "botguy" then
 		capture_close_botguy()
-	elseif what = "tribbles" then
+	elseif what == "tribbles" then
 		capture_close_tribbles()
 	end
 end
