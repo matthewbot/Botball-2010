@@ -47,6 +47,12 @@ servoutils.build_functions{
 
 
 --prototypes
+function pvc_grap()
+	close_half({wait = true})
+	drive:bk{inches = 0.32}
+	close()
+end
+
 function capture_open_botguy()
 	extend_full()
 	close_half({speed = 600, wait = true})
