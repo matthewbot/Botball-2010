@@ -4,6 +4,7 @@ local drivemod = require "mb.drive"
  
 grip_servo = servoutils.SpeedControlServo{1}
 updown_servo = servoutils.SpeedControlServo{2}
+pivot_servo = servoutils.SpeedControlServo{3}
 
 drivetrain = drivemod.CreateDriveTrain{wb = 10.11, flip = true}
 drive = drivemod.Drive{
@@ -12,6 +13,12 @@ drive = drivemod.Drive{
 	topvel = 19,
 	topvel_turn = 8
 }
+bdrive = drivemod.Drive{
+	drivetrain = drivetrain,
+	style = drivemod.BangBang(),
+	topvel = 19
+}
 
 launch_motor = motorutils.FixMotor{1}
+spool_motor = motorutils.FixMotor{2}
 
