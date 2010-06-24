@@ -7,11 +7,12 @@ function main()
 	create.connect_verbose()
 	claw.init()
 	
-	startarc(2.3, 19)
+	drivetrain:drive_dist(14, 10, 1.5, 1.75);
+	drive:fd{inches=12}
 	drive:bk{inches=2.4, vel=3}
 	first_cleanduck_grab()
 	
-	drive:bk{inches=20}
+	bdrive:bk{vel=6, wait=create.bump}
 	drive:lturn{degrees=90}
 	drive:bk{inches=8}
 	claw.down{wait=true}

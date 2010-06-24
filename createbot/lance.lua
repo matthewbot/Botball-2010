@@ -7,14 +7,9 @@ function extend()
 	
 	spool_in()
 	pivot(500)
-	task.sleep(1.5)
-	pivot_back()
-	task.sleep(1)
-	spool_off()
-	
-	pivot(650)
+	task.sleep(2)
 	spool_out()
-	task.sleep(1.5)
+	task.sleep(2.5)
 	spool_off()
 end
 
