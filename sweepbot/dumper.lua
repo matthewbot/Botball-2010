@@ -27,6 +27,30 @@ function reset()
 	dumped = false
 end
 
+function reset_check()
+	dumper_motor:setpwm(power)
+	local prevpos = dumper_motor:getpos()
+	local checkpos = prevpos
+	while true do
+		task.sleep(.05)
+		local pos = dumper_motor:getpos()
+		if pos - prevpos < 3 then break end
+		prevpos = pos
+	end
+	
+	dumper_motor:off()
+	task.sleep(.03)
+	dumper_motor:mrp(0, 1)
+	dumped = false
+	
+	local pos = dumper_motor:getpos()
+	if pos - checkpos < 100 then
+		return false
+	else
+		return true
+	end
+end	
+
 function off()
 	dumper_motor:off()
 end

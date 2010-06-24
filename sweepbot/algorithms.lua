@@ -71,13 +71,13 @@ end
 
 
 function drive_bump()
-	drive:fd{wait=rwall_bumper, speed=100}
+	drive:fd{wait=rwall_bumper, speed=500}
 end
 
 function final_palm_lineup()
 	drive:bk{speed=200, inches=1}
 	drive:scooch{xdist=-1, dir="bk"}
-	drive:fd{wait=rwall_bumper, speed=400}
+	drive:fd{wait=rwall_bumper, speed=600}
 	drive:bk{inches=1}
 	drive:off()
 end
@@ -143,6 +143,5 @@ end
 
 function lineup_first_palm_sweep()
 	drive:bk{speed=200, wait=function () return platform_range_sensor() > 700 end}
-	error "gimme a distance u idiot!!!"
 end
 	
