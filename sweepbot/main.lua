@@ -37,12 +37,12 @@ function main()
 	arm.extend(400, 600)
 	drive:fd{inches=1}
 	algorithms.lineup_first_palm_sweep()
-	drive:bk{inches=1}
+	drive:bk{inches=1.25}
 	--------------
 	-- Sweeping --
 	--------------
 	sweep.palms()
-	drive:fd{inches=1}
+	drive:fd{inches=1.75}
 	sweep.palms()
 	algorithms.follow_wall_sensor()
 	algorithms.final_palm_lineup()
@@ -61,7 +61,7 @@ function main()
 		arm.pitch(400, 500)
 	end)
 	drive:bk{inches=4}
-	drive:lturn{degrees=50}
+	drive:lturn{degrees=52}
 	drive:bk{inches=12}
 	drive:bk{inches=3, speed=600}
 	drive:fd{inches=5}
@@ -76,15 +76,20 @@ function main()
 	task.async(sweep.activate)
 	drive:fd{inches=34}
 	drive:lturn{degrees=98}
-	drive:fd{inches=39}
 	algorithms.drive_wall()
 	drive:bk{inches=7}
 	dumper.dump()
-	drive:fd{inches=5}
+	task.async(dumper.shake)
+	bdrive:lpiv{degrees=20}
+	bdrive:rpiv{degrees=20}
+	bdrive:lpiv{degrees=20}
+	bdrive:rpiv{degrees=20}
 	if dumper.reset_check() == true then
 		drive:rturn{degrees=90}
 		drive:bk{inches=2}
 	else
-		drive:bk{inches=5}
+		drive:fd{inches=5}
+		drive:lturn{degrees=90}
+		drive:bk{inches=15}
 	end
 end
