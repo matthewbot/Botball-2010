@@ -4,7 +4,6 @@ local task = require "cbclua.task"
 local servoutils = require "mb.servoutils"
 
 local time_half = 1.8
-local time_full = 25
 
 function init()
 	open()
@@ -44,67 +43,3 @@ servoutils.build_functions{
 	close_half = 600,
 	open = 1150
 }
-
-
---prototypes
-function pvc_grap()
-	close_half({wait = true})
-	drive:bk{inches = 0.32}
-	close()
-end
-
-function capture_open_botguy()
-	extend_full()
-	close_half({speed = 600, wait = true})
-end
-
-function capture_open_tribbles(waqt)
-	extend_full()
-	close()
-	retract(waqt)
-end
-
-function capture_close_botguy()
-	close({wait = true})
-	task.sleep(0.5)
-	retract()
-end
-
-function capture_close_tribbles()
-	drive:lturn{degrees = 25}
-	drive:fd{inches = 2, speed =500}
-	open()
-	capture_open_tribbles(1.2)
-	
-	drive:rturn{degrees = 50}
-	drive:fd{inches = 2, speed =500}
-	open()
-	capture_open_tribbles(1.2)
-	
-	drive:lturn{degrees = 25}
-	open()
-	capture_open_tribbles(time_full)
-end
-
-function capture(what)
-	drive:fd{inches = 10}
-	
-	if what == "botguy" then
-		capture_open_botguy()
-	elseif what == "tribbles" then
-		capture_open_tribbles()
-	end
-	
-	drive:bk{inches = 3.9}
-	
-	if what == "botguy" then
-		capture_close_botguy()
-	elseif what == "tribbles" then
-		capture_close_tribbles()
-	end
-end
-
-function release()
-	open()
-	drive:bk{inches = 3}
-end
