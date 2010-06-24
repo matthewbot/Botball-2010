@@ -87,7 +87,7 @@ function Smooth:set_vel_dist(drivetrain, ltravspeed, ldist, rtravspeed, rdist, a
 		end
 		
 		drivetrain:drive(lspeed, rspeed)
-		task.yield()
+		drivetrain:wait_encoders()
 	end
 	drivetrain:drive(0, 0)
 end
@@ -160,5 +160,3 @@ function calc_accels_stoptime(leftdelta, rightdelta, accel)
 
 	return leftaccel, rightaccel, stoptime
 end
-
-

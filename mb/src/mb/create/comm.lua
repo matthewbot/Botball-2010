@@ -145,9 +145,7 @@ function receive_update()
 	end
 	
 	local data = got:sub(5) -- data begins at 5th byte
-	
 	local bumpdata = data:byte(11)
-	
 	local sensors = {
 		left_bump         = bit.get(bumpdata, BumpLeft),
 		right_bump        = bit.get(bumpdata, BumpRight),

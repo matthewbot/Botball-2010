@@ -35,11 +35,11 @@ OIMode = 35
 LeftEncoder = 43
 RightEncoder = 44
 
-Advance = bit.flag(3)
-Play = bit.flag(1)
+Advance = 3
+Play = 1
 
-BumpRight = bit.flag(0)
-BumpLeft = bit.flag(1)
-WheeldropRight = bit.flag(2)
-WheeldropLeft = bit.flag(3)
-WheeldropCaster = bit.flag(4)
+BumpRight = 0
+BumpLeft = 1
+WheeldropRight = 2
+WheeldropLeft = 3
+WheeldropCaster = 4

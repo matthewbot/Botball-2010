@@ -75,5 +75,5 @@ function CreateDriveTrain:wait_encoders()
 end
 
 function CreateDriveTrain:get_speeds()
-	return create.left_motor:get_speed(), create.right_motor:get_speed()
+	return create.left_motor:get_speed() / ticks_per_inch, create.right_motor:get_speed() / ticks_per_inch
 end
