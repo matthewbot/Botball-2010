@@ -1,5 +1,7 @@
 local motorutils = require 'mb.motorutils'
 local task = require 'cbclua.task'
+local userprgm = require 'cbclua.userprgm'
+local util = require 'cbclua.util'
 local math = require 'math'
 
 MotorDriveTrain = create_class("MotorDriveTrain")
@@ -12,6 +14,11 @@ function MotorDriveTrain:construct(args)
 	self.wb = assert(args.wb, "Missing wb argument")
 	
 	self.lspeed, self.rspeed = 0, 0
+	
+	userprgm.add_stop_hook(function ()
+		self.lspeed = 0
+		self.rspeed = 0
+	end)
 end
 
 function MotorDriveTrain:drive(lspeed, rspeed)
