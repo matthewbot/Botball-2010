@@ -18,7 +18,7 @@ function b()
 end	
 
 function main()
---[[	task.async(init)
+	task.async(init)
 	drive:bk{inches=27}
 	drive:rturn{degrees=90}
 	drive:bk{inches=36}
@@ -36,12 +36,13 @@ function main()
 	drive:lturn{degrees=45}
 	arm.extend(400, 600)
 	drive:bk{inches=2}
+	lineup_first_palm_sweep()
 	--------------
 	-- Sweeping --
 	--------------
 	sweep.palms()
 	drive:fd{inches=1.5}
-	sweep.palms()]]
+	sweep.palms()
 	algorithms.follow_wall_sensor()
 	algorithms.final_palm_lineup()
 	sweep.botguy()
@@ -60,15 +61,15 @@ function main()
 	end)
 	drive:bk{inches=4}
 	drive:lturn{degrees=45}
-	drive:bk{inches=14}
+	drive:bk{inches=12}
 	drive:bk{inches=2, speed=400}
 	drive:fd{inches=5}
 	drive:rturn{degrees=90}
 	drive:bk{inches=14}
 	drive:rturn{degrees=20}
-	drive:bk{inches=2}
+	drive:bk{inches=3}
 	drive:lturn{degrees=20}
-	drive:bk{inches=5}
+	drive:bk{inches=6}
 	drive:bk{inches=2, speed=400}
 	drive:fd{inches=4}
 	drive:rturn{degrees=90}

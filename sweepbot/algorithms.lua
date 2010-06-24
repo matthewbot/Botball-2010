@@ -142,9 +142,7 @@ function drive_wall()
 end
 
 function lineup_first_palm_sweep()
-	drive:bk{speed=200}
-	task.wait(platform_range_sensor)
-	drive:stop{}
+	drive:bk{speed=200, wait=function () return platform_range_sensor() > 700 end}
 	error "gimme a distance u idiot!!!"
 end
 	
