@@ -90,11 +90,10 @@ function play_script()
 	port:clear()
 	
 	port:write(Sensors, OIMode) -- This is to wait until the script ends
-	port:wait(1, .2)
 	
 	local header = port:read(1):byte(1)
 	if header ~= 3 then
-		error("Bad script termination header " .. header)
+		error("Bad script termination header " .. header .. " avail " .. port:get_avail())
 	end
 	
 	port:write(LEDs, Advance + Play, led_color, led_brightness)
