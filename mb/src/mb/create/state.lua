@@ -70,6 +70,7 @@ local function wrap_speed(speed)
 end
 
 function Motor:set_speed(speed)
+	assert_connection(2)
 	self.speed = math.floor(wrap_speed(speed))
 	self.offpos = nil
 	self.sync = nil
@@ -77,14 +78,15 @@ function Motor:set_speed(speed)
 end
 
 function Motor:set_speed_offpos(speed, offpos)
+	assert_connection(2)
 	self.speed = math.floor(wrap_speed(speed))
 	self.offpos = math.floor(offpos)
 	self.sync = nil
 	self.stop = false
-	print("set_speed_offpos", offpos)
 end
 
 function Motor:set_speed_sync(speed, sync)
+	assert_connection(2)
 	self.speed = math.floor(wrap_speed(speed))
 	self.offpos = nil
 	self.sync = sync
