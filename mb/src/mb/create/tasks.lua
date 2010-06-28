@@ -20,7 +20,7 @@ local reconnect_task
 
 -- Private State
 
-local desired_packet_rate = 10
+local desired_packet_rate = 30
 local packet_rate = 0
 local packet_ctr = 0
 local started = false
@@ -91,27 +91,19 @@ function receive_taskfunc()
 end
 
 function transmit_taskfunc()
-	comm.send_motors(left_motor:get_speed(), right_motor:get_speed(), true)
-
-	local prevtime = timer.seconds()
-	while true do
-		local curtime = timer.seconds()
-		local sleeptime = 1/desired_packet_rate - (curtime - prevtime)
-		if sleeptime > 0 then
-			task.sleep(sleeptime)
-		end
-		
+	while true do		
 		comm.send_motors(left_motor:get_speed(), right_motor:get_speed())
 		comm.send_update_request()
-		prevtime = curtime
+		
+		task.sleep(1/desired_packet_rate)
 	end
 end
 
 function monitor_taskfunc()
-	local time = 1/4
+	local prevtime = timer.seconds()
 
 	while true do
-		task.sleep(time)
+		task.sleep(1/4)
 		
 		if packet_ctr == 0 then
 			print("Create connection lost")
@@ -121,8 +113,10 @@ function monitor_taskfunc()
 			return
 		end
 		
-		packet_rate = packet_ctr / time
+		local curtime = timer.seconds()
+		packet_rate = packet_ctr / (curtime - prevtime)
 		packet_ctr = 0
+		prevtime = curtime
 	end
 end
 

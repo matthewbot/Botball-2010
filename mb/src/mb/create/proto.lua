@@ -1,5 +1,3 @@
-local bit = require "cbclua.bit"
-
 -- names come from create OI
 
 Start = 128
