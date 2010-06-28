@@ -29,6 +29,17 @@ Camera::Camera(int width, int height, string path) : width(width), height(height
 		throw runtime_error("Failed to set camera video format: " + stringerr());
 }
 
+void Camera::readImage(uint8_t *buffer) {
+	int length = width*height*3;
+	while (length > 0) {
+		int got = read(fd, buffer, length);
+		if (got == -1)
+			throw runtime_error("Failed to read from camera: " + stringerr());
+		length -= got;
+		buffer += got;
+	}
+}
+
 Camera::~Camera() {
 	close(fd);
 }
