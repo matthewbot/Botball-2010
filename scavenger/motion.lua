@@ -17,7 +17,7 @@ function drive_sensor(side, dir, wait_for, speed, value)
 			task.wait(function () return lrange() < value end)
 		end
 		
-		drive:off{}
+		--drive:off{}
 	elseif side == "right" then
 		if dir == "fd" then
 			drive:fd{speed = speed}
@@ -31,8 +31,10 @@ function drive_sensor(side, dir, wait_for, speed, value)
 			task.wait(function () return rrange() < value end)
 		end
 		
-		drive:off{}
+		--drive:off{}
 	end
+	
+	drive:off()
 end
 
 function drive_bumper() --need to create when bumpers are installed
@@ -53,9 +55,8 @@ function turn(dir, degrees, speed)
 end 
 
 --this is just for fun right now
-
-function arc(speed)
-	drivetrain:drive_dist(speed, 3, (speed - 200), 5)
+function arc(lspeed, ldist, ratio)
+	drivetrain:drive_dist(lspeed, ldist, lspeed * ratio, ldist * ratio)
 end
 
 function startarc(diff, dist)
@@ -63,7 +64,17 @@ function startarc(diff, dist)
 	drivetrain:drive_dist(10, dist/2, 10-diff, dist/2)
 end
 
-function arc_power(power)
-	ldrive:mav(-power)
-	rdrive:mav(-(power - 200))
+function arc_off()
+	ldrive:off()
+	rdrive:off()
+end
+
+function arc_mav(lvel, rvel)
+	ldrive:mav(lvel)
+	rdrive:mav(rvel)
+end
+
+function arc_power(lpower, rpower)
+	ldrive:setpwm(lpower)
+	rdrive:setpwm(rpower)
 end
