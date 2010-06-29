@@ -1,6 +1,7 @@
 import "config"
 
 local task = require "cbclua.task"
+local math = require "math"
 local compactor = require "compactor"
 
 function drive_sensor(side, dir, wait_for, speed, value)
@@ -35,6 +36,34 @@ function drive_sensor(side, dir, wait_for, speed, value)
 	end
 	
 	drive:off()
+end
+
+function corner_check()-- use corner_check w/ driving now.  if > 500 and < 700, just turn and move more than usual elseif > 700 do what we have been doing
+	local readings = {}
+	local value = rrange()
+	
+	local index, sum, avg = 0, 0, 0
+	
+	while true do
+		reading[index] = rrange()
+		index = index + 1
+		
+		if index == 2 then
+			index, sum, avg = 0, 0, 0
+			
+			for v in pairs(readings) do
+				sum = sum + v
+			end
+			
+			avg = (math.abs(sum)) / 3
+			
+			if avg < value then
+				return value
+			end
+		end
+		
+		value = rrange()
+	end
 end
 
 function drive_bumper() --need to create when bumpers are installed

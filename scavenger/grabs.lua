@@ -19,6 +19,12 @@ function tribbles_pvc()
 	close()
 end
 
+function tribbles_pvc_full()
+	grabs.tribbles_pvc()
+	task.sleep(0.5)
+	compactor.extend(0.5)
+end
+
 function tribbles_pvc_bk(inches)
 	close_half({wait = true})
 	drive:bk{inches = inches}

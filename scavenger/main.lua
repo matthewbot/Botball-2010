@@ -9,7 +9,7 @@ local moves = require "moves"
 
 function main()
 	compactor.init()
-	moves.goto_pvc_island()
+	moves.goto_pvc_island(24)
 	
 	moves.grab_our_leg()
 
