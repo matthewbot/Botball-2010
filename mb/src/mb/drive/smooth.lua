@@ -67,11 +67,11 @@ function Smooth:set_vel_dist(drivetrain, ltravspeed, ldist, rtravspeed, rdist, a
 	local ldeaccelenc, rdeaccelenc = lstartenc + ldeacceldist, rstartenc + rdeacceldist
 	while true do
 		local lenc, renc = drivetrain:get_encoders()
-		local trav = (math.abs(lenc - ldeaccelenc) + math.abs(renc - rdeaccelenc)) / 2 + .5 -- FUDGE FACTOR
+		local trav = (math.abs(lenc - ldeaccelenc) + math.abs(renc - rdeaccelenc)) / 2 + .5
 		local lspeed
 		if ltravspeed ~= 0 then
 			local ltemp = 2*laccel*math.keepsgn(trav, ltravspeed) + ltravspeed*ltravspeed
-			if ltemp < 0 then break end
+			if ltemp < .6 then break end
 			lspeed = math.keepsgn(math.sqrt(ltemp), ltravspeed)
 		else
 			lspeed = 0
@@ -80,7 +80,7 @@ function Smooth:set_vel_dist(drivetrain, ltravspeed, ldist, rtravspeed, rdist, a
 		local rspeed
 		if rtravspeed ~= 0 then
 			local rtemp = 2*raccel*math.keepsgn(trav, rtravspeed) + rtravspeed*rtravspeed
-			if rtemp < 0 then break end
+			if rtemp < .6 then break end
 			rspeed = math.keepsgn(math.sqrt(rtemp), rtravspeed)
 		else
 			rspeed = 0

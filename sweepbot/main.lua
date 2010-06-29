@@ -31,9 +31,9 @@ function main()
 	drive:lturn{degrees=98}
 	drive:bk{inches=7}
 	drive:fd{inches=1}
-	bdrive:scooch{xdist=4, speed=500}		-- scooch getting ready to go sweep
+	drive:scooch{xdist=4, speed=500}		-- scooch getting ready to go sweep
 	drive:fd{inches=8}
-	drive:lturn{degrees=45}
+	drive:lturn{degrees=50}
 	arm.extend(400, 600)
 	drive:fd{inches=1}
 	algorithms.lineup_first_palm_sweep()	-- lining up to sweep the palms
@@ -80,20 +80,21 @@ function main()
 	drive:bk{inches=7}
 	dumper.dump()
 	task.async(dumper.shake)
-	bdrive:lpiv{degrees=20}
-	bdrive:rpiv{degrees=20}
-	bdrive:lpiv{degrees=20}
-	bdrive:rpiv{degrees=20}
-	if dumper.reset_check() == true then	-- if we still have botguy locked in the dumper on accident, this will keep us from pushing him out of the base, while still getting all palms in the base
+	bdrive:lpiv{degrees=18}
+	bdrive:rpiv{degrees=18}
+	bdrive:lpiv{degrees=18}
+	bdrive:rpiv{degrees=18}
+--[[	if dumper.reset_check() == true then	-- if we still have botguy locked in the dumper on accident, this will keep us from pushing him out of the base, while still getting all palms in the base
 		drive:fd{inches=5}
 		drive:lturn{degrees=90}
 		drive:bk{inches=15}
-		else
+		else]]
 		drive:rturn{degrees=90}
-	end
+	--[[end]]
 end
 
 function reset_run()
+	print "running the reset thing"
 	drive:rturn{degrees=90}
 	drive:bk{inches=8, speed=400}
 	drive:fd{inches=8}
