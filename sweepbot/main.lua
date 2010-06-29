@@ -37,22 +37,22 @@ function main()
 	arm.extend(400, 600)
 	drive:fd{inches=1}
 	algorithms.lineup_first_palm_sweep()	-- lining up to sweep the palms
-	drive:bk{inches=1.25}
+	--drive:bk{inches=1}
 	--------------
 	-- Sweeping --
 	--------------
+	drive:lturn{degrees=3}
 	sweep.palms()							-- sweeping palms
-	drive:fd{inches=1.75}
-	sweep.palms()
+	drive:rturn{degrees=3}
 	algorithms.follow_wall_sensor()			-- driving to PVC on other end of island to line up for next sweeps
 	algorithms.final_palm_lineup()
 	sweep.botguy()							-- sweeping botguy
 	task.sleep(.5) -- is needed?
 	dumper.shake()
-	drive:bk{speed=500, inches=1.5}
+	drive:bk{speed=500, inches=1.75}
+	drive:lturn{degrees=3}
 	sweep.palms()							-- sweeping second palms pile
-	drive:fd{inches=1.5}
-	sweep.palms()
+	drive:rturn{degrees=3}
 	---------------
 	-- Returning --
 	---------------
@@ -89,7 +89,17 @@ function main()
 		drive:lturn{degrees=90}
 		drive:bk{inches=15}
 		else
-		drive:fd{inches=5}
 		drive:rturn{degrees=90}
 	end
+end
+
+function reset_run()
+	drive:rturn{degrees=90}
+	drive:bk{inches=8, speed=400}
+	drive:fd{inches=8}
+	drive:lturn{degrees=90}
+	drive:bk{inches=10, speed=400}
+	drive:fd{inches=5}
+	drive:lturn{degrees=90}
+	drive:bk{inches=15}
 end
