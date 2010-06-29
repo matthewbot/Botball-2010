@@ -4,7 +4,7 @@ import "config"
 local quad_dist = 236
 local pluck_extra = 100
 
-local sponge_table = { large=1, medium=3, small=2 }
+local sponge_table = { large=1, medium=2, small=3 }
 
 function select(sponge)
 	select_quad(sponge_table[sponge])
@@ -17,7 +17,7 @@ function select_quad(quad)
 end
 
 function release()
-	sponge_motor:mrp(400, -200)
+	sponge_motor:mrp(400, -220)
 	sponge_motor:wait()
 end
 

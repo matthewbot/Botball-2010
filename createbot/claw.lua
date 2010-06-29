@@ -16,9 +16,14 @@ servoutils.build_functions{
 
 servoutils.build_functions{
 	servo = updown_servo,
-	default_speed = 600,
+	default_speed = 1200,
 	up = 400,
 	lift = 750,
 	down = 1500,
 	down_grab = 1900,
 }
+
+function up_fling()
+	updown_servo(400)
+end
+

@@ -87,7 +87,7 @@ function Smooth:set_vel_dist(drivetrain, ltravspeed, ldist, rtravspeed, rdist, a
 		end
 		
 		drivetrain:drive(lspeed, rspeed)
-		drivetrain:wait_encoders()
+		task.yield()
 	end
 	drivetrain:drive(0, 0)
 end
