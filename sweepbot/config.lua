@@ -30,7 +30,7 @@ fdrivetrain = drivemod.MotorDriveTrain{
 
 drive = drivemod.Drive{
 	drivetrain = drivetrain,
-	style = drivemod.Smooth{accel=10, turnaccel=6}, -- was 6 on turnaccel (changed it cuz matt broke it...)
+	style = drivemod.Smooth{accel=10, turnaccel=6},
 	topvel = 7,
 	topvel_turn = 2.8
 }

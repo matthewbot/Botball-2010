@@ -64,7 +64,8 @@ function MotorDriveTrain:drive_dist(lspeed, ldist, rspeed, rdist)
 	if rspeed ~= 0 then
 		self.rmot:mrp(rspeed, rdist)
 	end
-
+	task.sleep(.02)
+	
 	self.lmot:wait()
 	self.rmot:wait()
 	

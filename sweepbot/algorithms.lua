@@ -1,6 +1,7 @@
 import "config"
 import "arm"
 
+--!!! Algorithms file is for any functions mainly regarding sensor use
 
 local task = require "cbclua.task"
 local vision = require "cbclua.vision"
@@ -8,7 +9,7 @@ local math = require "math"
 
 local turntime_constant = 1
 
-function get_poms()
+function get_poms()								-- we dont use it... but it looks for palms
 	vision.update()
 	local a = green_channel[0]
 	local b = green_channel[1]
@@ -22,7 +23,7 @@ function get_poms()
 	end
 end
 
-function face_poms()
+function face_poms()									-- faces palms
 	local poms = get_poms()
 	if not poms then return false end
 	
@@ -35,13 +36,13 @@ function face_poms()
 end
 
 
-function read_ranges()
+function read_ranges()										-- reads our rangefinders for when we are wall following (the island)
 	local left = lrange() > 550
 	local right = rrange() > 550
 	return left, right
 end
 
-function follow_wall()
+function follow_wall()								-- follows top of island pvc
 	local left, right = read_ranges()
 	if not left and not right then
 		drivetrain:drive(.5, 3) -- TODO add arcs!!!
@@ -53,7 +54,7 @@ function follow_wall()
 	task.sleep(0.01)
 end
 
-function follow_wall_time(time)
+function follow_wall_time(time)							-- does "follow wall()" but with a time out
 	task.timeout(time, function()
 		while true do
 			follow_wall()
@@ -62,7 +63,7 @@ function follow_wall_time(time)
 	drive:stop{}
 end
 
-function follow_wall_sensor()
+function follow_wall_sensor()									--does Follow_wall() until sensor if pushed
 	while not rwall_bumper() do
 		follow_wall()
 	end
@@ -70,11 +71,11 @@ function follow_wall_sensor()
 end
 
 
-function drive_bump()
+function drive_bump()												-- drives until sensor is pushed
 	drive:fd{wait=rwall_bumper, speed=500}
 end
 
-function final_palm_lineup()
+function final_palm_lineup()								-- does the fancy little scooch thing to lineup to get botguy and the second palms pile
 	drive:bk{speed=200, inches=1}
 	drive:scooch{xdist=-1, dir="bk"}
 	drive:fd{wait=rwall_bumper, speed=600}
@@ -82,15 +83,15 @@ function final_palm_lineup()
 	drive:off()
 end
 
-function either_bumper()
+function either_bumper()								-- drives until either bumper is pushed
 	return lwall_bumper() or rwall_bumper()
 end
 
-function both_bumpers()
+function both_bumpers()								-- drives until both bumpers are pushed
 	return lwall_bumper() and rwall_bumper()
 end
 
-function wall_lineup_bumpers()
+function wall_lineup_bumpers()						-- does a lineup on both bumpers
 	print "running into wall"
 	local first = true
 	while true do
@@ -119,7 +120,7 @@ function wall_lineup_bumpers()
 	bdrive:stop{}
 end
 
-function drive_wall_follow()
+function drive_wall_follow()								-- a function we didnt end up using that follows a side wall (dont even have a sensor for it)
 	task.timeout(time, function()
 		while true do
 			dist = wall_range()
@@ -135,13 +136,13 @@ function drive_wall_follow()
 	end)
 end
 
-function drive_wall()
+function drive_wall()								-- drives to either bumper
 	drive:fd{}
 	task.wait(either_bumper)
 	drive:off()
 end
 
-function lineup_first_palm_sweep()
+function lineup_first_palm_sweep()												-- does a lineup to sweep for the first palm pile
 	drive:bk{speed=200, wait=function () return platform_range_sensor() > 700 end}
 end
 	
