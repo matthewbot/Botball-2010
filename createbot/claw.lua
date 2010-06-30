@@ -1,4 +1,5 @@
 local servoutils = require "mb.servoutils"
+local task = require "cbclua.task"
 import "config"
 
 function init()
@@ -16,9 +17,27 @@ servoutils.build_functions{
 
 servoutils.build_functions{
 	servo = updown_servo,
-	default_speed = 600,
+	default_speed = 1200,
 	up = 400,
-	lift = 750,
+	lift = 1100,
 	down = 1500,
 	down_grab = 1900,
 }
+
+function up_fling()
+	updown_servo(400)
+end
+
+function eject()
+	launch_motor:fd()
+	task.sleep(.1)
+	launch_motor:off()
+	task.async(function ()
+		task.sleep(1)
+		launch_motor:bk()
+		task.sleep(.1)
+		launch_motor:off()
+	end)
+end
+
+
