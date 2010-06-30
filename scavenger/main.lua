@@ -1,5 +1,6 @@
 import "config"
 
+local cbc = require "cbclua.cbc"
 local task = require "cbclua.task"
 local compactor = require "compactor"
 local motion = require "motion"
@@ -19,4 +20,27 @@ function main()
 	
 	moves.go_home()
 	
+	
+	--[[compactor.close()
+	
+	local l, r = 800, 800
+	
+	while true do
+		task.wait(cbc.a_button)
+	
+		motion.arc_mav(l, r)
+		
+		print("r = " .. r)
+		
+		task.wait(cbc.b_button)
+	
+		motion.arc_off()
+		
+		r = r - 10
+
+		if r <= 0 then
+			break
+		end
+	end
+	]]--
 end

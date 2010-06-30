@@ -47,7 +47,7 @@ bdrive = drivemod.Drive{
 -- Servos --
 ------------
 
-door_servo 	= servoutils.RescaleServo{1, start_pos = 400, end_pos = 1350}
+door_servo 	= servoutils.RescaleServo{1, start_pos = 250, end_pos = 1350}
 
 ------------
 -- Vision --

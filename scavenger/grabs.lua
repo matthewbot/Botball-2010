@@ -3,13 +3,15 @@ import "config"
 
 local task = require "cbclua.task"
 
-
 local time_full = 25
+--open, then extend
 
-function tribbles_pvc_bk(inches)
-	close_half({wait = true})
-	drive:bk{inches = inches}
-	close()
+function tribbles() --need to alter when i find if motor or servo commands are blocking
+	open()
+	extend_full()
+	close_half()
+	close({wait = true})
+	retract_full()
 end
 
 function tribbles_pvc()
@@ -17,13 +19,19 @@ function tribbles_pvc()
 	close()
 end
 
+function tribbles_pvc_bk(inches)
+	close_half({wait = true})
+	drive:bk{inches = inches}
+	close()
+end
+
+
 function botguy_pvc()
 	extend_full()
 	close_half()
 	drive:bk{inches = 3}
 	close()
 end
-
 
 function release()
 	open()
