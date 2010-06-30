@@ -12,7 +12,7 @@ servoutils.build_functions{
 	pitch_down = 0
 }
 
-function pitch(pos, speed)
+function pitch(pos, speed)											-- controls the pitch (lower half of arm)
 	if speed == nil then
 		pitch_servo:setpos(pos)
 	else
@@ -20,11 +20,11 @@ function pitch(pos, speed)
 	end
 end
 	
-function pitch_off()
+function pitch_off()			-- turns of pitch
 	pitch_servo:disable()
 end
 
-function pitch_wait()
+function pitch_wait()				-- waits for pitch to finish setting
 	pitch_servo:wait()
 end
 
@@ -38,7 +38,7 @@ servoutils.build_functions{
 	extend_close = 0,
 }
 
-function extend(pos, speed)
+function extend(pos, speed)				-- controlls extend (upper half of arm)
 	if speed == nil then
 		extend_servo:setpos(pos)
 	else
@@ -46,11 +46,11 @@ function extend(pos, speed)
 	end
 end
 
-function extend_off()
+function extend_off()				-- turns off the extend
 	extend_servo:disable()
 end
 
-function extend_wait()
+function extend_wait()					-- waits for the extend to finish
 	extend_servo:wait()
 end
 
@@ -58,12 +58,12 @@ end
 -- Combined Functions --
 ------------------------
 
-function off()
+function off()					-- cuts off arm (bleeds afterwards)
 	extend_off()
 	pitch_off()
 end
 
-function reset()
+function reset()				-- resets arm
 	if pitch_servo:getpos() == -1 and extend_servo:getpos() == -1 then
 		pitch_down()
 		extend_close()
@@ -74,7 +74,7 @@ function reset()
 	end
 end
 
-function wait()
+function wait()						-- waits for both pitch and extend to finish
 	extend_wait()
 	pitch_wait()
 end

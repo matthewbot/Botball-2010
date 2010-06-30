@@ -37,7 +37,7 @@ function main()
 	arm.extend(400, 600)
 	drive:fd{inches=1}
 	algorithms.lineup_first_palm_sweep()	-- lining up to sweep the palms
-	--drive:bk{inches=1}
+	drive:bk{inches=.75}
 	--------------
 	-- Sweeping --
 	--------------
@@ -93,7 +93,7 @@ function main()
 	--[[end]]
 end
 
-function reset_run()
+function reset_run()						--this is just for fun, it realigns the robot for the next run in the base after it has finished its previous run
 	print "running the reset thing"
 	drive:rturn{degrees=90}
 	drive:bk{inches=8, speed=400}

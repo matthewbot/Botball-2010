@@ -2,7 +2,7 @@ local task = require "cbclua.task"
 import "arm"
 
 
-function activate()
+function activate()					-- activates the arm for sweeping
 	print "Activating"
 	pitch(350, 400)
 	wait()
@@ -12,12 +12,12 @@ function activate()
 	wait()
 end
 
-function init()
+function init()					-- initializes and activatest the arm for sweeping
 	reset()
 	activate()
 end
 
-function palms_sweep()
+function palms_sweep()				-- sweeps palms
 	pitch(850, 600)
 	extend(700, 700)
 	wait()
@@ -25,7 +25,7 @@ function palms_sweep()
 	wait()
 end
 
-function palms_retract()
+function palms_retract()			-- retracts the palms
 	extend(300, 460)
 	pitch(200, 800)
 	wait()
