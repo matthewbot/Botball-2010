@@ -11,14 +11,14 @@ function main()
 	compactor.init()
 	moves.goto_pvc_island()
 	
-	moves.grab_our_leg()
+	--[[moves.grab_our_leg()
 
 	--scenario B:not going into the middle
 	
 	--scenario A:going into the middle
 	moves.go_into_middle()
 	
-	moves.go_home()
+	moves.go_home()]]--
 	
 	
 	--[[compactor.close()

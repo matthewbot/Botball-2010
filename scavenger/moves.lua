@@ -7,16 +7,43 @@ local grabs = require "grabs"
 local motion = require "motion"
 
 --Scenario A
-function goto_pvc_island()
-	motion.drive_sensor("right", "fd", "pvc", 800, 550)
-	drive:fd{inches = 2}
-	drive:rturn{degrees = 45}
-	drive:fd{inches = 24}--hit pvc of the island
-	
+function goto_pvc_island(block)
+	block = block or false
 
-	--[[drive:fd{inches = 29.5}
-	drive:rturn{degrees = 92}
-	drive:fd{inches = 49.2}]]--hit pvc of the island
+	local passed_corner, val = task.timeout(15, function() return motion.drive_to_corner(5) end) --need jeff's help to determine real time
+	
+	if passed_corner then
+		if val >= 500 and val < 600 then
+			drive:rturn{degrees = 40}
+			
+			if block == true then 
+				drive:fd{inches = 24}
+			else
+				drive:fd{inches = 26}
+			end
+		elseif val >= 600 then
+			drive:fd{inches = 3}
+			drive:rturn{degrees = 40}
+			
+			if block == true then 
+				drive:fd{inches = 21}
+			else
+				drive:fd{inches = 23}
+			end
+		end
+	else
+		drive:rturn{degrees = 40}
+		if block == true then
+			drive:fd{inches = 22}
+		else
+			drive:fd{inches = 24}
+		end
+	end
+		
+
+	--[[drive:fd{inches = 38}
+	drive:rturn{degrees = 40}
+	drive:fd{inches = 24}]]--hit pvc of the island
 end
 
 function grab_our_leg()
@@ -33,19 +60,17 @@ end
 function go_into_middle()  --middle = no touch zone
 	drive:lpiv{degrees = -30}
 	drive:rpiv{degrees = 37}
-	grabs.tribbles() --to stay or not to stay?
 	drive:scooch{xdist = 0.75, dir = "bk"}
+	grabs.tribbles() --to stay or not to stay?
 	drive:scooch{xdist = 0.5}
+	
 	compactor.open()
 	motion.drive_sensor("left", "fd", "pvc", 650, 500)
 	drive:fd{inches = 14}
-	grabs.tribbles_pvc()
-	task.sleep(1)
-	compactor.extend(0.5)
+	grabs.tribbles_pvc_full()
 end
 
 function go_home()
-	--grabs.tribbles_pvc()
 	motion.drive_sensor("left", "bk", "pvc", 900, 500)
 	drive:bk{inches = 13}
 	drive:rpiv{degrees = 37}
@@ -64,10 +89,7 @@ end
 
 --Scenario C
 function block(dist)
-	motion.drive_sensor("right", "fd", "pvc", 800, 520)
-	drive:fd{inches = 2}
-	drive:rturn{degrees = 45}
-	drive:fd{inches = 22}--hit pvc of the island
+	goto_pvc_island(true)--22 inches to get close to the pvc of the island
 
 	drive:rturn{degrees = 90}
 	compactor.close()
