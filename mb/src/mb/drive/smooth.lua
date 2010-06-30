@@ -67,7 +67,7 @@ function Smooth:set_vel_dist(drivetrain, ltravspeed, ldist, rtravspeed, rdist, a
 	local ldeaccelenc, rdeaccelenc = lstartenc + ldeacceldist, rstartenc + rdeacceldist
 	while true do
 		local lenc, renc = drivetrain:get_encoders()
-		local trav = (math.abs(lenc - ldeaccelenc) + math.abs(renc - rdeaccelenc)) / 2 + .5
+		local trav = (math.abs(lenc - ldeaccelenc) + math.abs(renc - rdeaccelenc)) / 2
 		local lspeed
 		if ltravspeed ~= 0 then
 			local ltemp = 2*laccel*math.keepsgn(trav, ltravspeed) + ltravspeed*ltravspeed
@@ -90,6 +90,10 @@ function Smooth:set_vel_dist(drivetrain, ltravspeed, ldist, rtravspeed, rdist, a
 		task.yield()
 	end
 	drivetrain:drive(0, 0)
+	
+	local lenc, renc = drivetrain:get_encoders()
+	print("Trav", lenc - lstartenc, renc - rstartenc)
+	print("Dist", ldist, rdist)
 end
 
 function Smooth:get_accel(ltravspeed, rtravspeed)
