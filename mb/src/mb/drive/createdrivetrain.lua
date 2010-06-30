@@ -3,11 +3,11 @@ local task = require "cbclua.task"
  
 CreateDriveTrain = create_class("CreateDriveTrain")
  
-local ticks_per_inch = 195
 local mm_per_inch = 25.4
  
 function CreateDriveTrain:construct(args)
 	self.wb = args.wb or 10.15
+	self.ticks_per_inch = args.ticks or 195
 	self.flip = args.flip or false
 end
  
@@ -30,13 +30,13 @@ function CreateDriveTrain:drive_dist(lvel, ltrav, rvel, rtrav)
 	if not self.flip then
 		lspeed = lvel*mm_per_inch
 		rspeed = rvel*mm_per_inch
-		ldist = ltrav*ticks_per_inch
-		rdist = rtrav*ticks_per_inch
+		ldist = ltrav*self.ticks_per_inch
+		rdist = rtrav*self.ticks_per_inch
 	else
 		lspeed = -rvel*mm_per_inch
 		rspeed = -lvel*mm_per_inch
-		ldist = -rtrav*ticks_per_inch
-		rdist = -ltrav*ticks_per_inch
+		ldist = -rtrav*self.ticks_per_inch
+		rdist = -ltrav*self.ticks_per_inch
 	end
 	
 	local lenc, renc = create.get_encoders()
@@ -64,9 +64,9 @@ end
 function CreateDriveTrain:get_encoders()
 	local lenc, renc = create.get_encoders()
 	if self.flip then
-		return -renc / ticks_per_inch, -lenc / ticks_per_inch
+		return -renc / self.ticks_per_inch, -lenc / self.ticks_per_inch
 	else
-		return lenc / ticks_per_inch, renc / ticks_per_inch
+		return lenc / self.ticks_per_inch, renc / self.ticks_per_inch
 	end
 end
 
@@ -75,5 +75,5 @@ function CreateDriveTrain:wait_encoders()
 end
 
 function CreateDriveTrain:get_speeds()
-	return create.left_motor:get_speed() / ticks_per_inch, create.right_motor:get_speed() / ticks_per_inch
+	return create.left_motor:get_speed() / self.ticks_per_inch, create.right_motor:get_speed() / self.ticks_per_inch
 end
