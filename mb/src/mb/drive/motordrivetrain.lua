@@ -27,11 +27,15 @@ function MotorDriveTrain:drive(lspeed, rspeed)
 	lspeed = math.round(lspeed * self.lticks)
 	rspeed = math.round(rspeed * self.rticks)
 	
-	motorutils.dual_mav(self.lmot, lspeed, self.rmot, rspeed)
-	if lspeed == 0 then
+	if lspeed ~= 0 then
+		self.lmot:mav(lspeed)
+	else
 		self.lmot:off()
 	end
-	if rspeed == 0 then
+	
+	if rspeed ~= 0 then
+		self.rmot:mav(rspeed)
+	else
 		self.rmot:off()
 	end
 end
@@ -54,11 +58,10 @@ function MotorDriveTrain:drive_dist(lspeed, ldist, rspeed, rdist)
 	ldist = ldist * self.lticks
 	rdist = rdist * self.rticks
 	
-	if lspeed ~= 0 and rspeed ~= 0 then
-		motorutils.dual_mrp(self.lmot, lspeed, ldist, self.rmot, rspeed, rdist)
-	elseif lspeed ~= 0 then
+	if lspeed ~= 0 then
 		self.lmot:mrp(lspeed, ldist)
-	else
+	end
+	if rspeed ~= 0 then
 		self.rmot:mrp(rspeed, rdist)
 	end
 

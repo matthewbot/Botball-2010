@@ -49,73 +49,6 @@ function FixMotor:mtp(speed, pos)
 	return Motor.mtp(self, speed*weirdfactor, pos)
 end
 
-function FixMotor:dual_mav(speed, othermot, otherspeed)
-	if not is_a(othermot, FixMotor) then
-		return false
-	end
-	
-	self:update_realpos()
-	othermot:update_realpos()
-	dualtoggle = not dualtoggle
-	if dualtoggle then
-		Motor.mav(self, speed*weirdfactor)
-		othermot:mav_direct(otherspeed)
-	else
-		othermot:mav_direct(otherspeed)
-		Motor.mav(self, speed*weirdfactor)
-	end
-	
-	return true
-end
-
-function FixMotor:mav_direct(speed)
-	return Motor.mav(self, speed*weirdfactor)
-end
-
-function FixMotor:dual_mrp(speed, dist, othermot, otherspeed, otherdist)
-	if not is_a(othermot, FixMotor) then
-		return false
-	end
-	
-	self:update_realpos()
-	othermot:update_realpos()
-	dualtoggle = not dualtoggle
-	if dualtoggle then
-		Motor.mrp(self, speed, dist)
-		othermot:mrp_direct(otherspeed, otherdist)
-	else
-		othermot:mrp_direct(otherspeed, otherdist)	
-		Motor.mrp(self, speed, dist)
-	end
-end
-
-function FixMotor:mrp_direct(speed, dist)
-	return Motor.mrp(self, speed, dist)
-end
-	
-function FixMotor:dual_mtp(speed, dist, othermot, otherspeed, otherdist)
-	if not is_a(othermot, FixMotor) then
-		return false
-	end
-	
-	self:update_realpos()
-	othermot:update_realpos()
-	dist = dist - self.realpos
-	otherdist = otherdist - othermot.realpos
-	dualtoggle = not dualtoggle
-	if dualtoggle then
-		Motor.mtp(speed, dist)
-		othermot:mtp_direct(self, otherspeed, otherdist)
-	else
-		othermot:mtp_direct(self, otherspeed, otherdist)	
-		Motor.mtp(speed, dist)
-	end
-end
-
-function FixMotor:mtp_direct(speed, dist)
-	return Motor.mtp(self, speed, dist)
-end
-
 --[[ DualMotor ]]--
 
 DualMotor = create_class "DualMotor"
@@ -135,45 +68,17 @@ for _, func in ipairs{"fd", "bk", "off", "clearpos", "setpos", "getpos", "getpwm
 end
 
 function DualMotor:mav(speed)
-	dual_mav(self.mot1, speed, self.mot2, speed)
+	self.mot1:mav(speed)
+	self.mot2:mav(speed)
 end
 
 function DualMotor:mrp(speed, dist)
-	dual_mrp(self.mot1, speed, dist, self.mot2, speed, dist)
+	self.mot1:mrp(speed, dist)
+	self.mot2:mrp(speed, dist)
 end
 
 function DualMotor:mtp(speed, dist)
-	dual_mtp(self.mot1, speed, dist, self.mot2, speed, dist)
+	self.mot1:mtp(speed, dist)
+	self.mot2:mtp(speed, dist)
 end
 
---[[ dual_ motor commands ]]--
--- Attempts to perform motor commands at the exact same instant
--- Only works with FixMotor, and does all motor counter manipulation before the commands
--- to get rid of a slight startup delay
-
-function dual_mav(mot1, speed1, mot2, speed2)
-	if mot1.dual_mav and mot1:dual_mav(speed1, mot2, speed2) then
-		return
-	end
-	
-	mot1:mav(speed1)
-	mot2:mav(speed2)
-end
-
-function dual_mrp(mot1, speed1, dist1, mot2, speed2, dist2)
-	if mot1.dual_mrp and mot1:dual_mrp(speed1, dist1, mot2, speed2, dist2) then
-		return
-	end
-	
-	mot1:mrp(speed1, dist1)
-	mot2:mrp(speed2, dist2)
-end
-
-function dual_mtp(mot1, speed1, dist1, mot2, speed2, dist2)
-	if mot1.dual_mtp and mot1:dual_mtp(speed1, dist1, mot2, speed2, dist2) then
-		return
-	end
-	
-	mot1:mtp(speed1, dist1)
-	mot2:mtp(speed2, dist2)
-end
