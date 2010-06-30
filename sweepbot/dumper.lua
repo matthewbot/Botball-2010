@@ -7,11 +7,11 @@ local power = 70
 
 local dumped = false
 
-function init()
+function init()								-- initializes the dumper
 	reset()
 end
 
-function reset()
+function reset()							-- resets the dumper (up position)
 	dumper_motor:setpwm(power)
 	local prevpos = dumper_motor:getpos()
 	while true do
@@ -27,7 +27,7 @@ function reset()
 	dumped = false
 end
 
-function reset_check()
+function reset_check()								-- does a reset, but checks to see if it is stuck (if botguy is stuck in the dumper, it will remain down, but return false to reset)
 	dumper_motor:setpwm(power)
 	local prevpos = dumper_motor:getpos()
 	local checkpos = prevpos
@@ -51,11 +51,11 @@ function reset_check()
 	end
 end	
 
-function off()
+function off()									-- cuts dumper
 	dumper_motor:off()
 end
 
-function shake()
+function shake()						-- shakes dumper to get botguy in place
 	local times = 0
 	while times < 5 do
 		dumper_motor:setpwm(-power)
@@ -66,7 +66,7 @@ function shake()
 	end
 end
 
-function dump()
+function dump()							-- dumps botguy
 	if dumped then error("Dumper has been dumped! Reset first!") end
 	dumper_motor:setpwm(-power)
 	task.sleep(dump_time)
