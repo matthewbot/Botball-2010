@@ -1,5 +1,5 @@
 modpath:=mb
-modname:=vision
+modname:=rawvision
 projdir:=..
 rootdir:=../../../cbclua
 
