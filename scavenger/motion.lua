@@ -38,30 +38,42 @@ function drive_sensor(side, dir, wait_for, speed, value)
 	drive:off()
 end
 
-function corner_check()-- use corner_check w/ driving now.  if > 500 and < 700, just turn and move more than usual elseif > 700 do what we have been doing
+--need to add a way to check its decreasing for a while
+function corner_drive(num)-- use corner_check w/ driving now.  if > 500 and < 700, just turn and move more than usual elseif > 700 do what we have been doing
 	local readings = {}
 	local value = rrange()
 	
-	local index, sum, avg = 0, 0, 0
+	local index, sum, avg = 1, 0, 0
 	
+	drive:fd{speed = 800}
 	while true do
-		reading[index] = rrange()
-		index = index + 1
+		task.yield()
+
+		readings[index] = rrange()
+		print("reading" .. readings[index])
 		
-		if index == 2 then
-			index, sum, avg = 0, 0, 0
+		if index == num then
+			index, sum, avg = 1, 0, 0
 			
-			for v in pairs(readings) do
+			for k, v in pairs(readings) do
 				sum = sum + v
 			end
 			
-			avg = (math.abs(sum)) / 3
+			print("sum" .. sum)
 			
-			if avg < value then
+			avg = (math.abs(sum)) / num
+			
+			print("avg" .. avg)
+			print("value" ..  value)
+			
+			if avg >= 300 and avg < value then
+				drive:off()
+				print("value returned:" .. value)
 				return value
 			end
 		end
 		
+		index = index + 1
 		value = rrange()
 	end
 end
@@ -106,4 +118,10 @@ end
 function arc_power(lpower, rpower)
 	ldrive:setpwm(lpower)
 	rdrive:setpwm(rpower)
+end
+
+function arc_drive(args)
+	local speed = args.speed
+	local radius = args.radius
+	return 0
 end

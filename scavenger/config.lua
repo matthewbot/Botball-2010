@@ -22,7 +22,7 @@ drivetrain = drivemod.MotorDriveTrain{
 }
 drive = drivemod.Drive{
 	drivetrain = drivetrain,
-	style = drivemod.Smooth{accel=15},
+	style = drivemod.Smooth{accel=8},
 	topvel = 8,
 }
 

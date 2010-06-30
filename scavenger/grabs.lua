@@ -37,6 +37,7 @@ function botguy_pvc()
 	close_half()
 	drive:bk{inches = 3}
 	close()
+	retract()
 end
 
 function release()

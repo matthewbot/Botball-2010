@@ -7,12 +7,30 @@ local grabs = require "grabs"
 local motion = require "motion"
 
 --Scenario A
-function goto_pvc_island(last_dist)
-	motion.drive_sensor("right", "fd", "pvc", 800, 500)-- before 550
-	drive:fd{inches = 2}
-	drive:rturn{degrees = 45}
-	drive:fd{inches = last_dist}--24 inches to hit pvc of the island
+function goto_pvc_island(block)
+	local val = motion.corner_drive(8)
 	
+	block = block or false
+	
+	if val >= 450 and val < 600 then
+		drive:rturn{degrees = 40}
+		
+		if block == true then 
+			drive:fd{inches = 24}
+		else
+			drive:fd{inches = 26}
+		end
+	elseif val >= 600 then
+		drive:fd{inches = 3}
+		drive:rturn{degrees = 40}
+		
+		if block == true then 
+			drive:fd{inches = 21}
+		else
+			drive:fd{inches = 23}
+		end
+	end
+		
 
 	--[[drive:fd{inches = 29.5}
 	drive:rturn{degrees = 92}
@@ -62,7 +80,7 @@ end
 
 --Scenario C
 function block(dist)
-	goto_pvc_island(22)--22 inches to get close to the pvc of the island
+	goto_pvc_island(true)--22 inches to get close to the pvc of the island
 
 	drive:rturn{degrees = 90}
 	compactor.close()
