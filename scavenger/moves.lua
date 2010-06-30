@@ -33,7 +33,11 @@ function goto_pvc_island(block)
 		end
 	else
 		drive:rturn{degrees = 40}
-		drive:fd{inches = 24}
+		if block == true then
+			drive:fd{inches = 22}
+		else
+			drive:fd{inches = 24}
+		end
 	end
 		
 
