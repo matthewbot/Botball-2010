@@ -47,6 +47,9 @@ bip:addColorModel(cm_black)
 
 function vtest(cm)
 	cm = cm or cm_green
+	
+	for i=1,3 do camera:readImage() end
+	
 	local image = camera:readImage()
 	gip:processImage(image)
 	
