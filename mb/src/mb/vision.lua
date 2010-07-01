@@ -53,4 +53,38 @@ function GridImageProcessor:getCount(x, y, model)
 	return rawvision.gip_get_count(self.obj, x, y, model.obj)
 end
 
+BlobImageProcessor = create_class "BlobImageProcessor"
+
+function BlobImageProcessor:construct(maxgapdist, minsegmentsize, minblobheight)
+	self.obj = rawvision.bip_new(maxgapdist, minsegmentsize, minblobheight)
+end
+
+function BlobImageProcessor:addColorModel(model)
+	rawvision.bip_add_color_model(self.obj, model.obj)
+end
+
+function BlobImageProcessor:processImage(image)
+	rawvision.bip_process_image(self.obj, image.obj)	
+end
+
+function BlobImageProcessor:getBlobCount()
+	return rawvision.bip_get_blob_count(self.obj)
+end
+
+function BlobImageProcessor:getBlob(num)
+	return Blob(rawvision.bip_get_blob(self.obj, num))
+end
+
+Blob = create_class "Blob"
+
+function Blob:construct(x, y, w, h)
+	self.x = x
+	self.y = y
+	self.w = w
+	self.h = h
+end
+
+function Blob:__tostring()
+	return "(" .. self.x + self.w/2 .. "," .. self.y + self.w/2 .. ") " .. self.w*self.h
+end
 
