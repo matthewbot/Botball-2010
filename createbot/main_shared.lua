@@ -11,13 +11,13 @@ function main()
 	sponge.reset()
 	
 	grab_dirty_ducks(20)
-	grab_dirty_ducks(23)
+	grab_dirty_ducks(20)
 	grab_dirty_ducks(23)
 	drive:fd{inches=9} -- wall lineup
 	drive:fd{vel=8, time=1}
 	
-	algorithm.drop_sponge(-42, "medium")
-	algorithm.drop_sponge(15, "small")
+	algorithm.drop_sponge(-36, "medium")
+	algorithm.drop_sponge(12, "small")
 	
 	drive:fd{inches=15} -- wall lineup
 	drive:fd{vel=8, time=1}
@@ -25,9 +25,9 @@ function main()
 	drive:rturn{degrees=90}
 	drive:bk{vel=8, wait=create.bump}
 	
-	grab_dirty_ducks(20)
+	grab_dirty_ducks(16)
 	
-	algorithm.drop_sponge(-5, "large")
+	algorithm.drop_sponge(-3, "large")
 	
 	drive:fd{inches=20} -- wall lineup
 	drive:fd{vel=8, time=1}
@@ -36,14 +36,28 @@ function main()
 	
 	drive:fd{inches=33} -- line up against duck scoring area
 	drive:fd{vel=8, time=1}
+	claw.down{wait=true}
+	claw.release_ground() -- release a duck possibly still in our claw
+	task.sleep(.3)
+	claw.up()
+	task.sleep(.5)
+	claw.close()
 	drive:bk{inches=1}
-	drive:lturn{degrees=75}
+	drive:lturn{degrees=85}
 	claw.down{wait=true}
 	claw.eject()
-	
+	claw.up{wait=true}
+	--[[
+	claw.lift{wait=true}
+	drive:rturn{degrees=60}
+	claw.release_ground()
+	task.sleep(.4)
+	drive:lturn{degrees=60}
 	claw.up()
-	drive:bk{inches=10}
-	drive:rturn{degrees=75}
+	claw.close()]]
+	
+	drive:bk{inches=15}
+	drive:rturn{degrees=80}
 	drive:fd{inches=37}
 	drive:fd{vel=8, time=1}
 	
@@ -99,9 +113,9 @@ function clean_ducks()
 	end)
 	drive:bk{vel=8, wait=create.bump}
 	drive:rturn{degrees=45}
-	drive:fd{inches=12}
+	drive:fd{inches=14}
 	drive:rturn{degrees=45}
-	drive:fd{inches=10}
+	drive:fd{inches=9}
 	drive:fd{vel=8, time=1}
 	
 	task.async(function () -- grab second set
@@ -115,7 +129,7 @@ function clean_ducks()
 	
 	drive:bk{inches=10} -- travel into position
 	drive:lturn{degrees=90}
-	drive:bk{inches=7.25}
+	drive:bk{inches=5}
 	
 	claw.down{wait=true} -- release second set
 	claw.release_ground{speed=700, wait=true}

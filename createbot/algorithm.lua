@@ -1,19 +1,23 @@
 local create = require "mb.create"
 local task = require "cbclua.task"
+local sponge = require "sponge"
 import "config"
 
 
 function drop_sponge(chargedist, cursponge)
 	print("Dropping " .. cursponge .. " sponge")
-	task.async(sponge.select, cursponge)
+	local spongeselect = task.async(function ()
+		sponge.reset()
+		sponge.select(cursponge)
+	end)
 	
 	local side
 	if chargedist > 0 then
 		drive:fd{inches=chargedist}
-		side = algorithm.drive_to_oilslick("fd")
+		side = drive_to_oilslick("fd")
 	else
 		drive:bk{inches=-chargedist}
-		side = algorithm.drive_to_oilslick("bk")
+		side = drive_to_oilslick("bk")
 	end
 	print("Got oil slick on side " .. side)
 
@@ -23,18 +27,14 @@ function drop_sponge(chargedist, cursponge)
 		turnamt = -90
 	elseif cursponge == "large" then
 		turnamt = 90
-		if side == "left" then
-			side = "center-left"
-			fddist = fddist + 5
-		elseif side == "right" then
-			side = "center-right"
+		if side == "left" or side == "right" then
 			fddist = fddist + 5
 		else
 			fddist = fddist + 3
 		end
 		
 		if chargedist < 0 then
-			fddist = fddist - 3
+			fddist = fddist - 5
 		end
 	else
 		turnamt = 0
@@ -57,14 +57,14 @@ function drop_sponge(chargedist, cursponge)
 		fddist = fddist + 2
 	end
 	
-	print("Turnamt", turnamt)
 	print("Fddist", fddist)
+	print("Turnamt", turnamt)
 	if fddist > 0 then
 		drive:fd{inches=fddist}
 	end
 	turn(turnamt)
+	task.join(spongeselect)
 	sponge.release()
-	task.async(sponge.reset)
 	task.sleep(.5)
 	turn(-turnamt)
 end
