@@ -10,6 +10,8 @@ Smooth = create_class "Smooth"
 function Smooth:construct(args)
 	self.accel = args.accel or 10
 	self.turnaccel = args.turnaccel or self.accel
+	self.deaccel_fudge = args.deaccel_fudge or 0
+	self.debug = args.debug or false
 end
 
 function Smooth:set_vel(drivetrain, lendspeed, rendspeed, args)
@@ -67,7 +69,7 @@ function Smooth:set_vel_dist(drivetrain, ltravspeed, ldist, rtravspeed, rdist, a
 	local ldeaccelenc, rdeaccelenc = lstartenc + ldeacceldist, rstartenc + rdeacceldist
 	while true do
 		local lenc, renc = drivetrain:get_encoders()
-		local trav = (math.abs(lenc - ldeaccelenc) + math.abs(renc - rdeaccelenc)) / 2
+		local trav = (math.abs(lenc - ldeaccelenc) + math.abs(renc - rdeaccelenc)) / 2 + self.deaccel_fudge
 		local lspeed
 		if ltravspeed ~= 0 then
 			local ltemp = 2*laccel*math.keepsgn(trav, ltravspeed) + ltravspeed*ltravspeed
@@ -91,9 +93,12 @@ function Smooth:set_vel_dist(drivetrain, ltravspeed, ldist, rtravspeed, rdist, a
 	end
 	drivetrain:drive(0, 0)
 	
-	local lenc, renc = drivetrain:get_encoders()
-	print("Trav", lenc - lstartenc, renc - rstartenc)
-	print("Dist", ldist, rdist)
+	if self.debug then
+		task.sleep(.3)
+		local lenc, renc = drivetrain:get_encoders()
+		print("Trav", lenc - lstartenc, renc - rstartenc)
+		print("Dist", ldist, rdist)
+	end
 end
 
 function Smooth:get_accel(ltravspeed, rtravspeed)
