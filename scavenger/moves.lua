@@ -1,5 +1,6 @@
 import "config"
 
+local cbc = require "cbclua.cbc"
 local task = require "cbclua.task"
 local math = require "math"
 local compactor = require "compactor"
@@ -10,8 +11,10 @@ local motion = require "motion"
 function goto_pvc_island(block)
 	block = block or false
 
-	local passed_corner, val = task.timeout(7, function() return motion.drive_to_corner(5) end) --need jeff's help to determine real time
+	local passed_corner, val = task.timeout(6.5, function() return motion.drive_to_corner(5) end) --need jeff's help to determine real time
 	drive:off()
+	
+	task.wait(cbc.a_button)
 	
 	if passed_corner then
 		if val >= 450 and val < 600 then
@@ -23,25 +26,26 @@ function goto_pvc_island(block)
 				drive:fd{inches = 26}
 			end
 		elseif val >= 600 then
-			drive:fd{inches = 3}
-			drive:rturn{degrees = 45}
+			drive:fd{inches = 1}
+			drive:rturn{degrees = 46}
 			
 			if block == true then 
-				drive:fd{inches = 21}
+				drive:fd{inches = 22}
 			else
-				drive:fd{inches = 23}
+				drive:fd{inches = 24}
 			end
 		end
 	else
 		print("time has passed")
-		drive:rturn{degrees = 55}
+		drive:rturn{degrees = 47}
 		if block == true then
 			drive:fd{inches = 24}
 		else
 			drive:fd{inches = 26}
 		end
 	end
-		
+	
+	task.wait(cbc.a_button)
 
 	--[[drive:fd{inches = 38}
 	drive:rturn{degrees = 40}
@@ -51,7 +55,7 @@ end
 function grab_our_leg()
 	grabs.tribbles_pvc_bk(0.32)
 	drive:bk{inches = 2}
-	drive:rturn{degrees = 87}
+	drive:rturn{degrees = 90}
 	compactor.open()
 	drive:scooch{xdist = -0.75}
 	motion.drive_sensor("right", "fd", "pvc", 650, 600)
