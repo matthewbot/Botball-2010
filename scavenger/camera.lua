@@ -5,6 +5,7 @@ local task = require "cbclua.task"
 local compactor = require "compactor"
 local motion = require "motion"
 local grabs = require "grabs"
+local motion = require "motion"
 local moves = require "moves"
 
 function check_botguy()
