@@ -41,16 +41,21 @@ end
 function check_if_decreasing(final_reading, stop_at)
 	local yes = 0
 	
+	print("final reading: " .. final_reading)
 	for x = 1, stop_at, 1 do --will do as many times as w/e value stop_at is
 		if rrange() < final_reading then
 			yes = yes + 1
 		end
+		print("false")
 	end
+	
+	print("yes: " .. yes)
 	
 	if yes == stop_at then
 		return true
 	else
 		return false
+	end
 end
 
 --need to add a way to check its decreasing for a while
@@ -73,15 +78,15 @@ function drive_to_corner(num)-- use corner_check w/ driving now.  if > 500 and <
 				sum = sum + v
 			end
 			
-			print("sum" .. sum)
+			print("sum: " .. sum)
 			
 			avg = (math.abs(sum)) / num
 			
-			print("avg" .. avg)
-			print("value" ..  value)
+			print("avg: " .. avg)
+			print("value: " ..  value)
 			
-			if avg >= 500 and avg < value then
-				if check_if_decreasing(value, 3) then
+			if avg >= 450 and avg < value then
+				if check_if_decreasing(value, 4) then
 					drive:off()
 					print("value returned:" .. value)
 					return value
@@ -143,6 +148,33 @@ function larc_drive(args) --but the right wheel has the higher speed
 	
 	local ldist, rdist = a, b
 	local lspeed = rspeed * (ldist/rdist)
+	
+	if rad then
+		drivetrain:drive_dist(lspeed, ldist, rspeed, rdist)
+	else
+		drivetrain:drive(lspeed, rspeed)
+	end
+end
+
+function rarc_drive(args) --but the right wheel has the higher speed
+	local lspeed = parse_vel(args)
+	local radius = args.radius
+	
+	local wb = drivetrain:get_wheel_base()
+	local a, b
+	
+	local rad = drive:parse_radians(args)
+	
+	if rad then
+		a = radius * rad
+		b = (radius + wb) * rad
+	else
+		a = radius
+		b = radius + wb
+	end
+	
+	local rdist, ldist = a, b
+	local rspeed = lspeed * (rdist/ldist)
 	
 	if rad then
 		drivetrain:drive_dist(lspeed, ldist, rspeed, rdist)

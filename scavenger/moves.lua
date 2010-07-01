@@ -10,11 +10,12 @@ local motion = require "motion"
 function goto_pvc_island(block)
 	block = block or false
 
-	local passed_corner, val = task.timeout(15, function() return motion.drive_to_corner(5) end) --need jeff's help to determine real time
+	local passed_corner, val = task.timeout(7, function() return motion.drive_to_corner(5) end) --need jeff's help to determine real time
+	drive:off()
 	
 	if passed_corner then
-		if val >= 500 and val < 600 then
-			drive:rturn{degrees = 40}
+		if val >= 450 and val < 600 then
+			drive:rturn{degrees = 45}
 			
 			if block == true then 
 				drive:fd{inches = 24}
@@ -23,7 +24,7 @@ function goto_pvc_island(block)
 			end
 		elseif val >= 600 then
 			drive:fd{inches = 3}
-			drive:rturn{degrees = 40}
+			drive:rturn{degrees = 45}
 			
 			if block == true then 
 				drive:fd{inches = 21}
@@ -32,11 +33,12 @@ function goto_pvc_island(block)
 			end
 		end
 	else
-		drive:rturn{degrees = 40}
+		print("time has passed")
+		drive:rturn{degrees = 55}
 		if block == true then
-			drive:fd{inches = 22}
-		else
 			drive:fd{inches = 24}
+		else
+			drive:fd{inches = 26}
 		end
 	end
 		
