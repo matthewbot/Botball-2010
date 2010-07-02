@@ -6,47 +6,18 @@ local math = require "math"
 local compactor = require "compactor"
 local grabs = require "grabs"
 local motion = require "motion"
+local camera = require "camera"
 
 --Scenario A
 function goto_pvc_island(block)
 	block = block or false
-
-	local passed_corner, val = task.timeout(6.5, function() return motion.drive_to_corner(5) end) --need jeff's help to determine real time
-	drive:off()
 	
-	task.wait(cbc.a_button)
+	drive:fd{inches = 38}
+	drive:rturn{degrees = 54}
+	motion.drive_sensor("right", "fd", "pvc", 800, 600)
+	motion.drive_sensor("right", "fd", "no_pvc", 800, 350)
+	drive:fd{inches = 15}
 	
-	if passed_corner then
-		if val >= 450 and val < 600 then
-			drive:rturn{degrees = 45}
-			
-			if block == true then 
-				drive:fd{inches = 24}
-			else
-				drive:fd{inches = 26}
-			end
-		elseif val >= 600 then
-			drive:fd{inches = 1}
-			drive:rturn{degrees = 46}
-			
-			if block == true then 
-				drive:fd{inches = 22}
-			else
-				drive:fd{inches = 24}
-			end
-		end
-	else
-		print("time has passed")
-		drive:rturn{degrees = 47}
-		if block == true then
-			drive:fd{inches = 24}
-		else
-			drive:fd{inches = 26}
-		end
-	end
-	
-	task.wait(cbc.a_button)
-
 	--[[drive:fd{inches = 38}
 	drive:rturn{degrees = 40}
 	drive:fd{inches = 24}]]--hit pvc of the island
@@ -55,19 +26,37 @@ end
 function grab_our_leg()
 	grabs.tribbles_pvc_bk(0.32)
 	drive:bk{inches = 2}
-	drive:rturn{degrees = 90}
+	drive:rturn{degrees = 96}
+	
+	local result = camera.check_botguy()
+	
+	if type(result) == "number" then
+		print("x_pos: " .. result)
+	else
+		print("close?: " .. result)
+	end
+	
 	compactor.open()
-	drive:scooch{xdist = -0.75}
 	motion.drive_sensor("right", "fd", "pvc", 650, 600)
 	drive:fd{inches = 7}
-	grabs.tribbles_pvc()
+	
+	if result == true or (result >= 2 and result <= 5) then
+		grabs.botguy_pvc()
+	end
+		
+	
+	--[[drive:scooch{xdist = -0.75}
+	motion.drive_sensor("right", "fd", "pvc", 650, 600)
+	drive:fd{inches = 7}
+	grabs.tribbles_pvc()]]--
 end
 
 function go_into_middle()  --middle = no touch zone
 	drive:lpiv{degrees = -30}
 	drive:rpiv{degrees = 37}
+	--local tribble_async = task.async(grabs.tribbles) --to stay or not to stay?
 	drive:scooch{xdist = 0.75, dir = "bk"}
-	grabs.tribbles() --to stay or not to stay?
+	--task.join(tribble_async)
 	drive:scooch{xdist = 0.5}
 	
 	compactor.open()
