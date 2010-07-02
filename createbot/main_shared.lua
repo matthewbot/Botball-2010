@@ -3,39 +3,88 @@ local create = require "mb.create"
 local claw = require "claw"
 local algorithm = require "algorithm"
 local sponge = require "sponge"
+local camera = require "camera"
+local os = require "os"
 import "config"
 
-function main()
+function init()
+	create.connect_verbose()
 	claw.init()
-	create.connect()
 	sponge.reset()
+end
+
+function dirty_ducks()
+	local oilslicks = { }
 	
-	grab_dirty_ducks(20)
-	grab_dirty_ducks(20)
-	grab_dirty_ducks(23)
-	drive:fd{inches=9} -- wall lineup
-	drive:fd{vel=8, time=1}
+	oilslicks[1] = camera.get_oilslick() -- me ugly
+	print(oilslicks[1])
+	if oilslicks[1] ~= "none" then
+		grab_dirty_ducks(20)
+	else
+		drive:fd{inches=20}
+	end
+	oilslicks[2] = camera.get_oilslick()
+	print(oilslicks[2])
+	if oilslicks[2] ~= "none" then
+		grab_dirty_ducks(20)
+	else
+		drive:fd{inches=22}
+	end
+	oilslicks[3] = camera.get_oilslick()
+	print(oilslicks[3])
+	if oilslicks[3] ~= "none" then
+		grab_dirty_ducks(23)
+	else
+		drive:fd{inches=25}
+	end
 	
-	algorithm.drop_sponge(-36, "medium")
-	algorithm.drop_sponge(12, "small")
+	wall_lineup(9)
 	
-	drive:fd{inches=15} -- wall lineup
-	drive:fd{vel=8, time=1}
+	if oilslicks[1] ~= "none" then
+		algorithm.drop_sponge(-36, oilslicks[1])
+	else
+		drive:bk{inches=36}
+	end
+	
+	if oilslicks[2] ~= "none" then
+		algorithm.drop_sponge(12, oilslicks[2])
+	else
+		drive:fd{inches=24}
+	end
+	
+	wall_lineup(15)
 	drive:bk{inches=4}
 	drive:rturn{degrees=90}
 	drive:bk{vel=8, wait=create.bump}
 	
-	grab_dirty_ducks(16)
+	oilslicks[4] = camera.get_oilslick()
+	print(oilslicks[4])
+	grab_dirty_ducks(22)
 	
-	algorithm.drop_sponge(-3, "large")
-	
-	drive:fd{inches=20} -- wall lineup
-	drive:fd{vel=8, time=1}
+	if oilslicks[3] ~= "none" then
+		algorithm.drop_sponge(-5, oilslicks[3])
+		wall_lineup(20) -- wall lineup
+	else
+		wall_lineup(16) -- wall lineup, slightly less
+	end
 	drive:bk{inches=4}
-	drive:rturn{degrees=85}
+	drive:rturn{degrees=90}
 	
-	drive:fd{inches=33} -- line up against duck scoring area
-	drive:fd{vel=8, time=1}
+	oilslicks[5] = camera.get_oilslick()
+	print(oilslicks[5])
+	if oilslicks[5] ~= "none" then
+		grab_dirty_ducks(24, .5)
+		drive:bk{inches=8}
+	else
+		drive:fd{inches=15}
+	end
+	
+	if oilslicks[4] ~= "none" then
+		algorithm.drop_sponge(-2, oilslicks[4])
+		wall_lineup(33) -- line up against duck area
+	else
+		wall_lineup(36) -- line up against duck area
+	end
 	claw.down{wait=true}
 	claw.release_ground() -- release a duck possibly still in our claw
 	task.sleep(.3)
@@ -47,6 +96,11 @@ function main()
 	claw.down{wait=true}
 	claw.eject()
 	claw.up{wait=true}
+	
+	if oilslicks[5] ~= "none" then
+		drive:fd{inches=15}
+		algorithm.drop_sponge(-2, oilslicks[5])
+	end
 	--[[
 	claw.lift{wait=true}
 	drive:rturn{degrees=60}
@@ -55,22 +109,18 @@ function main()
 	drive:lturn{degrees=60}
 	claw.up()
 	claw.close()]]
-	
-	drive:bk{inches=15}
-	drive:rturn{degrees=80}
-	drive:fd{inches=37}
-	drive:fd{vel=8, time=1}
-	
-	clean_ducks()
 end
 	
-function grab_dirty_ducks(fddist)
+function grab_dirty_ducks(fddist, delay)
 	task.async(function ()
 		claw.down()
 		task.sleep(.5)
 		claw.open()
 	end)
 	
+	if delay then
+		task.sleep(delay)
+	end
 	drive:fd{inches=fddist}
 	claw.down_grab{wait=true}
 	claw.close()
@@ -81,10 +131,17 @@ function grab_dirty_ducks(fddist)
 	task.sleep(.2)
 end
 
+function wall_lineup(fddist)
+	if fddist then
+		drive:fd{inches=fddist}
+	end
+	drive:fd{vel=8, time=1}
+end
+
 function clean_ducks()
 	drive:bk{inches=11} -- travel to duck zone
 	drive:lturn{degrees=90}
-	drive:fd{vel=8, time=1}
+	wall_lineup()
 	drive:bk{inches=2.5}
 	
 	task.async(function () -- grab first set of ducks
@@ -115,8 +172,7 @@ function clean_ducks()
 	drive:rturn{degrees=45}
 	drive:fd{inches=14}
 	drive:rturn{degrees=45}
-	drive:fd{inches=9}
-	drive:fd{vel=8, time=1}
+	wall_lineup(9)
 	
 	task.async(function () -- grab second set
 		task.sleep(.3)
@@ -139,7 +195,6 @@ function clean_ducks()
 	task.sleep(.4)
 	claw.close()
 	drive:lturn{degrees=90}
-	drive:fd{inches=10}
-	drive:fd{vel=8, time=1}
+	wall_lineup(10)
 end
 

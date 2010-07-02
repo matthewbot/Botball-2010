@@ -7,16 +7,21 @@ local black_cm = vision.ColorModel{
 	minsat = 0,
 	maxsat = 255,
 	minval = 0,
-	maxval = 50
+	maxval = 30,
 }
 
-local bip = vision.BlobImageProcessor(1, 5, 5)
+local bip = vision.BlobImageProcessor(1, 5, 5, true)
 bip:addColorModel(black_cm)
 
 function get_oilslick()
 	local blob = get_oilslick_blob()
-	local factor = blob.w*blob.h / (blob.y + blob.h/2)
+		
+	if blob == nil then
+		return "none"
+	end
 	
+	local factor = blob.w*blob.h / (blob.y + blob.h/2)
+
 	print(factor, blob.w*blob.h, blob.y+blob.h/2)
 	if factor < 20 then
 		return "small"
@@ -39,7 +44,8 @@ function get_oilslick_blob()
 	for i=0,bip:getBlobCount()-1 do
 		local blob = bip:getBlob(i)
 		
-		if blob.y < 100 then
+		print("y", blob.y)
+		if blob.y < 90 and blob.x > 20 and blob.x < 140 then
 			return blob
 		end
 	end
