@@ -11,38 +11,6 @@ local camera = require "camera"
 --Scenario A
 function goto_pvc_island(block)
 	block = block or false
-	--[[
-	local passed_corner, val = task.timeout(6.5, function() return motion.drive_to_corner(5) end) --need jeff's help to determine real time
-	drive:off()
-	
-	if passed_corner then
-		if val >= 450 and val < 600 then
-			drive:rturn{degrees = 45}
-			
-			if block == true then 
-				drive:fd{inches = 24}
-			else
-				drive:fd{inches = 26}
-			end
-		elseif val >= 600 then
-			drive:fd{inches = 1}
-			drive:rturn{degrees = 47}
-			
-			if block == true then 
-				drive:fd{inches = 22}
-			else
-				drive:fd{inches = 24}
-			end
-		end
-	else
-		print("time has passed")
-		drive:rturn{degrees = 47}
-		if block == true then
-			drive:fd{inches = 24}
-		else
-			drive:fd{inches = 26}
-		end
-	end]]--
 	
 	drive:fd{inches = 38}
 	drive:rturn{degrees = 54}
@@ -60,15 +28,19 @@ function grab_our_leg()
 	drive:bk{inches = 2}
 	drive:rturn{degrees = 96}
 	
-	local x_pos, y_pos = camera.check_botguy()
+	local result = camera.check_botguy()
 	
-	print("x_pos: " .. x_pos .. " , y_pos: " .. y_pos)
+	if type(result) == "number" then
+		print("x_pos: " .. result)
+	else
+		print("close?: " .. result)
+	end
 	
 	compactor.open()
 	motion.drive_sensor("right", "fd", "pvc", 650, 600)
 	drive:fd{inches = 7}
 	
-	if x_pos >= 2 and x_pos <= 5 then
+	if result == true or (result >= 2 and result <= 5) then
 		grabs.botguy_pvc()
 	end
 		

@@ -14,7 +14,7 @@ function open_camera()
 end
 
 function dump_grid(cm, image)
-	cm = cm or cm_red
+	local cm = cm or cm_red
 	
 	open_camera()
 	
@@ -38,9 +38,52 @@ function dump_grid(cm, image)
 	end
 end
 
+function check_closeness(list, end_pt, min_x)
+	for i = 1, end_pt do
+		if list[i] == 3 then
+			return true
+		end
+	end
+	
+	return min_x
+end
 
 function check_botguy()
-	cm = cm_red
+	local cm = cm_red
+	open_camera()
+	
+	local once, min_x
+	local num = 0
+	local y_list = {}	
+	
+	for i=1,4 do camera:readImage() end
+	
+	local image = camera:readImage()
+	gip:processImage(image)
+	
+	for x=0,7 do
+		for y=0,3 do
+			local count = gip:getCount(x, y, cm)
+			if count > 20 then
+				num = num + 1
+				y_list[num] = y
+				
+				if not once then
+					min_x = x
+					once = true
+				end
+			end
+		end
+	end
+	
+	if not min_x then
+		return false
+	else
+		return check_closeness(y_list, num, min_x)
+end
+
+function check_tribbles()
+	local cm = cm_green
 	open_camera()
 	
 	for i=1,4 do camera:readImage() end
@@ -56,8 +99,4 @@ function check_botguy()
 			end
 		end
 	end
-end
-
-function check_tribbles()
-	return 0
 end
