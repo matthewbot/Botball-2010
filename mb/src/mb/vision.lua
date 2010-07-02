@@ -55,8 +55,8 @@ end
 
 BlobImageProcessor = create_class "BlobImageProcessor"
 
-function BlobImageProcessor:construct(maxgapdist, minsegmentsize, minblobheight)
-	self.obj = rawvision.bip_new(maxgapdist, minsegmentsize, minblobheight)
+function BlobImageProcessor:construct(maxgapdist, minsegmentsize, minblobheight, debug)
+	self.obj = rawvision.bip_new(maxgapdist, minsegmentsize, minblobheight, debug)
 end
 
 function BlobImageProcessor:addColorModel(model)

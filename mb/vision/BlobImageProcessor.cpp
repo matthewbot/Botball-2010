@@ -85,7 +85,7 @@ BlobImageProcessor::BlobList::iterator BlobImageProcessor::matchSegment(const Se
 BlobImageProcessor::SegmentList BlobImageProcessor::getSegments(int y, const Image &image) const {
 	SegmentList segments;
 	Segment cursegment = { -1, -1 };
-	int gapcount;
+	int gapcount = 0;
 	int x;
 	
 	for (x=0; x<image.getWidth(); x++) {
@@ -98,7 +98,7 @@ BlobImageProcessor::SegmentList BlobImageProcessor::getSegments(int y, const Ima
 			}
 
 			gapcount = 0; // any valid pixel resets the gap counter
-		} else if (cursegment.start > 0) { // pixel not valid, but we're in a row
+		} else if (cursegment.start >= 0) { // pixel not valid, but we're in a row
 			if (++gapcount > maxgapdist) { // if we've exceeded the maximum gap count
 				cursegment.end = x - maxgapdist; // set the end of the segment
 				if (cursegment.end - cursegment.start >= minsegmentsize) { // if the segment is large enough
