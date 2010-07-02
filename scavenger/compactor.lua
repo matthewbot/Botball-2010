@@ -3,7 +3,7 @@ import "config"
 local task = require "cbclua.task"
 local servoutils = require "mb.servoutils"
 
-local time_half = 1.8
+local time_half = 1.5
 
 function init()
 	open()

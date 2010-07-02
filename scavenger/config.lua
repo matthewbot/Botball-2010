@@ -53,7 +53,6 @@ door_servo 	= servoutils.RescaleServo{1, start_pos = 250, end_pos = 1350}
 -- Vision --
 ------------
 
-camera = vision.Camera()
 cm_green = vision.ColorModel{
 	lefthue = 88,
 	righthue = 156,
@@ -63,7 +62,7 @@ cm_green = vision.ColorModel{
 cm_red = vision.ColorModel{
 	lefthue = 336,
 	righthue = 41,
-	minsat = 150,
+	minsat = 100,
 	minval = 100	
 }
 gip = vision.GridImageProcessor(8, 5)

@@ -20,9 +20,9 @@ function tribbles_pvc()
 end
 
 function tribbles_pvc_full()
-	grabs.tribbles_pvc()
+	tribbles_pvc()
 	task.sleep(0.5)
-	compactor.extend(0.5)
+	extend(0.5)
 end
 
 function tribbles_pvc_bk(inches)

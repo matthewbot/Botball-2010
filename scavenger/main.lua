@@ -8,8 +8,8 @@ local grabs = require "grabs"
 local moves = require "moves"
 
 function main()
-	compactor.init()
-	moves.goto_pvc_island()
+	--compactor.init()
+	--moves.goto_pvc_island()
 	
 	moves.grab_our_leg()
 
@@ -18,7 +18,7 @@ function main()
 	--scenario A:going into the middle
 	moves.go_into_middle()
 	
-	moves.go_home()
+	--[[moves.go_home()
 	
 	drive:rturn{degrees = 180}
 	motion.drive_sensor("right", "fd", "no_pvc", 900, 350)
@@ -30,7 +30,7 @@ function main()
 
 	moves.go_into_middle()
 	
-	moves.go_home()
+	moves.go_home()]]--
 	
 	--[[compactor.close()
 	
