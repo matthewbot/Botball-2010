@@ -12,11 +12,11 @@ local camera = require "camera"
 function goto_pvc_island(block)
 	block = block or false
 	
-	drive:fd{inches = 38}
+	drive:fd{inches = 39}
 	drive:rturn{degrees = 54}
 	motion.drive_sensor("right", "fd", "pvc", 800, 600)
 	motion.drive_sensor("right", "fd", "no_pvc", 800, 350)
-	drive:fd{inches = 15}
+	drive:fd{inches = 7}
 	
 	--[[drive:fd{inches = 38}
 	drive:rturn{degrees = 40}
@@ -24,31 +24,55 @@ function goto_pvc_island(block)
 end
 
 function grab_our_leg()
-	grabs.tribbles_pvc_bk(0.32)
-	drive:bk{inches = 2}
-	drive:rturn{degrees = 96}
+	--grabs.tribbles_pvc_bk(0.32)
+	--drive:bk{inches = 2}
+	--drive:rturn{degrees = 96}
 	
-	local result = camera.check_botguy()
+	local close, min_x = camera.find_botguy()
 	
-	if type(result) == "number" then
-		print("x_pos: " .. result)
-	else
-		print("close?: " .. result)
-	end
+	print("min_x: " .. min_x .. " close?: " .. tostring(close))
 	
 	compactor.open()
 	motion.drive_sensor("right", "fd", "pvc", 650, 600)
-	drive:fd{inches = 7}
-	
-	if result == true or (result >= 2 and result <= 5) then
+	--[[
+	if close == true or (min_x >= 2 and min_x <= 5) then		-- original (before Utkarsh left)
+		drive:fd{inches = 7}
 		grabs.botguy_pvc()
-	end
+		drive:fd{inches = 5}
+	else
+		drive:bk{inches = 2}
+		drive:rpiv{degrees = 35}
+		drive:fd{inches = 5}
+		drive:rpiv{degrees = 30}
 		
+	end
+	]]
+	if close == true and min_x < 2 then		-- Added special case check
+		drive:rpiv{degrees = 62}
+	elseif close == true or (min_x >= 2 and min_x <= 5) then
+		drive:fd{inches = 7}
+		grabs.botguy_pvc()
+		drive:fd{inches = 5}
+	else
+		drive:bk{inches = 2}
+		drive:rpiv{degrees = 35}
+		drive:fd{inches = 5}
+		drive:rpiv{degrees = 30}
+	end
+end
 	
 	--[[drive:scooch{xdist = -0.75}
 	motion.drive_sensor("right", "fd", "pvc", 650, 600)
 	drive:fd{inches = 7}
 	grabs.tribbles_pvc()]]--
+
+function test_leftside()
+	compactor.open()
+	motion.drive_sensor("right", "fd", "pvc", 650, 600)
+	drive:bk{inches = 2}
+	drive:rpiv{degrees = 35}
+	drive:fd{inches = 5}
+	drive:rpiv{degrees = 30}
 end
 
 function go_into_middle()  --middle = no touch zone

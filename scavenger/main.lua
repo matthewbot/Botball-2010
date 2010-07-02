@@ -16,7 +16,7 @@ function main()
 	--scenario B:not going into the middle
 	
 	--scenario A:going into the middle
-	moves.go_into_middle()
+	--moves.go_into_middle()
 	
 	--[[moves.go_home()
 	
