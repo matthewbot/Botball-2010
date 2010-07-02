@@ -11,6 +11,8 @@ class Camera {
 		Camera(int width=160, int height=120, std::string path="/dev/video0");
 		~Camera();
 		
+		int getFd() { return fd; }
+		void close();
 		void readImage(uint8_t *buffer);
 		
 		int getWidth() const { return width; }

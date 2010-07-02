@@ -1,5 +1,8 @@
 local rawvision = require "mb.rawvision"
 local task = require "cbclua.task"
+local userprgm = require "cbclua.userprgm"
+local util = require "cbclua.util"
+local timer = require "cbclua.timer"
 
 Camera = create_class "Camera"
 
@@ -13,10 +16,20 @@ function Camera:construct(width, height, path)
 	end
 	
 	self.obj = rawvision.camera_new(width, height, path)
+	userprgm.add_stop_hook(util.bind(self, "close"))
 end
 
 function Camera:readImage()
+	task.sleep_io(self)
 	return Image(rawvision.camera_read_image(self.obj))
+end
+
+function Camera:getfd()
+	return rawvision.camera_get_fd(self.obj)
+end
+
+function Camera:close()
+	rawvision.camera_close(self.obj)
 end
 
 Image = create_class "Image"

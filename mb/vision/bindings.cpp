@@ -12,6 +12,8 @@ using namespace std;
 
 static int camera_new(lua_State *L);
 static int camera_read_image(lua_State *L);
+static int camera_get_fd(lua_State *L);
+static int camera_close(lua_State *L);
 static int image_get_pixel(lua_State *L);
 static int color_model_new(lua_State *L);
 static int gip_new(lua_State *L);
@@ -42,6 +44,8 @@ static void setup_metatable(lua_State *L, int idx, const char *metatablename, lu
 const luaL_Reg luafuncs[] = {
 	{"camera_new", camera_new},
 	{"camera_read_image", camera_read_image},
+	{"camera_get_fd", camera_get_fd},
+	{"camera_close", camera_close},
 	{"image_get_pixel", image_get_pixel},
 	{"color_model_new", color_model_new},
 	{"gip_new", gip_new},
@@ -88,6 +92,21 @@ static int camera_read_image(lua_State *L) {
 	}
 	
 	return 1;
+}
+
+static int camera_get_fd(lua_State *L) {
+	Camera *cam = (Camera *)luaL_checkudata(L, 1, "mb_vision_camera");
+	
+	lua_pushinteger(L, cam->getFd());
+	return 1;
+}
+
+static int camera_close(lua_State *L) {
+	Camera *cam = (Camera *)luaL_checkudata(L, 1, "mb_vision_camera");
+	
+	cam->close();
+	
+	return 0;	
 }
 
 static int image_get_pixel(lua_State *L) {
@@ -167,11 +186,12 @@ static int bip_new(lua_State *L) {
 	int maxgapdist = luaL_checkint(L, 1);
 	int minsegmentsize = luaL_checkint(L, 2);
 	int minblobheight = luaL_checkint(L, 3);
+	bool debug = lua_toboolean(L, 4);
 	
 	void *userdata = lua_newuserdata(L, sizeof(BlobImageProcessor));
-	new (userdata) BlobImageProcessor(maxgapdist, minsegmentsize, minblobheight);
+	new (userdata) BlobImageProcessor(maxgapdist, minsegmentsize, minblobheight, debug);
 	
-	setup_metatable(L, 4, "mb_vision_blobimageprocessor", lua_destructor<BlobImageProcessor>);
+	setup_metatable(L, 5, "mb_vision_blobimageprocessor", lua_destructor<BlobImageProcessor>);
 
 	return 1;
 }
