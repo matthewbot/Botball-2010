@@ -16,11 +16,18 @@ function Camera:construct(width, height, path)
 	end
 	
 	self.obj = rawvision.camera_new(width, height, path)
-	userprgm.add_stop_hook(util.bind(self, "close"))
+	
+	local weaktable = setmetatable({self=self}, {__mode="v"})
+	userprgm.add_stop_hook(function ()
+		local wself = weaktable.self
+		if wself then
+			wself:close()
+		end
+	end)
 end
 
 function Camera:readImage()
-	task.sleep_io(self)
+	timer.watchdog_disable()
 	return Image(rawvision.camera_read_image(self.obj))
 end
 
@@ -51,6 +58,8 @@ end
 GridImageProcessor = create_class "GridImageProcessor"
 
 function GridImageProcessor:construct(w, h)
+	self.w = w
+	self.h = h
 	self.obj = rawvision.gip_new(w, h)
 end
 
@@ -64,6 +73,20 @@ end
 
 function GridImageProcessor:getCount(x, y, model)
 	return rawvision.gip_get_count(self.obj, x, y, model.obj)
+end
+
+function GridImageProcessor:dump(model, cutoff)
+	for x=0,self.w-1 do
+		for y=0,self.h-1 do
+			local count = self:getCount(x, y, model)
+
+			if count >= cutoff then
+				print(x .. "," .. y .. " " .. count)
+			end
+		end
+	end
+	
+	print("Dump done")
 end
 
 BlobImageProcessor = create_class "BlobImageProcessor"
