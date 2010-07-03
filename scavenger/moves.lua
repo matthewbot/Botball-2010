@@ -16,7 +16,11 @@ function goto_pvc_island(block)
 	drive:rturn{degrees = 54}
 	motion.drive_sensor("right", "fd", "pvc", 800, 600)
 	motion.drive_sensor("right", "fd", "no_pvc", 800, 350)
-	drive:fd{inches = 7}
+	if block then
+		drive:fd{inches = 4}
+	else
+		drive:fd{inches = 6}
+	end
 	
 	--[[drive:fd{inches = 38}
 	drive:rturn{degrees = 40}
@@ -34,46 +38,33 @@ function grab_our_leg()
 	
 	compactor.open()
 	motion.drive_sensor("right", "fd", "pvc", 650, 600)
-	--[[
-	if close == true or (min_x >= 2 and min_x <= 5) then		-- original (before Utkarsh left)
+
+	if close == false
+		if min_x < 2 then		-- Added special case check
+			drive:rpiv{degrees = 62}
+		elseif min_x >= 2 and min_x <= 5 then
+			drive:fd{inches = 7}
+			grabs.botguy_pvc()
+			drive:fd{inches = 5}
+		end
+	elseif close == true then
 		drive:fd{inches = 7}
 		grabs.botguy_pvc()
 		drive:fd{inches = 5}
-	else
-		drive:bk{inches = 2}
-		drive:rpiv{degrees = 35}
-		drive:fd{inches = 5}
-		drive:rpiv{degrees = 30}
-		
-	end
-	]]
-	if close == true and min_x < 2 then		-- Added special case check
-		drive:rpiv{degrees = 62}
-	elseif close == true or (min_x >= 2 and min_x <= 5) then
-		drive:fd{inches = 7}
-		grabs.botguy_pvc()
-		drive:fd{inches = 5}
-	else
-		drive:bk{inches = 2}
-		drive:rpiv{degrees = 35}
-		drive:fd{inches = 5}
-		drive:rpiv{degrees = 30}
 	end
 end
+
+	--[[else
+	drive:bk{inches = 2}
+	drive:rpiv{degrees = 35}
+	drive:fd{inches = 5}
+	drive:rpiv{degrees = 30}]]--
+
 	
 	--[[drive:scooch{xdist = -0.75}
 	motion.drive_sensor("right", "fd", "pvc", 650, 600)
 	drive:fd{inches = 7}
 	grabs.tribbles_pvc()]]--
-
-function test_leftside()
-	compactor.open()
-	motion.drive_sensor("right", "fd", "pvc", 650, 600)
-	drive:bk{inches = 2}
-	drive:rpiv{degrees = 35}
-	drive:fd{inches = 5}
-	drive:rpiv{degrees = 30}
-end
 
 function go_into_middle()  --middle = no touch zone
 	drive:lpiv{degrees = -30}

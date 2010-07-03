@@ -69,17 +69,12 @@ end
 
 function check_closeness(y_list, conc_list)
 	print("checking closeness")
-	--[[for i = 1, end_pt do
-		if list[i] == 3 then
-			return true
-		end
-	end]]--
 	
-	local high_count, num = return_highest(conc_list)
+	local highest, num = return_highest(conc_list)
 	
 	print("num: " .. num .. " y_list[num]: " .. y_list[num])
 	
-	if high_count ~= 0 then
+	if highest ~= 0 then
 		if y_list[num] > 1 and y_list[num] <= 3 then
 			return true
 		end
@@ -131,13 +126,17 @@ function find_tribbles()
 	local cm = cm_green
 	open_camera()
 	
+	print("opening camera!!!!!")
+	
 	local once, min_x
 	local k = 0
-	local y_list = {}	
+	local y_list, count_list = {}, {}	
 	
-	for i=1,4 do camera:readImage() end
+	for i=1,3 do camera:readImage() end
 	
 	local image = camera:readImage()
+	dump_grid(cm, image)
+	
 	gip:processImage(image)
 	
 	for x=0,7 do
@@ -145,7 +144,9 @@ function find_tribbles()
 			local count = gip:getCount(x, y, cm)
 			if count > 20 then
 				k = k + 1
+				print("k: " .. k)
 				y_list[k] = y
+				count_list[k] = count
 				
 				if not once then
 					min_x = x
@@ -154,10 +155,8 @@ function find_tribbles()
 			end
 		end
 	end
+
+	local close = check_closeness(y_list, count_list)
 	
-	if not min_x then
-		return false
-	else
-		return check_closeness(y_list, k, min_x)
-	end
+	return close, min_x	
 end
