@@ -35,7 +35,7 @@ end
 function botguy_pvc()
 	extend_full()
 	close_half()
-	drive:bk{inches = 3}
+	drive:bk{inches = 2}
 	close()
 	retract()
 end

@@ -8,11 +8,15 @@ local grabs = require "grabs"
 local motion = require "motion"
 local camera = require "camera"
 
+local botguy_grabbed = false
+
 --Scenario A
 function goto_pvc_island(block)
 	block = block or false
 	
+	task.sleep(4)
 	drive:fd{inches = 39}
+	task.sleep(2)
 	drive:rturn{degrees = 54}
 	motion.drive_sensor("right", "fd", "pvc", 800, 600)
 	motion.drive_sensor("right", "fd", "no_pvc", 800, 350)
@@ -28,29 +32,50 @@ function goto_pvc_island(block)
 end
 
 function grab_our_leg()
-	--grabs.tribbles_pvc_bk(0.32)
-	--drive:bk{inches = 2}
-	--drive:rturn{degrees = 96}
+	grabs.tribbles_pvc_bk(0.32)
+	drive:bk{inches = 3}
+	drive:rturn{degrees = 96}
+	drive:fd{inches = 1}
 	
-	local close, min_x = camera.find_botguy()
+	local close_botguy, min_x_botguy = camera.find_botguy()
+	local max_x_tribbles = camera.find_tribbles()
 	
-	print("min_x: " .. min_x .. " close?: " .. tostring(close))
+	print("max_x_tribbles: " .. tostring(max_x_tribbles))
+	print("min_x_botguy: " .. tostring(min_x_botguy) .. " close_botguy?: " .. tostring(close_botguy))
 	
 	compactor.open()
 	motion.drive_sensor("right", "fd", "pvc", 650, 600)
 
-	if close == false
-		if min_x < 2 then		-- Added special case check
-			drive:rpiv{degrees = 62}
-		elseif min_x >= 2 and min_x <= 5 then
+	if min_x_botguy then
+		if close_botguy == false and (min_x_botguy < 2) then    -- Added special case check
+			drive:rpiv{degrees = 61}
+			grabs.botguy_pvc()
+		elseif close_botguy == true then
 			drive:fd{inches = 7}
 			grabs.botguy_pvc()
 			drive:fd{inches = 5}
 		end
-	elseif close == true then
-		drive:fd{inches = 7}
-		grabs.botguy_pvc()
-		drive:fd{inches = 5}
+		
+		botguy_grabbed = true
+	elseif max_x_tribbles then
+		if max_x_tribbles >= 2 and max_x_tribbles < 6 then
+			drive:fd{inches = 7}
+			grabs.tribbles_pvc()
+			drive:lpiv{degrees = -30}
+			drive:rpiv{degrees = 37}
+			--local tribble_async = task.async(grabs.tribbles) --to stay or not to stay?
+			drive:scooch{xdist = 0.75, dir = "bk"}
+			--task.join(tribble_async)
+			drive:scooch{xdist = 0.5}
+		elseif max_x_tribbles < 2 then
+			drive:bk{inches = 2}
+			drive:rpiv{degrees = 35}
+			drive:fd{inches = 5}
+			drive:rpiv{degrees = 30}
+	
+		end
+	else
+		drive:rpiv{degrees = 61}
 	end
 end
 
@@ -67,34 +92,58 @@ end
 	grabs.tribbles_pvc()]]--
 
 function go_into_middle()  --middle = no touch zone
-	drive:lpiv{degrees = -30}
-	drive:rpiv{degrees = 37}
-	--local tribble_async = task.async(grabs.tribbles) --to stay or not to stay?
-	drive:scooch{xdist = 0.75, dir = "bk"}
-	--task.join(tribble_async)
-	drive:scooch{xdist = 0.5}
-	
+	compactor.close()
+
+	local close_botguy, min_x_botguy = camera.find_botguy()
+	print("min_x_botguy: " .. tostring(min_x_botguy) .. " close_botguy?: " .. tostring(close_botguy))
+
 	compactor.open()
 	motion.drive_sensor("left", "fd", "pvc", 650, 500)
 	drive:fd{inches = 14}
-	grabs.tribbles_pvc_full()
+	
+	if botguy_grabbed == true then
+		grabs.botguy_pvc()
+	elseif min_x_botguy then
+		if min_x_botguy >= 2 and min_x_botguy < 6 then
+			grabs.botguy_pvc()
+			botguy_grabbed = true
+		end
+	else
+		grabs.tribbles_pvc_full()
+	end
+	
+	drive:fd{inches = 5}
 end
 
 function go_home()
-	motion.drive_sensor("left", "bk", "pvc", 900, 500)
-	drive:bk{inches = 13}
+	drive:bk{inches = 25}
+--	motion.drive_sensor("left", "bk", "pvc", 900, 500)
+	--drive:bk{inches = 13}
 	drive:rpiv{degrees = 37}
 	drive:lpiv{degrees = -30}
+	drive:bk{inches = 4}
+	
+	cbc.a_button:wait()
 	
 	motion.drive_sensor("left", "fd", "no_pvc", 900, 500)
-	drive:fd{inches = 1}
-	drive:lturn{degrees = 85}
-	motion.drive_sensor("left", "fd", "pvc", 900, 400)
-	motion.drive_sensor("left", "fd", "no_pvc", 900, 350)
-	drive:fd{inches = 1}
-	drive:lturn{degrees = 91}
-	drive:fd{inches = 39}
-	grabs.release()
+	drive:fd{inches = 3}
+	drive:rturn{degrees = 95}
+	drive:fd{inches = 5}
+	motion.drive_sensor("right", "bk", "pvc", 900, 400)
+	motion.drive_sensor("right", "bk", "no_pvc", 900, 350)
+	drive:bk{inches = 6}
+	
+	cbc.a_button:wait()
+	
+	drive:rturn{degrees = 97}
+	drive:fd{inches = 28}
+	--drive:rturn{degrees = 190}
+	--grabs.release()
+end
+
+function turn_180()
+	drive:lturn{degrees = 90}
+	drive:lturn{degrees = 90}
 end
 
 --Scenario C
