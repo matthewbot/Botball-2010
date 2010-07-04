@@ -113,22 +113,23 @@ end
 
 -- Update stuff
 
-local update_response_size = 19
+local update_response_size = 20
 function send_update_request()
 	port:write(
-		QueryList, 12,
+		QueryList, 13,
 			ZeroSensorByteA, -- header
 			ZeroSensorByteA,
 			OIMode,
 			OIMode,
+			LeftEncoder,
+			RightEncoder,
 			CliffLeftSignal,
 			CliffFrontLeftSignal,
 			CliffFrontRightSignal,
 			CliffRightSignal,
 			WallSignal,
 			BumpsAndWheelDrops,
-			LeftEncoder,
-			RightEncoder
+			OIMode
 	)
 end
 
@@ -137,29 +138,29 @@ function receive_update()
 	while true do
 		got = port:read(update_response_size)
 		local a, b, c, d = got:byte(1, 4)
-		if a == 0 and b == 0 and c == 3 and d == 3 then
+		if a == 0 and b == 0 and c == 3 and d == 3 and got:byte(20) == 3 then
 			break
 		end
 		port:unread(got:sub(2)) -- unread all data after the first byte
 	end
 	
 	local data = got:sub(5) -- data begins at 5th byte
-	local bumpdata = data:byte(11)
+	local bumpdata = data:byte(14)
 	local sensors = {
 		left_bump         = bit.get(bumpdata, BumpLeft),
 		right_bump        = bit.get(bumpdata, BumpRight),
 		left_wheel_drop   = bit.get(bumpdata, WheeldropLeft),
 		right_wheel_drop  = bit.get(bumpdata, WheeldropRight),
 		front_wheel_drop  = bit.get(bumpdata, WheeldropCaster),
-		left_cliff        = bit.getu16(data, 1),
-		front_left_cliff  = bit.getu16(data, 3),
-		front_right_cliff = bit.getu16(data, 5),
-		right_cliff       = bit.getu16(data, 7),
-		wall              = bit.getu16(data, 9)
+		left_cliff        = bit.getu16(data, 5),
+		front_left_cliff  = bit.getu16(data, 7),
+		front_right_cliff = bit.getu16(data, 9),
+		right_cliff       = bit.getu16(data, 11),
+		wall              = bit.getu16(data, 13)
 	}
 	
-	local lenc = bit.getu16(data, 12)
-	local renc = bit.getu16(data, 14)
+	local lenc = bit.getu16(data, 1)
+	local renc = bit.getu16(data, 3)
 	
 	return sensors, lenc, renc
 end

@@ -120,6 +120,12 @@ function Motor:update_encoder(newenc)
 		delta = delta + 0xFFFF
 	end
 	
+	if delta > 400 or delta < 0 then
+		print("Got a big delta of " .. delta .. " newenc " .. newenc .. " rawenc " .. self.rawenc)
+		self.rawenc = newenc
+		return 0
+	end
+	
 	if math.abs(delta) > math.abs(self.prevdelta) then
 		if self.speed > 0 then
 			self.prevdir = "fd"
