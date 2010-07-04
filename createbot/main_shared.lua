@@ -15,54 +15,44 @@ end
 
 function dirty_ducks()
 	local oilslicks = { }
+	local dropped_small = false
 	
-	oilslicks[1] = camera.get_oilslick() -- me ugly
-	print(oilslicks[1])
-	if oilslicks[1] ~= "none" then
-		grab_dirty_ducks(20)
-	else
-		drive:fd{inches=20}
-	end
-	oilslicks[2] = camera.get_oilslick()
-	print(oilslicks[2])
-	if oilslicks[2] ~= "none" then
-		grab_dirty_ducks(20)
-	else
-		drive:fd{inches=22}
-	end
-	oilslicks[3] = camera.get_oilslick()
-	print(oilslicks[3])
-	if oilslicks[3] ~= "none" then
-		grab_dirty_ducks(23)
-	else
-		drive:fd{inches=25}
+	local function drop_sponge(dist, num)
+		local slick = oilslicks[num]
+		if slick == "none" then
+			return false
+		elseif slick == "small" then
+			if dropped_small then
+				return false
+			else
+				dropped_small = true
+			end
+		end
+		algorithm.drop_sponge(dist, oilslicks[num])
+		
+		return true
 	end
 	
+	oilslicks[1] = grab_dirty_ducks(20, 20)
+	oilslicks[2] = grab_dirty_ducks(20, 21)
+	oilslicks[3] = grab_dirty_ducks(23, 22)
 	wall_lineup(9)
 	
-	if oilslicks[1] ~= "none" then
-		algorithm.drop_sponge(-36, oilslicks[1])
-	else
+	if not drop_sponge(-36, 1) then
 		drive:bk{inches=36}
 	end
 	
-	if oilslicks[2] ~= "none" then
-		algorithm.drop_sponge(12, oilslicks[2])
-	else
+	if not drop_sponge(12, 2) then
 		drive:fd{inches=24}
 	end
 	
 	wall_lineup(15)
 	drive:bk{inches=4}
 	drive:rturn{degrees=90}
-	drive:bk{vel=8, wait=create.bump}
+	bdrive:bk{vel=8, wait=create.bump}
+	oilslicks[4] = grab_dirty_ducks(22, 23)
 	
-	oilslicks[4] = camera.get_oilslick()
-	print(oilslicks[4])
-	grab_dirty_ducks(22)
-	
-	if oilslicks[3] ~= "none" then
-		algorithm.drop_sponge(-5, oilslicks[3])
+	if drop_sponge(-5, 3) then
 		wall_lineup(20) -- wall lineup
 	else
 		wall_lineup(16) -- wall lineup, slightly less
@@ -70,22 +60,19 @@ function dirty_ducks()
 	drive:bk{inches=4}
 	drive:rturn{degrees=90}
 	
-	oilslicks[5] = camera.get_oilslick()
-	print(oilslicks[5])
-	if oilslicks[5] ~= "none" then
-		grab_dirty_ducks(24, .5)
-		drive:bk{inches=8}
+	oilslicks[5] = grab_dirty_ducks(24, 20, .5)
+	
+	if drop_sponge(-2, 4) then
+		wall_lineup(26, true) -- line up against duck area
 	else
-		drive:fd{inches=15}
+		wall_lineup(20, true) -- line up against duck area
 	end
 	
-	if oilslicks[4] ~= "none" then
-		algorithm.drop_sponge(-2, oilslicks[4])
-		wall_lineup(33) -- line up against duck area
-	else
-		wall_lineup(36) -- line up against duck area
+	if drop_sponge(-1, 5) then
+		wall_lineup(1, true)
 	end
-	claw.down{wait=true}
+	
+	claw.down_push{wait=true}
 	claw.release_ground() -- release a duck possibly still in our claw
 	task.sleep(.3)
 	claw.up()
@@ -93,14 +80,11 @@ function dirty_ducks()
 	claw.close()
 	drive:bk{inches=1}
 	drive:lturn{degrees=85}
-	claw.down{wait=true}
+	claw.down_push{wait=true}
 	claw.eject()
+	task.sleep(.2)
 	claw.up{wait=true}
 	
-	if oilslicks[5] ~= "none" then
-		drive:fd{inches=15}
-		algorithm.drop_sponge(-2, oilslicks[5])
-	end
 	--[[
 	claw.lift{wait=true}
 	drive:rturn{degrees=60}
@@ -111,9 +95,17 @@ function dirty_ducks()
 	claw.close()]]
 end
 	
-function grab_dirty_ducks(fddist, delay)
+function grab_dirty_ducks(fddist, fddist_noducks, delay)
+	local oiltype, direction = camera.get_oilslick()
+	if oiltype == "none" then
+		print("Skipping duck grab")
+		drive:fd{inches=fddist_noducks}
+		return oiltype
+	end
+
+	print("Grabbing ducks on " .. oiltype .. " pile direction " .. direction)
 	task.async(function ()
-		claw.down()
+		claw.down_push()
 		task.sleep(.5)
 		claw.open()
 	end)
@@ -121,7 +113,14 @@ function grab_dirty_ducks(fddist, delay)
 	if delay then
 		task.sleep(delay)
 	end
-	drive:fd{inches=fddist}
+	
+	if direction == "center" then
+		drive:fd{inches=fddist}
+	elseif direction == "left" then
+		drive.style:set_vel_dist(drive.drivetrain, 18, fddist, 19, fddist, { })
+	else
+		drive.style:set_vel_dist(drive.drivetrain, 19, fddist, 18, fddist, { })
+	end
 	claw.down_grab{wait=true}
 	claw.close()
 	task.sleep(.8)
@@ -129,13 +128,29 @@ function grab_dirty_ducks(fddist, delay)
 	task.sleep(.5)
 	claw.release_basket()
 	task.sleep(.2)
+	
+	return oiltype
 end
 
-function wall_lineup(fddist)
-	if fddist then
-		drive:fd{inches=fddist}
+function wall_lineup(fddist, either)
+	local drivingasync = task.async(function ()
+		if fddist then
+			bdrive:fd{inches=fddist}
+		end
+		bdrive:fd{vel=8}
+	end)
+	
+	local ok
+	if either then
+		ok = task.wait(algorithm.read_either_lineup, 4)
+	else
+		ok = task.wait(algorithm.read_lineups, 4)
 	end
-	drive:fd{vel=8, time=1}
+	task.sleep(.2)
+	task.stop(drivingasync)
+	drive:stop{}
+	
+	return ok
 end
 
 function clean_ducks()
@@ -150,15 +165,16 @@ function clean_ducks()
 	end)
 	claw.down_grab{wait=true}
 	claw.close()
-	task.sleep(.5)
+	task.sleep(.5) -- normal sleep
 	claw.lift{wait=true}
 	
 	drive:bk{inches=14} -- move into position
 	drive:bk{vel=8, wait=create.bump}
+	drive:fd{inches=.5}
 	drive:lturn{degrees=95}
-	drive:bk{inches=7.25}
+	drive:bk{inches=7}
 	
-	claw.down{wait=true} -- drop first set
+	claw.down_release{wait=true} -- drop first set
 	claw.release_ground{speed=700, wait=true}
 	task.sleep(.5)
 	
@@ -169,8 +185,8 @@ function clean_ducks()
 		claw.close()
 	end)
 	drive:bk{vel=8, wait=create.bump}
-	drive:rturn{degrees=45}
-	drive:fd{inches=14}
+	drive:rturn{degrees=50}
+	drive:fd{inches=12}
 	drive:rturn{degrees=45}
 	wall_lineup(9)
 	
@@ -185,9 +201,10 @@ function clean_ducks()
 	
 	drive:bk{inches=10} -- travel into position
 	drive:lturn{degrees=90}
-	drive:bk{inches=5}
+	drive:bk{vel=8, wait=create.bump}
+	drive:fd{inches=3.5}
 	
-	claw.down{wait=true} -- release second set
+	claw.down_release{wait=true} -- release second set
 	claw.release_ground{speed=700, wait=true}
 
 	drive:bk{vel=8, wait=create.bump} -- travel into back corner
@@ -195,6 +212,6 @@ function clean_ducks()
 	task.sleep(.4)
 	claw.close()
 	drive:lturn{degrees=90}
-	wall_lineup(10)
+	wall_lineup(5)
 end
 

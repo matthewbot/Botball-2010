@@ -18,7 +18,7 @@ function select_quad(quad)
 end
 
 function release()
-	sponge_motor:mrp(400, -250)
+	sponge_motor:mrp(400, -270)
 	task.sleep(.1)
 	sponge_motor:wait()
 end
@@ -28,7 +28,7 @@ function reset()
 		sponge_motor:mrp(400, -100)
 		sponge_motor:wait()
 	end
-	sponge_motor:mav(400)
+	sponge_motor:mav(200)
 	task.wait(sponge_reset)
 	sponge_motor:off()
 	sponge_motor:clearpos()

@@ -29,11 +29,11 @@ function pivot(pos, speed)
 end
 
 function spool_out()
-	spool_motor:fd()
+	spool_motor:mav(980)
 end
 
 function spool_in()
-	spool_motor:bk()
+	spool_motor:mav(-980)
 end
 
 function spool_off()

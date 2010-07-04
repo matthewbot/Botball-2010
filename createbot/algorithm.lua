@@ -1,5 +1,6 @@
 local create = require "mb.create"
 local task = require "cbclua.task"
+local timer = require "cbclua.timer"
 local sponge = require "sponge"
 import "config"
 
@@ -20,6 +21,16 @@ function drop_sponge(chargedist, cursponge)
 		side = drive_to_oilslick("bk")
 	end
 	print("Got oil slick on side " .. side)
+
+	if side == "timeout" then
+		if chargedist > 0 then
+			drive:bk{inches=4}
+		else
+			drive:fd{inches=4}
+		end
+		task.join(spongeselect)
+		return
+	end
 
 	local turnamt
 	local fddist = 2
@@ -84,6 +95,7 @@ function drive_to_oilslick(dir)
 		drive:fd{vel=5}
 	end
 	
+	local start_time = timer.seconds()
 	local cliff
 	while true do
 		cliff = read_cliffs()
@@ -96,6 +108,11 @@ function drive_to_oilslick(dir)
 		end
 
 		task.sleep(.01)
+		
+		if timer.seconds() - start_time > 3 then
+			cliff = "timeout"
+			break
+		end
 	end
 
 	drive:stop{}
@@ -117,6 +134,14 @@ function read_cliffs()
 	elseif create.left_cliff() < 150 then
 		return "right"
 	end
+end
+
+function read_lineups()
+	return left_lineup() < 400 and right_lineup() < 400
+end
+
+function read_either_lineup()
+	return left_lineup() < 400 or right_lineup() < 400
 end
 
 
