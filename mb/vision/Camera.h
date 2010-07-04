@@ -8,7 +8,7 @@
 
 class Camera {
 	public:
-		Camera(int width=160, int height=120, std::string path="/dev/video0");
+		Camera(int width=160, int height=120);
 		~Camera();
 		
 		int getFd() { return fd; }

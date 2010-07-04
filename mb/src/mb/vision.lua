@@ -6,16 +6,13 @@ local timer = require "cbclua.timer"
 
 Camera = create_class "Camera"
 
-function Camera:construct(width, height, path)
+function Camera:construct(width, height)
 	if not width then
 		width = 160
 		height = 120
 	end
-	if not path then
-		path = "/dev/video0"
-	end
 	
-	self.obj = rawvision.camera_new(width, height, path)
+	self.obj = rawvision.camera_new(width, height)
 	
 	local weaktable = setmetatable({self=self}, {__mode="v"})
 	userprgm.add_stop_hook(function ()

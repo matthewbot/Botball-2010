@@ -11,11 +11,15 @@ using namespace std;
 
 static string stringerr();
 
-Camera::Camera(int width, int height, string path) : width(width), height(height) {
-	fd = open(path.c_str(), O_RDWR);
-	if (fd < 0)
-		throw runtime_error("Failed to open camera: " + stringerr());
-		
+Camera::Camera(int width, int height) : width(width), height(height) {
+	fd = open("/dev/video0", O_RDWR);
+	if (fd < 0) {
+		string video0_err = stringerr();
+		fd = open("/dev/video1", O_RDWR);
+		if (fd < 0)
+			throw runtime_error("Failed to open camera.\nvideo0: " + video0_err + "\nvideo1: " + stringerr());
+	}
+	
 	struct v4l2_format fmt;
 	memset(&fmt, '\0', sizeof(fmt));
 	fmt.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;

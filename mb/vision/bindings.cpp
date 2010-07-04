@@ -63,17 +63,16 @@ const luaL_Reg luafuncs[] = {
 static int camera_new(lua_State *L) {
 	int width = luaL_checkint(L, 1);
 	int height = luaL_checkint(L, 2);
-	string path = lua_tostring(L, 3);
 
 	Camera *cam;
 	try {
 		void *userdata = lua_newuserdata(L, sizeof(Camera));
-		cam = new (userdata) Camera(width, height, path);
+		cam = new (userdata) Camera(width, height);
 	} catch (runtime_error &err) {
 		return luaL_error(L, "%s", err.what());
 	}
 
-	setup_metatable(L, 4, "mb_vision_camera", lua_destructor<Camera>);
+	setup_metatable(L, 3, "mb_vision_camera", lua_destructor<Camera>);
 	
 	return 1;
 }
