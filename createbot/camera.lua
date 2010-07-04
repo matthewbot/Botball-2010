@@ -1,6 +1,7 @@
 local vision = require "mb.vision"
+local math = require "math"
 
-local black_cm = vision.ColorModel{
+black_cm = vision.ColorModel{
 	lefthue = 0,
 	righthue = 360,
 	minsat = 0,
@@ -9,10 +10,10 @@ local black_cm = vision.ColorModel{
 	maxval = 40,
 }
 
-local bip = vision.BlobImageProcessor(1, 5, 5)
+bip = vision.BlobImageProcessor(1, 5, 5)
 bip:addColorModel(black_cm)
 
-local gip = vision.GridImageProcessor(5, 5)
+gip = vision.GridImageProcessor(5, 5)
 gip:addColorModel(black_cm)
 
 function dump()
@@ -27,10 +28,12 @@ function get_oilslick(count)
 		return "none"
 	end
 	
-	local factor = blob.w*blob.h / (blob.y + blob.h/2)
+	local y = blob.y + blob.h/2
+	local sizefactor = blob.w*blob.h / (y + .000001 * y^4)
 	local xfactor = blob.x+blob.w/2
 
-	print(factor, blob.w*blob.h, xfactor, blob.y+blob.h/2)
+	print("Oilslick factors", sizefactor, xfactor)
+	print("Oilslick blob", blob)
 	
 	local dir 
 	if xfactor < 70 then
@@ -41,9 +44,9 @@ function get_oilslick(count)
 		dir = "center"
 	end
 	
-	if factor < 10 then
+	if sizefactor < 20 then
 		return "small", dir
-	elseif factor < 30 then
+	elseif sizefactor < 40 then
 		return "medium", dir
 	else
 		return "large", dir
@@ -53,18 +56,13 @@ end
 function get_oilslick_blob(count)
 	local camera = vision.Camera()
 	for i=1,count do
-		print("Reading image " .. i)
 		camera:readImage()
 	end
 	
-	print("Last image")
 	local image = camera:readImage()
-	print("Closing")
 	camera:close()
-	print("Done, processing")
 	bip:processImage(image)
 	
-	print("Count", bip:getBlobCount())
 	for i=0,bip:getBlobCount()-1 do
 		local blob = bip:getBlob(i)
 		
