@@ -27,6 +27,7 @@ function Camera:construct(width, height, path)
 end
 
 function Camera:readImage()
+	task.yield()
 	timer.watchdog_disable()
 	return Image(rawvision.camera_read_image(self.obj))
 end
