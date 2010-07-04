@@ -62,7 +62,7 @@ cm_green = vision.ColorModel{
 cm_red = vision.ColorModel{
 	lefthue = 336,
 	righthue = 41,
-	minsat = 100,
+	minsat = 160,
 	minval = 100	
 }
 gip = vision.GridImageProcessor(8, 5)
