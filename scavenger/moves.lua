@@ -37,16 +37,15 @@ function grab_our_leg()
 	drive:rturn{degrees = 96}
 	drive:fd{inches = 1}
 	
-	local close_botguy, min_x_botguy = camera.find_botguy()
-	local max_x_tribbles = camera.find_tribbles()
-	
+	local close_botguy, min_x_botguy, max_x_tribbles = camera.find_both()
+		
 	print("max_x_tribbles: " .. tostring(max_x_tribbles))
 	print("min_x_botguy: " .. tostring(min_x_botguy) .. " close_botguy?: " .. tostring(close_botguy))
 	
 	compactor.open()
 	motion.drive_sensor("right", "fd", "pvc", 650, 600)
 
-	if min_x_botguy then
+	if min_x_botguy > -1 then
 		if close_botguy == false and (min_x_botguy < 2) then    -- Added special case check
 			drive:rpiv{degrees = 61}
 			grabs.botguy_pvc()
@@ -55,9 +54,8 @@ function grab_our_leg()
 			grabs.botguy_pvc()
 			drive:fd{inches = 5}
 		end
-		
 		botguy_grabbed = true
-	elseif max_x_tribbles then
+	elseif max_x_tribbles > -1 then
 		if max_x_tribbles >= 2 and max_x_tribbles < 6 then
 			drive:fd{inches = 7}
 			grabs.tribbles_pvc()
@@ -72,7 +70,6 @@ function grab_our_leg()
 			drive:rpiv{degrees = 35}
 			drive:fd{inches = 5}
 			drive:rpiv{degrees = 30}
-	
 		end
 	else
 		drive:rpiv{degrees = 61}
@@ -103,7 +100,7 @@ function go_into_middle()  --middle = no touch zone
 	
 	if botguy_grabbed == true then
 		grabs.botguy_pvc()
-	elseif min_x_botguy then
+	elseif min_x_botguy > -1 then
 		if min_x_botguy >= 2 and min_x_botguy < 6 then
 			grabs.botguy_pvc()
 			botguy_grabbed = true

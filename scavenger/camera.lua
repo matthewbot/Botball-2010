@@ -49,33 +49,30 @@ function dump_grid(cm, image)
 	end
 end
 
-function return_highest(list, num_return)
+function return_highest(list, return_pos)
 	local highest = list[1]
 	
-	num_return = num_return or false
-	local num = 1
-	
+	return_pos = return_pos or false
+	local pos = 1
 	
 	print("list[1]: " .. tostring(list[1]))
 	
-	if not highest then
-		highest = 0
-	else
+	if highest then
 		print("#list: " .. #list)
 		print("first highest: " .. highest)
-	
+
 		for k = 2, #list do
 			if list[k] > highest then
 				print("k: " .. k)
 				highest = list[k]
 				print("new highest: " .. highest)
-				num = k
+				pos = k
 			end
 		end
 	end
 	
-	if num_return == true then
-		return highest, num
+	if return_pos == true then
+		return highest, pos
 	end
 	
 	return highest
@@ -84,13 +81,13 @@ end
 function check_closeness(y_list, conc_list)
 	print("checking closeness")
 	
-	local highest, num = return_highest(conc_list, true)
+	local highest, pos = return_highest(conc_list, true)
 	
-	print("highest: " .. highest)
-	print("num: " .. num .. " y_list[num]: " .. tostring(y_list[num]))
+	print("highest: " .. tostring(highest))
+	print("pos: " .. pos .. " y_list[pos]: " .. tostring(y_list[pos]))
 	
-	if highest ~= 0 then
-		if y_list[num] > 1 and y_list[num] <= 3 then
+	if highest then
+		if y_list[pos] > 1 and y_list[pos] <= 3 then
 			return true
 		end
 	end
@@ -98,78 +95,102 @@ function check_closeness(y_list, conc_list)
 	return false
 end
 
-function find_botguy()
-	local cm = cm_red
-		
-	local once, min_x
-	local k = 0
-	local y_list, count_list = {}, {}	
+function check_nil(value)
+	if not value then
+		return value
+	end
 	
-	local image = take_image(6)
-	dump_grid(cm, image)
+	return -1
+end
+
+function find_item(item, return_image, old_image)	
+	local botguy, tribbles, cm, x_cutoff, count_cutoff
+	if item == "botguy" then
+		botguy = true
+		cm = cm_red
+		x_cutoff = 7
+		count_cutoff = 30
+	elseif item == "tribbles" then
+		tribbles = true
+		cm = cm_green
+		x_cutoff = 5
+		count_cutoff = 20
+	else
+		return nil
+	end
+	
+	local max_x, min_x
+	local k = 0
+	local once = false
+	local x_list, y_list, count_list = {}, {}, {}
+	
+	local image
+	if not old_image then
+		image = take_image(6)
+	else
+		image = old_image
+	end
+	--dump_grid(cm, image)
 	
 	gip:processImage(image)
 	
-	for x=0,7 do
+	for x=0,x_cutoff do
 		for y=0,3 do
 			local count = gip:getCount(x, y, cm)
 			if x == 4 and y == 3 then
 				print("skip")
 			else
-				if count > 30 then
+				if count > count_cutoff then
 					k = k + 1
 					print("k: " .. k)
-					y_list[k] = y
-					count_list[k] = count
-					
-					if not once then
-						min_x = x
-						once = true
+					if botguy then
+						y_list[k] = y
+						count_list[k] = count
+						
+						if not once then
+							min_x = x
+							once = true
+						end
+					elseif tribbles then
+						x_list[k] = x
 					end
 				end
 			end
 		end
 	end
-
-	print("min_x: " .. tostring(min_x))
-	local close = check_closeness(y_list, count_list)
 	
-	return close, min_x	
-end
-
-function find_tribbles()
-	local cm = cm_green
+	return_image = return_image or false
+	if botguy then
+		print("min_x: " .. tostring(min_x))
+		local close = check_closeness(y_list, count_list)
 		
-	local k, max_x = 0
-	local x_list = {}	
-	
-	local image = take_image(6)
-	--dump_grid(cm, image)
-	
-	gip:processImage(image)
-	
-	for x=0,5 do
-		for y=0,3 do
-			local count = gip:getCount(x, y, cm)
-			if x == 4 and y == 3 then
-				print("skip")
-			else
-				if count > 20 then
-					k = k + 1
-					print("k: " .. k)
-					x_list[k] = x
-				end
-			end
+		min_x = check_nil(min_x)
+		
+		if return_image then
+			return close, min_x, image
+		else
+			return close, min_x
 		end
-	end
-
-	print("max_x: " .. tostring(max_x))
+	elseif tribbles then
+		print("max_x: " .. tostring(max_x))
 	
-	max_x = return_highest(x_list)
-	
-	if max_x ~= 0 then
-		return max_x
+		max_x = return_highest(x_list)
+		max_x = check_nil(max_x)
+			
+		if return_image then
+			return max_x, image
+		else
+			return max_x
+		end
 	end
 	
 	return nil
+end
+
+function find_botguy() find_item("botguy") end
+function find_tribbles() find_item("tribbles") end
+function find_both()
+	local close, min_x, image = find_item("botguy", true)
+	local max_x = find_item("tribbles", false, image)
+	return close, min_x, max_x
 end
