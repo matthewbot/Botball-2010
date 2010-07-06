@@ -175,7 +175,7 @@ end
 
 --this is just for fun right now
 function larc(args) --but the right wheel has the higher speed
-	local rspeed = parse_vel(args)
+	local rspeed = motion.parse_vel(args)
 	local radius = args.radius
 	
 	local wb = drivetrain:get_wheel_base()
@@ -202,7 +202,7 @@ function larc(args) --but the right wheel has the higher speed
 end
 
 function rarc(args) --but the right wheel has the higher speed
-	local lspeed = parse_vel(args)
+	local lspeed = motion.parse_vel(args)
 	local radius = args.radius
 	
 	local wb = drivetrain:get_wheel_base()
@@ -225,15 +225,5 @@ function rarc(args) --but the right wheel has the higher speed
 		drivetrain:drive_dist(lspeed, ldist, rspeed, rdist)
 	else
 		drivetrain:drive(lspeed, rspeed)
-	end
-end
-
-function parse_vel(args)
-	if args.speed then
-		return args.speed / 1000 * 8
-	elseif args.vel then
-		return args.vel
-	else
-		return 8
 	end
 end
