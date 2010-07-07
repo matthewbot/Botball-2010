@@ -78,10 +78,6 @@ function drive_bump()												-- drives until sensor is pushed
 	drive:fd{wait=rwall_bumper, speed=500}
 end
 
-function either_bumper()								-- drives until either bumper is pushed
-	return lwall_bumper() or rwall_bumper()
-end
-
 function both_bumpers()								-- drives until both bumpers are pushed
 	return lwall_bumper() and rwall_bumper()
 end
