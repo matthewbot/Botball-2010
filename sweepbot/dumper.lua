@@ -11,9 +11,11 @@ function init()								-- initializes the dumper
 	reset()
 end
 
-function reset()							-- resets the dumper (up position)
+function reset(return_startpos)							-- resets the dumper (up position)
+	return_startpos = return_startpos or false
 	dumper_motor:setpwm(power)
 	local prevpos = dumper_motor:getpos()
+	local startpos = prevpos
 	while true do
 		task.sleep(.05)
 		local pos = dumper_motor:getpos()
@@ -25,23 +27,14 @@ function reset()							-- resets the dumper (up position)
 	task.sleep(.03)
 	dumper_motor:mrp(0, 1)
 	dumped = false
+	
+	if return_startpos then
+		return startpos
+	end
 end
 
 function reset_check()								-- does a reset, but checks to see if it is stuck (if botguy is stuck in the dumper, it will remain down, but return false to reset)
-	dumper_motor:setpwm(power)
-	local prevpos = dumper_motor:getpos()
-	local checkpos = prevpos
-	while true do
-		task.sleep(.05)
-		local pos = dumper_motor:getpos()
-		if pos - prevpos < 3 then break end
-		prevpos = pos
-	end
-	
-	dumper_motor:off()
-	task.sleep(.03)
-	dumper_motor:mrp(0, 1)
-	dumped = false
+	local checkpos = reset(true)
 	
 	local pos = dumper_motor:getpos()
 	if pos - checkpos < 100 then
