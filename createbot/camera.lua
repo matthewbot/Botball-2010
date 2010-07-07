@@ -44,13 +44,15 @@ function get_oilslick(count)
 		dir = "center"
 	end
 	
+	local size
 	if sizefactor < 20 then
-		return "small", dir
+		size = "small"
 	elseif sizefactor < 40 then
-		return "medium", dir
+		size = "medium"
 	else
-		return "large", dir
+		size = "large"
 	end
+	return size, dir
 end
 
 function get_oilslick_blob(count)
