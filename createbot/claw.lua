@@ -20,7 +20,7 @@ servoutils.build_functions{
 	default_speed = 1200,
 	up = 400,
 	lift = 1100,
-	down_push = 1450,
+	down_push = 1480,
 	down_release = 1550,
 	down_grab = 1900,
 }

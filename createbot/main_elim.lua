@@ -14,10 +14,6 @@ function main()
 	after_sweep_lineup()
 	dirty_ducks_de()
 	
-	drive:bk{inches=15}
-	drive:rturn{degrees=80}
-	wall_lineup(37)
-	
 	clean_ducks()
 end
 
@@ -109,5 +105,27 @@ function dirty_ducks_de()
 	if not drop_sponge(10, 1) then
 		drive:fd{inches=10}
 	end
+	
+	-- possible additional fd bk?
+	drive:lturn{degrees=90}
+	wall_lineup(15)
+	
+	claw.down_push{wait=true}
+	claw.release_ground() -- release a duck possibly still in our claw
+	task.sleep(.3)
+	claw.up()
+	task.sleep(.5)
+	claw.close()
+
+	drive:bk{inches=1}
+	drive:lturn{degrees=90}
+	drive:bk{inches=3} -- probably needed to align basket w/ oily duck center
+	claw.down_push{wait=true}
+	claw.eject()
+	task.sleep(.4)
+	claw.up{}
+
+	drive:lturn{degrees=178}
+	wall_lineup(15) -- possibly shorter?
 end
 
