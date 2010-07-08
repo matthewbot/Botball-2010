@@ -5,7 +5,6 @@ local task = require "cbclua.task"
 local vision = require "mb.vision"
 local compactor = require "compactor"
 
-
 function open_camera() return vision.Camera() end
 function close_camera(camera) camera:close() end
 
@@ -96,14 +95,14 @@ function check_closeness(y_list, conc_list)
 end
 
 function check_nil(value)
-	if not value then
+	if value ~= nil then
 		return value
 	end
 	
 	return -1
 end
 
-function find_item(item, return_image, old_image)	
+function find_item(item, capture_image)	
 	local botguy, tribbles, cm, x_cutoff, count_cutoff
 	if item == "botguy" then
 		botguy = true
@@ -124,15 +123,14 @@ function find_item(item, return_image, old_image)
 	local once = false
 	local x_list, y_list, count_list = {}, {}, {}
 	
-	local image
-	if not old_image then
-		image = take_image(6)
-	else
-		image = old_image
+	capture_image = capture_image or true
+	if capture_image then
+		local image = take_image(6)
+		gip:processImage(image)
 	end
 	--dump_grid(cm, image)
 	
-	gip:processImage(image)
+
 	
 	for x=0,x_cutoff do
 		for y=0,3 do
@@ -159,38 +157,31 @@ function find_item(item, return_image, old_image)
 		end
 	end
 	
-	return_image = return_image or false
-	if botguy then
+	print("botguy: ", botguy)
+	if botguy == true then
 		print("min_x: " .. tostring(min_x))
 		local close = check_closeness(y_list, count_list)
+		print("close ", close)
 		
 		min_x = check_nil(min_x)
 		
-		if return_image then
-			return close, min_x, image
-		else
-			return close, min_x
-		end
-	elseif tribbles then
+		return close, min_x
+	elseif tribbles == true then
 		print("max_x: " .. tostring(max_x))
 	
 		max_x = return_highest(x_list)
 		max_x = check_nil(max_x)
 			
-		if return_image then
-			return max_x, image
-		else
-			return max_x
-		end
+		return max_x
 	end
 	
 	return nil
 end
 
-function find_botguy() find_item("botguy") end
-function find_tribbles() find_item("tribbles") end
+function find_botguy() return find_item("botguy") end
+function find_tribbles() return find_item("tribbles") end
 function find_both()
-	local close, min_x, image = find_item("botguy", true)
-	local max_x = find_item("tribbles", false, image)
+	local close, min_x = find_item("botguy", true)
+	local max_x = find_item("tribbles", false)
 	return close, min_x, max_x
 end

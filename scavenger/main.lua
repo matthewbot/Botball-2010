@@ -7,9 +7,16 @@ local compactor = require "compactor"
 local motion = require "motion"
 local grabs = require "grabs"
 local moves = require "moves"
+local camera = require "camera"
+
+function init()
+	local camera = camera.open_camera()
+	camera.close_camera(camera)
+	compactor.init()
+end
 
 function main()
-	botball.start_game_time()
+	botball.start(starting_light)
 	--botball.game_time_sleep(50) need to add actual time w/ jeffrey's help
 	compactor.init()
 	moves.goto_pvc_island()

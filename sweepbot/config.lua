@@ -58,8 +58,6 @@ pitch_servo 	= servoutils.RescaleServo{1, start_pos=0, end_pos=1050}
 -- Vision --
 ------------
 
-green_channel = vision.Channel(0)
-
 -------------
 -- Sensors --
 -------------
@@ -67,5 +65,7 @@ green_channel = vision.Channel(0)
 lrange = cbc.AnalogSensor{0, float = true}
 rrange = cbc.AnalogSensor{1, float = true}
 platform_range_sensor = cbc.AnalogSensor{2, float = true}
+starting_light = cbc.AnalogSensor{3}
+
 lwall_bumper = cbc.DigitalSensor{14}
 rwall_bumper = cbc.DigitalSensor{15}

@@ -164,7 +164,7 @@ function go_under_island()
 			
 			motion.drive_sensor("right", "bk", "pvc", 850, 600)
 		elseif min_x_botguy < 2 then
-			drive
+		end
 	elseif max_x_tribbles > -1 then
 		if max_x_tribbles >= 2 and max_x_tribbles < 6 then
 			motion.drive_sensor("right", "fd", "no_pvc", 850, 350)

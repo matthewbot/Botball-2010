@@ -37,18 +37,19 @@ function drive_sensor(side, dir, wait_for, speed, value)
 	
 	drive:off()
 end
-
+--[[
 function swirl(num, dir, radius, degrees, speed)
 	radius = radius or 5
 	degrees = degrees or 360
 	local amt = radius / num
 	
-	while num >= 0 then
+	while num >= 0 do
 		arc{dir = dir, radius = radius, degrees = degrees, speed = speed}
 		radius = radius - amt
 		num = num - 1
 	end
 end
+]]--
 
 function arc(args)
 	local dir = args.dir or "left"
