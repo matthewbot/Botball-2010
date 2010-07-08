@@ -41,8 +41,11 @@ function final_palm_lineup()								-- does the fancy little scooch thing to lin
 end
 
 function drive_wall()								-- drives to either bumper
+	print("A")
 	drive:fd{}
+	print("B")
 	task.wait(either_bumper)
+	print("C")
 	drive:off()
 end
 

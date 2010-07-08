@@ -1,14 +1,19 @@
 local main_shared = require "main_shared"
+local algorithm = require "algorithm"
+local create = require "mb.create"
+local task = require "cbclua.task"
+local claw = require "claw"
 import "main_shared"
 import "config"
 
 function main()
 	init()
+	task.sleep(3)
 	dirty_ducks_se()
 	
-	drive:bk{inches=15}
+	drive:bk{inches=13}
 	drive:rturn{degrees=85}
-	wall_lineup(37)
+	wall_lineup(40)
 	
 	clean_ducks()
 end
@@ -33,10 +38,10 @@ function dirty_ducks_se()
 		return true
 	end
 	
-	oilslicks[1] = grab_dirty_ducks(20, 20)
-	oilslicks[2] = grab_dirty_ducks(20, 21)
-	oilslicks[3] = grab_dirty_ducks(23, 22)
-	wall_lineup(9)
+	oilslicks[1] = grab_dirty_ducks(20, 20, .5)
+	oilslicks[2] = grab_dirty_ducks(20, 19, .2)
+	oilslicks[3] = grab_dirty_ducks(21, 20)
+	wall_lineup(7)
 	
 	if not drop_sponge(-36, 1) then
 		drive:bk{inches=36}
@@ -46,26 +51,28 @@ function dirty_ducks_se()
 		drive:fd{inches=24}
 	end
 	
-	wall_lineup(15)
+	wall_lineup(5)
 	drive:bk{inches=4}
 	drive:rturn{degrees=90}
 	bdrive:bk{vel=8, wait=create.bump}
-	oilslicks[4] = grab_dirty_ducks(22, 23)
+	drive:fd{inches=5}
+	task.sleep(1) -- maybe not needed
+	oilslicks[4] = grab_dirty_ducks(14, 12, .5)
 	
 	if drop_sponge(-5, 3) then
-		wall_lineup(20) -- wall lineup
+		wall_lineup(10) -- wall lineup
 	else
-		wall_lineup(16) -- wall lineup, slightly less
+		wall_lineup(8) -- wall lineup, slightly less
 	end
-	drive:bk{inches=4}
+	drive:bk{inches=6}
 	drive:rturn{degrees=90}
 	
 	oilslicks[5] = grab_dirty_ducks(24, 20, .5)
 	
 	if drop_sponge(-2, 4) then
-		wall_lineup(26, true) -- line up against duck area
+		wall_lineup(24, true) -- line up against duck area
 	else
-		wall_lineup(20, true) -- line up against duck area
+		wall_lineup(18, true) -- line up against duck area
 	end
 	
 	if drop_sponge(-1, 5) then

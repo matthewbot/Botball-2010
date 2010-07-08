@@ -27,13 +27,13 @@ function MotorDriveTrain:drive(lspeed, rspeed)
 	lspeed = math.round(lspeed * self.lticks)
 	rspeed = math.round(rspeed * self.rticks)
 	
-	if lspeed ~= 0 then
+	if math.abs(lspeed) > 2 then
 		self.lmot:mav(lspeed)
 	else
 		self.lmot:off()
 	end
 	
-	if rspeed ~= 0 then
+	if math.abs(rspeed) > 2 then
 		self.rmot:mav(rspeed)
 	else
 		self.rmot:off()

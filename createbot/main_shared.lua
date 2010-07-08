@@ -22,6 +22,7 @@ function grab_dirty_ducks(fddist, fddist_noducks, delay)
 	end
 
 	print("Grabbing ducks on " .. oiltype .. " pile direction " .. direction)
+		
 	task.async(function ()
 		claw.down_push()
 		task.sleep(.5)
@@ -55,14 +56,14 @@ function wall_lineup(fddist, either)
 		if fddist then
 			bdrive:fd{inches=fddist}
 		end
-		bdrive:fd{vel=8}
+		bdrive:fd{vel=6}
 	end)
 	
 	local ok
 	if either then
-		ok = task.wait(algorithm.read_either_lineup, 4)
+		ok = task.wait(algorithm.read_either_lineup, 2)
 	else
-		ok = task.wait(algorithm.read_lineups, 4)
+		ok = task.wait(algorithm.read_lineups, 2)
 	end
 	task.sleep(.2)
 	task.stop(drivingasync)
@@ -74,7 +75,7 @@ end
 function clean_ducks()
 	drive:bk{inches=11} -- travel to duck zone
 	drive:lturn{degrees=90}
-	wall_lineup()
+	wall_lineup(0)
 	drive:bk{inches=2.5}
 	
 	task.async(function () -- grab first set of ducks
@@ -90,7 +91,7 @@ function clean_ducks()
 	drive:bk{vel=8, wait=create.bump}
 	drive:fd{inches=.5}
 	drive:lturn{degrees=95}
-	drive:bk{inches=7}
+	drive:bk{inches=6}
 	
 	claw.down_release{wait=true} -- drop first set
 	claw.release_ground{speed=700, wait=true}
@@ -106,7 +107,7 @@ function clean_ducks()
 	drive:rturn{degrees=50}
 	drive:fd{inches=12}
 	drive:rturn{degrees=45}
-	wall_lineup(9)
+	wall_lineup(3)
 	
 	task.async(function () -- grab second set
 		task.sleep(.3)
@@ -130,6 +131,6 @@ function clean_ducks()
 	task.sleep(.4)
 	claw.close()
 	drive:lturn{degrees=90}
-	wall_lineup(5)
+	drive:fd{inches=11}
 end
 
