@@ -62,8 +62,9 @@ cm_green = vision.ColorModel{
 cm_red = vision.ColorModel{
 	lefthue = 336,
 	righthue = 41,
-	minsat = 160,
-	minval = 100	
+	minsat = 140,
+	minval = 100,
+	--maxval = 200
 }
 gip = vision.GridImageProcessor(8, 5)
 gip:addColorModel(cm_green)
@@ -75,8 +76,8 @@ gip:addColorModel(cm_red)
 
 starting_light = cbc.AnalogSensor{0}
 
-in_sensor = cbc.DigitalSensor{8} --if true, it is retracted
-out_sensor = cbc.DigitalSensor{9} --if true, it is extended
+in_sensor = cbc.DigitalSensor{8} --if true, it is retracting
+out_sensor = cbc.DigitalSensor{9} --if true, it is extending
 
 lrange = cbc.AnalogSensor{2, float = true} --rangefinder on the left side of the robot
 rrange = cbc.AnalogSensor{1, float = true} --rangefinder on the right side of the robot

@@ -6,35 +6,35 @@ local vision = require "mb.vision"
 local compactor = require "compactor"
 
 function open_camera() return vision.Camera() end
-function close_camera(camera) camera:close() end
+function close_camera(cam) cam:close() end
 
 function take_image(fake_pics)
-	local camera = open_camera()
+	local cam = open_camera()
 	
 	print("open camera")
 	
 	for i=1,fake_pics do 
-		camera:readImage() 
+		cam:readImage() 
 	end
 
 	print("took fake images:")
 	
-	local image = camera:readImage()
+	local image = cam:readImage()
 
 	print("took image:")
 	
-	close_camera(camera)
+	close_camera(cam)
 	
 	return image
 end
 
 function dump_grid(cm, image)
-	local cm = cm or cm_red
+	print("take dump images")
 	
-	if not image then
+	if image == nil then
 		image = take_image(6)
+		gip:processImage(image)
 	end
-	gip:processImage(image)
 	
 	print("begin dump:")
 	
@@ -87,11 +87,11 @@ function check_closeness(y_list, conc_list)
 	
 	if highest then
 		if y_list[pos] > 1 and y_list[pos] <= 3 then
-			return true
+			return "close"
 		end
 	end
 	
-	return false
+	return "not_close"
 end
 
 function check_nil(value)
@@ -123,19 +123,23 @@ function find_item(item, capture_image)
 	local once = false
 	local x_list, y_list, count_list = {}, {}, {}
 	
-	capture_image = capture_image or true
-	if capture_image then
-		local image = take_image(6)
+	if capture_image == nil then
+		capture_image = true
+	end
+	
+	local image
+	if capture_image == true then
+		image = take_image(6)
 		gip:processImage(image)
 	end
-	--dump_grid(cm, image)
+	dump_grid(cm, image)
 	
 
 	
 	for x=0,x_cutoff do
 		for y=0,3 do
 			local count = gip:getCount(x, y, cm)
-			if x == 4 and y == 3 then
+			if (x == 4 and y == 3) or (x == 0 and y == 3) then
 				print("skip")
 			else
 				if count > count_cutoff then
@@ -159,15 +163,25 @@ function find_item(item, capture_image)
 	
 	print("botguy: ", botguy)
 	if botguy == true then
+	local close
+	local high_conc = return_highest(count_list)
+	print("high_conc: " ..  tostring(high_conc))
+		if high_conc ~= nil and high_conc > 100 then
+			min_x = check_nil(min_x)
+			close = check_closeness(y_list, count_list)
+		else
+			min_x = -1
+			close = "not_close"
+		end
 		print("min_x: " .. tostring(min_x))
-		local close = check_closeness(y_list, count_list)
-		print("close ", close)
 		
-		min_x = check_nil(min_x)
+		print("close ", close)
+		print("          ")
 		
 		return close, min_x
 	elseif tribbles == true then
 		print("max_x: " .. tostring(max_x))
+		print("          ")
 	
 		max_x = return_highest(x_list)
 		max_x = check_nil(max_x)
@@ -181,7 +195,13 @@ end
 function find_botguy() return find_item("botguy") end
 function find_tribbles() return find_item("tribbles") end
 function find_both()
+	print("printing botguy check, normal")
+	print("          ")
 	local close, min_x = find_item("botguy", true)
+	print("          ")
+	print("printing tribbles w/o second pic")
+	print("          ")
 	local max_x = find_item("tribbles", false)
+	print("          ")
 	return close, min_x, max_x
 end

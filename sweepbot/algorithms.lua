@@ -9,23 +9,17 @@ local math = require "math"
 
 function read_ranges()										-- reads our rangefinders for when we are wall following (the island)
 	local left = lrange() > 550
-	print("lrange() > 550: " ..  tostring(left))
 	local right = rrange() > 550
-	print("rrange() > 550: " ..  tostring(right))
 	return left, right
 end
 
 function follow_wall()								-- follows top of island pvc
 	local left, right = read_ranges()
-	print("read ranges")
 	if not left and not right then
 		drivetrain:drive(.5, 3) -- TODO add arcs!!!
-		print("left false and right false")
 	elseif left and not right then
 		drivetrain:drive(4, 4)
-		print("left true and right false")
 	else
-		print("left true and right true")
 		drivetrain:drive(3, .5)
 	end
 	task.sleep(0.01)
@@ -44,7 +38,7 @@ function final_palm_lineup()								-- does the fancy little scooch thing to lin
 	print("scooched")
 	drive:fd{wait=rwall_bumper, speed=600}
 	print("used rwall_bumper to lineup")
-	drive:bk{inches=1}
+	drive:bk{inches=1.5}
 	drive:off()
 end
 
@@ -61,6 +55,6 @@ function drive_wall()								-- drives to either bumper
 end
 
 function lineup_first_palm_sweep()												-- does a lineup to sweep for the first palm pile
-	drive:bk{speed=200, wait=function () return platform_range_sensor() > 700 end}
+	drive:bk{speed=200, wait=function () return platform_range_sensor() > 600 end}
 end
 	
