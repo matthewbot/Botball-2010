@@ -24,9 +24,9 @@ function drop_sponge(chargedist, cursponge)
 
 	if side == "timeout" then
 		if chargedist > 0 then
-			drive:bk{inches=4}
+			drive:bk{inches=6}
 		else
-			drive:fd{inches=4}
+			drive:fd{inches=6}
 		end
 		task.join(spongeselect)
 		return
@@ -76,6 +76,7 @@ function drop_sponge(chargedist, cursponge)
 	turn(turnamt)
 	task.join(spongeselect)
 	sponge.release()
+	task.async(sponge.select_quad, 3)
 	task.sleep(.5)
 	turn(-turnamt)
 end

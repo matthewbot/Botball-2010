@@ -42,31 +42,34 @@ function grab_dirty_ducks(fddist, fddist_noducks, delay)
 	end
 	claw.down_grab{wait=true}
 	claw.close()
-	task.sleep(.8)
+	task.sleep(.4)
 	claw.up_fling()
-	task.sleep(.5)
 	claw.release_basket()
-	task.sleep(.2)
 	
 	return oiltype
 end
 
 function wall_lineup(fddist, either)
+	local wentslow = false
 	local drivingasync = task.async(function ()
 		if fddist then
 			bdrive:fd{inches=fddist}
 		end
+		wentslow = true
 		bdrive:fd{vel=6}
 	end)
 	
 	local ok
 	if either then
-		ok = task.wait(algorithm.read_either_lineup, 2)
+		ok = task.wait(algorithm.read_either_lineup, 3)
 	else
-		ok = task.wait(algorithm.read_lineups, 2)
+		ok = task.wait(algorithm.read_lineups, 3)
 	end
 	task.sleep(.2)
 	task.stop(drivingasync)
+	if not wentslow then
+		drive:fd{inches=1, vel=6}
+	end
 	drive:stop{}
 	
 	return ok

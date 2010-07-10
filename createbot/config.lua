@@ -27,5 +27,6 @@ sponge_motor = motorutils.FixMotor{3, pid = {i=.3, d=0}}
 sponge_reset = cbc.DigitalSensor{10}
 left_lineup = cbc.AnalogSensor{7}
 right_lineup = cbc.AnalogSensor{6}
+starting_light = cbc.AnalogSensor{0}
 
 

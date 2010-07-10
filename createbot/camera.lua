@@ -7,10 +7,10 @@ black_cm = vision.ColorModel{
 	minsat = 0,
 	maxsat = 255,
 	minval = 0,
-	maxval = 50, -- was 70
+	maxval = 60, -- was 70
 }
 
-bip = vision.BlobImageProcessor(3, 4, 4, true)
+bip = vision.BlobImageProcessor(3, 4, 4)
 bip:addColorModel(black_cm)
 
 gip = vision.GridImageProcessor(5, 5)
@@ -45,9 +45,9 @@ function get_oilslick(count)
 	end
 	
 	local size
-	if sizefactor < 15 then
+	if sizefactor < 25 then
 		size = "small"
-	elseif sizefactor < 35 then
+	elseif sizefactor < 50 then
 		size = "medium"
 	else
 		size = "large"
@@ -70,7 +70,7 @@ function get_oilslick_blob(count)
 		
 		local x, y = blob.x+blob.w/2, blob.y+blob.h/2
 		print("x", x, "y", y, "area", blob.w*blob.h)
-		if y > 15 and y < 120 and x > 40 and x < 120 then
+		if y > 5 and y < 105 and x > 40 and x < 120 then
 			return blob
 		end
 	end
