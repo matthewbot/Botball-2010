@@ -23,7 +23,8 @@ function main()
 	task.async(init)						-- sets up robot as we leave the base
 	drive:bk{inches=26}
 	drive:rturn{degrees=94}
-	drive:bk{inches=36}						-- aligning the first time on PVC of the island area
+	drive:bk{inches=28}	-- aligning the first time on PVC of the island area
+	drive:bk{inches = 8, speed = 400}
 	drive:fd{inches=4.5}
 	drive:lturn{degrees=95}
 	drive:fd{}
@@ -33,7 +34,7 @@ function main()
 	drive:bk{inches=1.25}
 	arm.extend(550, 600)
 	drive:lturn{degrees=93}
-	drive:bk{inches=7}
+	drive:bk{inches=7, speed = 400}
 	drive:fd{inches=1}
 	drive:scooch{xdist=4, speed=500}		-- scooch getting ready to go sweep
 	drive:fd{inches=8}
@@ -57,7 +58,7 @@ function main()
 	print("sweepped botguy")
 	task.sleep(.5) -- is needed?
 	dumper.shake()
-	drive:bk{speed=500, inches=1.7}
+	drive:bk{speed=500, inches=1.5}
 	drive:lturn{degrees=3}
 	sweep.palms()							-- sweeping second palms pile
 	print("sweepped second set of palms")
@@ -69,13 +70,13 @@ function main()
 		arm.extend(800, 500)
 		arm.pitch(400, 500)
 	end)
-	drive:bk{inches=7}
+	drive:bk{inches=9}
 	drive:lturn{degrees=48}
 	drive:bk{inches=7}
 	drive:bk{inches=4, speed=400}			-- lining up on PVC after all sweeps
 	drive:fd{inches=6}
-	drive:rturn{degrees=93}
-	botball.game_time_sleep(82)
+	drive:rturn{degrees=94}
+	botball.game_time_sleep(78)
 	print("first right turn when going home")
 	
 	drive:bk{inches=19}
@@ -89,8 +90,9 @@ function main()
 	task.async(sweep.activate)
 	drive:fd{inches=34}
 	drive:lturn{degrees=94}
-	botball.game_time_sleep(116)
+	botball.game_time_sleep(119)
 	
+	drive:fd{inches = 20}
 	algorithms.drive_wall()					-- driving into base until it hits PVC
 	drive:bk{inches=6}
 	dumper.dump()
@@ -104,8 +106,8 @@ function main()
 		drive:lturn{degrees=90}
 		drive:bk{inches=15}
 		else]]
-		drive:rturn{degrees=90}
-		drive:bk{inches = 7, speed = 400}
+		drive:bk{inches = 5}
+		drive:rturn{degrees=94}
 	--[[end]]
 end
 

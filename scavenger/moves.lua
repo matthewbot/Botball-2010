@@ -1,6 +1,7 @@
 import "config"
 
 local cbc = require "cbclua.cbc"
+local botball = require "cbclua.botball"
 local task = require "cbclua.task"
 local math = require "math"
 local compactor = require "compactor"
@@ -14,12 +15,13 @@ local botguy_grabbed = false
 function goto_pvc_island(block)
 	block = block or false
 	
+	drive:rpiv{degrees = -4}
 	task.sleep(4)
 	drive:fd{inches = 39}
 	task.sleep(2)
 	drive:rturn{degrees = 54}
-	motion.drive_sensor("right", "fd", "pvc", 800, 600)
-	motion.drive_sensor("right", "fd", "no_pvc", 800, 350)
+	motion.drive_sensor("right", "fd", "pvc", 800, 500)
+	motion.drive_sensor("right", "fd", "no_pvc", 800, 400)
 	if block then
 		drive:fd{inches = 4}
 	else
@@ -31,178 +33,198 @@ function goto_pvc_island(block)
 	drive:fd{inches = 24}]]--hit pvc of the island
 end
 
-function grab_our_leg()
+function grab_our_leg(snow)
+	snow = snow or false
 	grabs.tribbles_pvc_bk(0.32)
-	drive:bk{inches = 3}
+	drive:bk{inches = 2.5}
 	drive:rturn{degrees = 96}
 	drive:fd{inches = 1}
 	
-	local close_botguy, min_x_botguy, max_x_tribbles = camera.find_both()
+	if snow == false  then
+		local close_botguy, min_x_botguy, max_x_tribbles = camera.find_both()
+			
+		print("max_x_tribbles: " .. tostring(max_x_tribbles))
+		print("min_x_botguy: " .. tostring(min_x_botguy) .. " close_botguy?: " .. tostring(close_botguy))
 		
-	print("max_x_tribbles: " .. tostring(max_x_tribbles))
-	print("min_x_botguy: " .. tostring(min_x_botguy) .. " close_botguy?: " .. tostring(close_botguy))
-	
-	compactor.open()
-	motion.drive_sensor("right", "fd", "pvc", 650, 600)
+		compactor.open()
+		motion.drive_sensor("right", "fd", "pvc", 650, 600)
 
-	if min_x_botguy > -1 then
-		if close_botguy == false and (min_x_botguy < 2) then    -- Added special case check
+		if min_x_botguy > -1 then
+			if close_botguy == "not_close" and (min_x_botguy < 2) then    -- Added special case check
+				print("          ")
+				print("botguy close and to the left")
+				drive:rpiv{degrees = 61}
+				drive:fd{inches = 6}
+				grabs.botguy_pvc()
+			else
+				print("          ")
+				print("botguy close/ false and to the right")
+				drive:fd{inches = 7}
+				grabs.botguy_pvc()
+				drive:fd{inches = 5}
+				drive:bk{inches = 1.5}
+				drive:lturn{degrees = 90}
+				drive:fd{inches = 10}
+			end
+			botguy_grabbed = true
+		elseif max_x_tribbles > -1 then
+			if max_x_tribbles >= 2 and max_x_tribbles < 6 then
+				print("          ")
+				print("tribbles to the right")
+				drive:fd{inches = 7}
+				grabs.tribbles_pvc()
+				drive:lpiv{degrees = -30}
+				drive:rpiv{degrees = 37}
+				drive:scooch{xdist = 0.5, dir = "bk"}
+				drive:scooch{xdist = 0.25}
+			elseif max_x_tribbles < 2 then
+				print("          ")
+				print("tribbles to the left")			
+				drive:bk{inches = 2}
+				drive:rpiv{degrees = 35}
+				drive:fd{inches = 5}
+				drive:rpiv{degrees = 30}
+			end
+		else
+			print("          ")
+			print("no botguy or tribbles")	
 			drive:rpiv{degrees = 61}
-			grabs.botguy_pvc()
-		elseif close_botguy == true then
-			drive:fd{inches = 7}
-			grabs.botguy_pvc()
-			drive:fd{inches = 5}
 		end
-		botguy_grabbed = true
-	elseif max_x_tribbles > -1 then
-		if max_x_tribbles >= 2 and max_x_tribbles < 6 then
-			drive:fd{inches = 7}
-			grabs.tribbles_pvc()
-			drive:lpiv{degrees = -30}
-			drive:rpiv{degrees = 37}
-			--local tribble_async = task.async(grabs.tribbles) --to stay or not to stay?
-			drive:scooch{xdist = 0.75, dir = "bk"}
-			--task.join(tribble_async)
-			drive:scooch{xdist = 0.5}
-		elseif max_x_tribbles < 2 then
-			drive:bk{inches = 2}
-			drive:rpiv{degrees = 35}
-			drive:fd{inches = 5}
-			drive:rpiv{degrees = 30}
+		
+		if botguy_grabbed == true then
+			return true
 		end
+	
+		return false
 	else
+		compactor.open()
+		motion.drive_sensor("right", "fd", "pvc", 650, 600)
 		drive:rpiv{degrees = 61}
 	end
+	
+	return
 end
 
-	--[[else
-	drive:bk{inches = 2}
-	drive:rpiv{degrees = 35}
-	drive:fd{inches = 5}
-	drive:rpiv{degrees = 30}]]--
+function go_into_middle(snow)  --middle = no touch zone
+	snow = snow or false
+	if snow == false then
+		compactor.close()
 
-	
-	--[[drive:scooch{xdist = -0.75}
-	motion.drive_sensor("right", "fd", "pvc", 650, 600)
-	drive:fd{inches = 7}
-	grabs.tribbles_pvc()]]--
+		local close_botguy, min_x_botguy = camera.find_botguy()
+		print("min_x_botguy: " .. tostring(min_x_botguy) .. " close_botguy?: " .. tostring(close_botguy))
 
-function go_into_middle()  --middle = no touch zone
-	compactor.close()
-
-	local close_botguy, min_x_botguy = camera.find_botguy()
-	print("min_x_botguy: " .. tostring(min_x_botguy) .. " close_botguy?: " .. tostring(close_botguy))
-
-	compactor.open()
-	motion.drive_sensor("left", "fd", "pvc", 650, 500)
-	drive:fd{inches = 14}
-	
-	if botguy_grabbed == true then
-		grabs.botguy_pvc()
-	elseif min_x_botguy > -1 then
-		if min_x_botguy >= 2 and min_x_botguy < 6 then
+		compactor.open()
+		drive:fd{inches = 22}
+		
+		if botguy_grabbed == true then
 			grabs.botguy_pvc()
-			botguy_grabbed = true
+		elseif min_x_botguy > -1 then
+			if min_x_botguy >= 2 and min_x_botguy < 6 then
+				grabs.botguy_pvc()
+				botguy_grabbed = true
+			end
+		else
+			grabs.tribbles_pvc_full()
 		end
 	else
-		grabs.tribbles_pvc_full()
+		drive:fd{inches = 26}
+		grabs.botguy_pvc()
+		drive:fd{inches = 5}
 	end
-	
-	drive:fd{inches = 5}
 end
 
 function go_under_island()
 	drive:bk{inches = 2}
-	drive:rturn{degrees = 90}
-	
-	local close_botguy, min_x_botguy, max_x_tribbles = camera.find_both()
-		
-	print("max_x_tribbles: " .. tostring(max_x_tribbles))
-	print("min_x_botguy: " .. tostring(min_x_botguy) .. " close_botguy?: " .. tostring(close_botguy))
-	
-	compactor.open()
-	--going into 1
-	if min_x_botguy > -1 and botguy_grabbed == false then   -- need to add and verify the correct movements
-		if min_x_botguy >= 2 and min_x_botguy <= 5 then
-			motion.drive_sensor("right", "fd", "no_pvc", 850, 350)
-			drive:fd{inches = 7}
-			grabs.botguy_pvc()
-			motion.drive_sensor("right", "bk", "pvc", 850, 600)
-			botguy_grabbed = true
-		end
-	elseif max_x_tribbles > -1 then
-		if max_x_tribbles >= 2 and max_x_tribbles < 6 then
-			motion.drive_sensor("right", "fd", "no_pvc", 850, 350)
-			drive:fd{inches = 7}
-			grabs.tribbles_pvc_full()
-			motion.drive_sensor("right", "bk", "pvc", 850, 600)
-		end
-	else
-		motion.drive_sensor("right", "fd", "no_pvc", 900, 350)
-	end
-	
-	drive:fd{inches = 1.5}
 	drive:lturn{degrees = 90}
-	compactor.close()
-	
-	local close_botguy, min_x_botguy, max_x_tribbles = camera.find_both()
-		
-	print("max_x_tribbles: " .. tostring(max_x_tribbles))
-	print("min_x_botguy: " .. tostring(min_x_botguy) .. " close_botguy?: " .. tostring(close_botguy))
 	
 	compactor.open()
-	
-	--going into 3
-	if min_x_botguy > -1 and botguy_grabbed == false then   -- need to add and verify the correct movements
-		if close_botguy == true and (min_x_botguy < 2) then
-			drive:fd{inches = 5}
-			drive:bk{inches = 3}
-			drive:rpiv{degrees = 35}
-			drive:fd{inches = 5}
-			grabs.botguy_pvc()
-			
-			motion.drive_sensor("right", "bk", "pvc", 850, 600)
-		elseif min_x_botguy < 2 then
-		end
-	elseif max_x_tribbles > -1 then
-		if max_x_tribbles >= 2 and max_x_tribbles < 6 then
-			motion.drive_sensor("right", "fd", "no_pvc", 850, 350)
-			drive:fd{inches = 7}
-			grabs.tribbles_pvc_full()
-			motion.drive_sensor("right", "bk", "pvc", 850, 600)
-		end
-	else
-		motion.drive_sensor("right", "fd", "no_pvc", 900, 350)
-	end
-	
+	drive:fd{inches = 24}
+	drive:rpiv{degrees = 175}
+	drive:fd{inches = 24}
+	drive:fd{inches = 10}
+	grabs.botguy_pvc()
+	drive:fd{inches = 5}
+	drive:bk{inches = 6}
+	drive:rturn{degrees = 90}
 end
 
-function go_home()
-	drive:bk{inches = 25}
---	motion.drive_sensor("left", "bk", "pvc", 900, 500)
-	--drive:bk{inches = 13}
-	drive:rpiv{degrees = 37}
-	drive:lpiv{degrees = -30}
-	drive:bk{inches = 4}
+
+function go_home(where)
+	if where == "leg" then
+		drive:lturn{degrees = 192}
+		drive:fd{inches = 19}
+	else
+		drive:fd{inches = 27.5}
+	end
 	
-	cbc.a_button:wait()
+	drive:rpiv{degrees = -30}
+	drive:lpiv{degrees = 37}
+	--drive:bk{inches = 1}
+	--drive:bk{inches = 8, speed = 400}
 	
 	motion.drive_sensor("left", "fd", "no_pvc", 900, 500)
+	drive:fd{inches = 2.5}
+	drive:lturn{degrees = 95}
+	drive:bk{inches = 5, speed = 400}
+	--botball.game_time_sleep(92)
+	motion.drive_sensor("left", "fd", "pvc", 900, 400)
+	motion.drive_sensor("left", "fd", "no_pvc", 900, 350)
 	drive:fd{inches = 3}
-	drive:rturn{degrees = 95}
-	drive:fd{inches = 5}
-	motion.drive_sensor("right", "bk", "pvc", 900, 400)
-	motion.drive_sensor("right", "bk", "no_pvc", 900, 350)
-	drive:bk{inches = 6}
 	
-	cbc.a_button:wait()
-	
-	drive:rturn{degrees = 97}
+	drive:lturn{degrees = 97}
+	--botball.game_time_sleep(112)
 	drive:fd{inches = 28}
-	--drive:rturn{degrees = 190}
-	--grabs.release()
+	drive:rturn{degrees = 190}
+	grabs.release()
 end
+
+function summit()
+	goto_pvc_island()
+	local return_home_early
+	return_home_early = grab_our_leg()
+	if return_home_early then
+		print("go home early: " .. tostring(return_home_early))
+		go_home("leg")
+		return
+	end
+	
+	go_into_middle()	
+	go_home("middle")
+end
+
+function snow()
+	goto_pvc_island()
+	grab_our_leg(true)
+	go_into_middle(true)
+	go_under_island()
+	go_home("snow")
+end
+--[[
+function go_home()
+	drive:fd{inches = 27.5}
+--	motion.drive_sensor("left", "bk", "pvc", 900, 500)
+	--drive:bk{inches = 13}
+	drive:rpiv{degrees = -30}
+	drive:lpiv{degrees = 37}
+	drive:bk{inches = 1}
+	--drive:bk{inches = 8, speed = 400}
+	
+	motion.drive_sensor("left", "fd", "no_pvc", 900, 500)
+	drive:fd{inches = 2.5}
+	drive:lturn{degrees = 95}
+	drive:bk{inches = 5, speed = 400}
+	botball.game_time_sleep(92)
+	motion.drive_sensor("left", "fd", "pvc", 900, 400)
+	motion.drive_sensor("left", "fd", "no_pvc", 900, 350)
+	drive:fd{inches = 3}
+	
+	drive:lturn{degrees = 97}
+	botball.game_time_sleep(112)
+	drive:fd{inches = 28}
+	drive:rturn{degrees = 190}
+	grabs.release()
+end
+]]--
 
 --Scenario C
 function block(dist)
