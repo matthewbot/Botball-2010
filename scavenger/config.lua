@@ -73,6 +73,8 @@ gip:addColorModel(cm_red)
 -- Sensors --
 -------------
 
+starting_light = cbc.AnalogSensor{0}
+
 in_sensor = cbc.DigitalSensor{8} --if true, it is retracted
 out_sensor = cbc.DigitalSensor{9} --if true, it is extended
 

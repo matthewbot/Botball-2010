@@ -122,36 +122,60 @@ function go_under_island()
 	print("min_x_botguy: " .. tostring(min_x_botguy) .. " close_botguy?: " .. tostring(close_botguy))
 	
 	compactor.open()
-	
-	if min_x_botguy > -1 and botguy_grabbed == false then
-		if close_botguy == false and (min_x_botguy < 2) then    -- need to add and verify the correct movements
-			drive:rpiv{degrees = 61}
-			grabs.botguy_pvc()
-		elseif close_botguy == true then
+	--going into 1
+	if min_x_botguy > -1 and botguy_grabbed == false then   -- need to add and verify the correct movements
+		if min_x_botguy >= 2 and min_x_botguy <= 5 then
+			motion.drive_sensor("right", "fd", "no_pvc", 850, 350)
 			drive:fd{inches = 7}
 			grabs.botguy_pvc()
-			drive:fd{inches = 5}
+			motion.drive_sensor("right", "bk", "pvc", 850, 600)
+			botguy_grabbed = true
 		end
-		botguy_grabbed = true
 	elseif max_x_tribbles > -1 then
 		if max_x_tribbles >= 2 and max_x_tribbles < 6 then
+			motion.drive_sensor("right", "fd", "no_pvc", 850, 350)
 			drive:fd{inches = 7}
-			grabs.tribbles_pvc()
-			drive:lpiv{degrees = -30}
-			drive:rpiv{degrees = 37}
-			--local tribble_async = task.async(grabs.tribbles) --to stay or not to stay?
-			drive:scooch{xdist = 0.75, dir = "bk"}
-			--task.join(tribble_async)
-			drive:scooch{xdist = 0.5}
-		elseif max_x_tribbles < 2 then
-			drive:bk{inches = 2}
-			drive:rpiv{degrees = 35}
-			drive:fd{inches = 5}
-			drive:rpiv{degrees = 30}
+			grabs.tribbles_pvc_full()
+			motion.drive_sensor("right", "bk", "pvc", 850, 600)
 		end
 	else
-		drive:rpiv{degrees = 61}
+		motion.drive_sensor("right", "fd", "no_pvc", 900, 350)
 	end
+	
+	drive:fd{inches = 1.5}
+	drive:lturn{degrees = 90}
+	compactor.close()
+	
+	local close_botguy, min_x_botguy, max_x_tribbles = camera.find_both()
+		
+	print("max_x_tribbles: " .. tostring(max_x_tribbles))
+	print("min_x_botguy: " .. tostring(min_x_botguy) .. " close_botguy?: " .. tostring(close_botguy))
+	
+	compactor.open()
+	
+	--going into 3
+	if min_x_botguy > -1 and botguy_grabbed == false then   -- need to add and verify the correct movements
+		if close_botguy == true and (min_x_botguy < 2) then
+			drive:fd{inches = 5}
+			drive:bk{inches = 3}
+			drive:rpiv{degrees = 35}
+			drive:fd{inches = 5}
+			grabs.botguy_pvc()
+			
+			motion.drive_sensor("right", "bk", "pvc", 850, 600)
+		elseif min_x_botguy < 2 then
+		end
+	elseif max_x_tribbles > -1 then
+		if max_x_tribbles >= 2 and max_x_tribbles < 6 then
+			motion.drive_sensor("right", "fd", "no_pvc", 850, 350)
+			drive:fd{inches = 7}
+			grabs.tribbles_pvc_full()
+			motion.drive_sensor("right", "bk", "pvc", 850, 600)
+		end
+	else
+		motion.drive_sensor("right", "fd", "no_pvc", 900, 350)
+	end
+	
 end
 
 function go_home()
@@ -178,11 +202,6 @@ function go_home()
 	drive:fd{inches = 28}
 	--drive:rturn{degrees = 190}
 	--grabs.release()
-end
-
-function turn_180()
-	drive:lturn{degrees = 90}
-	drive:lturn{degrees = 90}
 end
 
 --Scenario C
