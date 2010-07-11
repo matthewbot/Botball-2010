@@ -30,22 +30,22 @@ function get_oilslick(count)
 	
 	local y = blob.y + blob.h/2
 	local sizefactor = blob.w*blob.h / (y + .0000003 * y^4)
-	local xfactor = blob.x+blob.w/2
+	local xfactor = blob.x+blob.w/2 - 3
 
 	print("Oilslick factors", sizefactor, xfactor)
 	print("Oilslick blob", blob)
 	
 	local dir 
-	if xfactor < 70 then
+	if xfactor < 63 then
 		dir = "left"
-	elseif xfactor > 90 then
+	elseif xfactor > 97 then
 		dir = "right"
 	else
 		dir = "center"
 	end
 	
 	local size
-	if sizefactor < 25 then
+	if sizefactor < 20 then
 		size = "small"
 	elseif sizefactor < 50 then
 		size = "medium"

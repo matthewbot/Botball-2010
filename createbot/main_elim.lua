@@ -2,6 +2,7 @@ local task = require "cbclua.task"
 local cbc = require "cbclua.cbc"
 local algorithm = require "algorithm"
 local create = require "mb.create"
+local botball = require "cbclua.botball"
 local lance = require "lance"
 local scripts = require "scripts"
 local claw = require "claw"
@@ -10,13 +11,14 @@ import "config"
 
 function main()
 	init()
+	botball.start(starting_light)
 	
 	local sweep_ok = lance_sweep()
 	print("sweep_ok", sweep_ok)
 	after_sweep_lineup(sweep_ok)
-	dirty_ducks_de()
-	
-	clean_ducks()
+	local drop_count = dirty_ducks_de()
+	print("drop_count in main", drop_count)
+	clean_ducks(drop_count < 3 and sweep_ok)
 end
 
 function lance_sweep()
@@ -28,7 +30,7 @@ function lance_sweep()
 	end)
 	scripts.sweep_position:play()
 	
-	local ok = task.timeout(6, function ()
+	local ok = task.timeout(5, function ()
 		bdrive:rturn{degrees=10, vel=8}
 		task.sleep(.6)
 		bdrive:rturn{degrees=45, vel=9}
@@ -52,14 +54,16 @@ function after_sweep_lineup(sweep_ok)
 	drive:lturn{degrees=80}
 	drive:fd{vel=8, time=1}
 	drive:lpiv{degrees=-27}
-	task.sleep(1)
+	if sweep_ok then
+		task.sleep(1)
+	end
 	
-	drive:bk{inches=38}
+	drive:bk{inches=36}
 	drive:rturn{degrees=130}
-	wall_lineup(27)
+	wall_lineup(29)
 	drive:bk{inches=5}
 	drive:rturn{degrees=90}
-	wall_lineup(3)
+	wall_lineup(5)
 	drive:bk{inches=4}
 	drive:rturn{degrees=90}
 end
@@ -83,6 +87,7 @@ end]]
 function dirty_ducks_de()
 	local oilslicks = { }
 	local dropped = { }
+	local drop_count = 0
 	
 	local function drop_sponge(dist, num)
 		local slick = oilslicks[num]
@@ -114,12 +119,13 @@ function dirty_ducks_de()
 		end
 
 		algorithm.drop_sponge(dist, override_slick or oilslicks[num])
-		
+		drop_count = drop_count + 1
+		print("drop_count", drop_count)
 		return true
 	end
 	
 	oilslicks[1] = grab_dirty_ducks(20, 19.5, .5)
-	oilslicks[2] = grab_dirty_ducks(20, 19, .2)
+	oilslicks[2] = grab_dirty_ducks(20, 20, .2)
 	oilslicks[3] = grab_dirty_ducks(21, 20)
 	wall_lineup(4)
 	
@@ -130,19 +136,19 @@ function dirty_ducks_de()
 		drive:fd{inches=4}
 	end
 	if not drop_sponge(10, 2) then
-		drive:fd{inches=14}
+		drive:fd{inches=16}
 	end
 	
-	if not drop_sponge(10, 1) then
+	if not drop_sponge(14, 1) then
 		drive:fd{inches=18}
 	end
 	
 	drive:lturn{degrees=10}
-	wall_lineup(30)
+	wall_lineup(20)
 	drive:bk{inches=18}
 	
 	drive:lturn{degrees=90}
-	wall_lineup(15)
+	wall_lineup(6, false, true)
 
 	drive:bk{inches=1}
 	claw.down_push{speed=900}
@@ -152,6 +158,8 @@ function dirty_ducks_de()
 	claw.up{}
 
 	drive:lturn{degrees=178}
-	wall_lineup(18) -- possibly shorter?
+	wall_lineup(14) -- possibly shorter?
+	
+	return drop_count
 end
 

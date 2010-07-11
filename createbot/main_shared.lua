@@ -36,9 +36,9 @@ function grab_dirty_ducks(fddist, fddist_noducks, delay)
 	if direction == "center" then
 		drive:fd{inches=fddist}
 	elseif direction == "left" then
-		drive.style:set_vel_dist(drive.drivetrain, 18, fddist, 19, fddist, { })
+		drive.style:set_vel_dist(drive.drivetrain, 17.75, fddist, 19, fddist, { })
 	else
-		drive.style:set_vel_dist(drive.drivetrain, 19, fddist, 18, fddist, { })
+		drive.style:set_vel_dist(drive.drivetrain, 19, fddist, 17.9, fddist, { })
 	end
 	claw.down_grab{wait=true}
 	claw.close()
@@ -49,7 +49,7 @@ function grab_dirty_ducks(fddist, fddist_noducks, delay)
 	return oiltype
 end
 
-function wall_lineup(fddist, either)
+function wall_lineup(fddist, either, sensative)
 	local wentslow = false
 	local drivingasync = task.async(function ()
 		if fddist then
@@ -62,20 +62,24 @@ function wall_lineup(fddist, either)
 	local ok
 	if either then
 		ok = task.wait(algorithm.read_either_lineup, 3)
+	elseif sensative then
+		ok = task.wait(algorithm.read_lineups_sensative, 3)
 	else
 		ok = task.wait(algorithm.read_lineups, 3)
 	end
 	task.sleep(.2)
 	task.stop(drivingasync)
 	if not wentslow then
-		drive:fd{inches=1, vel=6}
+		drive:fd{time=.5, vel=6}
 	end
 	drive:stop{}
 	
 	return ok
 end
 
-function clean_ducks()
+function clean_ducks(drop_all)
+	if drop_all == nil then drop_all = true end
+
 	drive:bk{inches=11} -- travel to duck zone
 	drive:lturn{degrees=90}
 	wall_lineup(0)
@@ -107,9 +111,17 @@ function clean_ducks()
 		claw.close()
 	end)
 	drive:bk{vel=8, wait=create.bump}
+	
+	print("drop_all", drop_all)
+	if not drop_all then
+		print("Not dropping second set of clean ducks")
+		task.sleep(1) -- for servos to get up
+		return
+	end
+	
 	drive:rturn{degrees=50}
 	drive:fd{inches=12}
-	drive:rturn{degrees=45}
+	drive:rturn{degrees=45.5}
 	wall_lineup(3)
 	
 	task.async(function () -- grab second set
@@ -121,7 +133,7 @@ function clean_ducks()
 	task.sleep(.5)
 	claw.lift{wait=true}
 	
-	drive:bk{inches=10} -- travel into position
+	drive:bk{inches=9.75} -- travel into position
 	drive:lturn{degrees=90}
 	drive:bk{vel=8, wait=create.bump}
 	drive:fd{inches=3.5}

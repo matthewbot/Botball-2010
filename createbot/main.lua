@@ -1,5 +1,5 @@
-local main_seeding = require "main_seeding"
+local main_elim = require "main_elim"
 
 function main()
-	main_seeding.main()
+	main_elim.main()
 end
