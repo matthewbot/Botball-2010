@@ -56,7 +56,7 @@ function return_highest(list, return_pos)
 	
 	print("list[1]: " .. tostring(list[1]))
 	
-	if highest then
+	if highest ~= nil and highest >= 0 then
 		print("#list: " .. #list)
 		print("first highest: " .. highest)
 
@@ -77,10 +77,10 @@ function return_highest(list, return_pos)
 	return highest
 end
 
-function check_closeness(y_list, conc_list)
+function check_closeness(highest_y)
 	print("checking closeness")
 	
-	local highest, pos = return_highest(conc_list, true)
+--[[	local highest, pos = return_highest(conc_list, true)
 	
 	print("highest: " .. tostring(highest))
 	print("pos: " .. pos .. " y_list[pos]: " .. tostring(y_list[pos]))
@@ -89,6 +89,11 @@ function check_closeness(y_list, conc_list)
 		if y_list[pos] > 1 and y_list[pos] <= 3 then
 			return "close"
 		end
+	end
+	]]--
+	
+	if highest_y == 3 then
+		return "close"
 	end
 	
 	return "not_close"
@@ -108,7 +113,7 @@ function find_item(item, capture_image)
 		botguy = true
 		cm = cm_red
 		x_cutoff = 7
-		count_cutoff = 30
+		count_cutoff = 100
 	elseif item == "tribbles" then
 		tribbles = true
 		cm = cm_green
@@ -135,7 +140,7 @@ function find_item(item, capture_image)
 	dump_grid(cm, image)
 	
 
-	
+	local highest_y = 0
 	for x=0,x_cutoff do
 		for y=0,3 do
 			local count = gip:getCount(x, y, cm)
@@ -144,10 +149,10 @@ function find_item(item, capture_image)
 			else
 				if count > count_cutoff then
 					k = k + 1
-					print("k: " .. k)
 					if botguy then
-						y_list[k] = y
-						count_list[k] = count
+						if y > highest_y then
+							highest_y = y
+						end
 						
 						if not once then
 							min_x = x
@@ -161,29 +166,23 @@ function find_item(item, capture_image)
 		end
 	end
 	
-	print("botguy: ", botguy)
+	print("botguy: " .. tostring(botguy))
 	if botguy == true then
-	local close
-	local high_conc = return_highest(count_list)
-	print("high_conc: " ..  tostring(high_conc))
-		if high_conc ~= nil and high_conc > 100 then
-			min_x = check_nil(min_x)
-			close = check_closeness(y_list, count_list)
-		else
-			min_x = -1
-			close = "not_close"
-		end
+		print("highest_y: " .. highest_y)
+		local close = check_closeness(highest_y)
+
+		min_x = check_nil(min_x)	
 		print("min_x: " .. tostring(min_x))
-		
+			
 		print("close ", close)
 		print("          ")
-		
+			
 		return close, min_x
 	elseif tribbles == true then
-		print("max_x: " .. tostring(max_x))
-		print("          ")
 	
 		max_x = return_highest(x_list)
+		print("max_x: " .. tostring(max_x))
+		print("          ")
 		max_x = check_nil(max_x)
 			
 		return max_x

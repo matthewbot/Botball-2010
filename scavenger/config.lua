@@ -8,10 +8,10 @@ local drivemod      = require "mb.drive"
 -- Motors --
 ------------
 
-ldrive 	= motorutils.FixMotor{3}
+ldrive 	= motorutils.FixMotor{2}
 rdrive 	= motorutils.FixMotor{0}
 
-extend_motor = motorutils.FixMotor{2}
+extend_motor = motorutils.FixMotor{1}
 
 drivetrain = drivemod.MotorDriveTrain{
 	lmot = ldrive,
@@ -47,7 +47,7 @@ bdrive = drivemod.Drive{
 -- Servos --
 ------------
 
-door_servo 	= servoutils.RescaleServo{1, start_pos = 250, end_pos = 1350}
+door_servo 	= servoutils.RescaleServo{3, start_pos = 250, end_pos = 1350}
 
 ------------
 -- Vision --
@@ -60,10 +60,10 @@ cm_green = vision.ColorModel{
 	minval = 100
 }
 cm_red = vision.ColorModel{
-	lefthue = 336,
-	righthue = 41,
-	minsat = 140,
-	minval = 100,
+	lefthue = 0,
+	righthue = 15,
+	minsat = 110,
+	minval = 80,
 	--maxval = 200
 }
 gip = vision.GridImageProcessor(8, 5)
@@ -74,7 +74,7 @@ gip:addColorModel(cm_red)
 -- Sensors --
 -------------
 
-starting_light = cbc.AnalogSensor{0}
+starting_light = cbc.AnalogSensor{4}
 
 in_sensor = cbc.DigitalSensor{8} --if true, it is retracting
 out_sensor = cbc.DigitalSensor{9} --if true, it is extending
