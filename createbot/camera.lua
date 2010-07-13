@@ -36,11 +36,16 @@ function get_oilslick(count)
 	print("Oilslick blob", blob)
 	
 	local dir 
-	if xfactor < 63 then
-		dir = "left"
-	elseif xfactor > 97 then
-		dir = "right"
+	if blob.w*blob.h < 14000 then
+		if xfactor < 63 then
+			dir = "left"
+		elseif xfactor > 97 then
+			dir = "right"
+		else
+			dir = "center"
+		end
 	else
+		print("!!! Huge blob seen, forcing center")
 		dir = "center"
 	end
 	
@@ -69,8 +74,8 @@ function get_oilslick_blob(count)
 		local blob = bip:getBlob(i)
 		
 		local x, y = blob.x+blob.w/2, blob.y+blob.h/2
-		print("x", x, "y", y, "area", blob.w*blob.h)
-		if y > 5 and y < 105 and x > 40 and x < 120 then
+		print("x", x, "y", y, "area", blob.w*blob.h, "real_y", blob.y)
+		if y > 5 and y < 100 and x > 40 and x < 120 then
 			return blob
 		end
 	end

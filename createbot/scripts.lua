@@ -16,11 +16,11 @@ import "mb.create.script"
 
 sweep_position = Script{
 	drive_direct(500, 500),
-	wait_dist(36),
+	wait_dist(34),
 	drive_direct(0, 0),
 	wait_time(.1),
 	drive_direct(400, 0),
-	wait_angle(-84),
+	wait_angle(-81.5),
 	drive_direct(0, 0),
 	wait_time(.1),
 	drive_direct(500, 500),

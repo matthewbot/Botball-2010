@@ -25,13 +25,13 @@ function lance_sweep()
 	print("Sweeping lance")
 
 	task.async(function ()
-		task.sleep(2.2)
+		task.sleep(2.1)
 		lance.extend()
 	end)
 	scripts.sweep_position:play()
 	
 	local ok = task.timeout(5, function ()
-		bdrive:rturn{degrees=10, vel=8}
+		bdrive:rturn{degrees=13, vel=8}
 		task.sleep(.6)
 		bdrive:rturn{degrees=45, vel=9}
 		bdrive:rturn{degrees=45, vel=5}	
@@ -126,11 +126,14 @@ function dirty_ducks_de()
 	
 	oilslicks[1] = grab_dirty_ducks(20, 19.5, .5)
 	oilslicks[2] = grab_dirty_ducks(20, 20, .2)
+	if oilslicks[2] == "none" then
+		drive:rturn{degrees=3}
+	end
 	oilslicks[3] = grab_dirty_ducks(21, 20)
 	wall_lineup(4)
 	
 	drive:bk{inches=14}
-	drive:lturn{degrees=180}
+	drive:lturn{degrees=181}
 	
 	if not drop_sponge(-2, 3) then
 		drive:fd{inches=4}
