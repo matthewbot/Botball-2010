@@ -24,9 +24,9 @@ function drop_sponge(chargedist, cursponge)
 
 	if side == "timeout" then
 		if chargedist > 0 then
-			drive:bk{inches=4}
+			drive:bk{inches=6}
 		else
-			drive:fd{inches=4}
+			drive:fd{inches=6}
 		end
 		task.join(spongeselect)
 		return
@@ -61,10 +61,10 @@ function drop_sponge(chargedist, cursponge)
 	elseif side == "center-right" then
 		turnamt = turnamt + 7
 	elseif side == "left" then
-		turnamt = turnamt - 40
+		turnamt = turnamt - 30
 		fddist = fddist + 2
 	elseif side == "right" then
-		turnamt = turnamt + 40
+		turnamt = turnamt + 30
 		fddist = fddist + 2
 	end
 	
@@ -76,6 +76,7 @@ function drop_sponge(chargedist, cursponge)
 	turn(turnamt)
 	task.join(spongeselect)
 	sponge.release()
+	task.async(sponge.select_quad, 3)
 	task.sleep(.5)
 	turn(-turnamt)
 end
@@ -138,6 +139,10 @@ end
 
 function read_lineups()
 	return left_lineup() < 400 and right_lineup() < 400
+end
+
+function read_lineups_sensative()
+	return left_lineup() < 600 and right_lineup() < 600
 end
 
 function read_either_lineup()
