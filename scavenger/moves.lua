@@ -20,13 +20,15 @@ function goto_pvc_island(block)
 	drive:fd{inches = 39}
 	task.sleep(2)
 	drive:rturn{degrees = 54}
-	motion.drive_sensor("right", "fd", "pvc", 800, 500)
-	motion.drive_sensor("right", "fd", "no_pvc", 800, 400)
-	if block then
-		drive:fd{inches = 4}
-	else
-		drive:fd{inches = 6}
-	end
+	task.timeout(7, function ()
+		motion.drive_sensor("right", "fd", "pvc", 800, 500)
+		motion.drive_sensor("right", "fd", "no_pvc", 800, 400)
+		if block then
+			drive:fd{inches = 4}
+		else
+			drive:fd{inches = 6}
+		end
+	end)
 	
 	--[[drive:fd{inches = 38}
 	drive:rturn{degrees = 40}
@@ -66,7 +68,10 @@ function grab_our_leg(snow)
 				drive:lturn{degrees = 90}
 				drive:fd{inches = 10}
 			end
-			botguy_grabbed = true
+			if min_x_botguy < 7 then
+				print("botguy grabbed")
+				botguy_grabbed = true
+			end
 		elseif max_x_tribbles > -1 then
 			if max_x_tribbles >= 2 and max_x_tribbles < 6 then
 				print("          ")
@@ -104,6 +109,7 @@ function grab_our_leg(snow)
 end
 
 function go_into_middle(snow)  --middle = no touch zone
+	botball.game_time_sleep(45)
 	if snow == false then
 		print("summit, second part")
 		compactor.close()
@@ -121,6 +127,7 @@ function go_into_middle(snow)  --middle = no touch zone
 			if min_x_botguy >= 2 and min_x_botguy < 6 then
 				print("botguy to the right")
 				grabs.botguy_pvc()
+				print("botguy grabbed")
 				botguy_grabbed = true
 			else
 				print("botguy to the left")
@@ -149,17 +156,19 @@ function collect_near_sponges()
 		compactor.open()
 		drive:fd{inches = 5}
 		drive:rpiv{degrees = 170}
-		grabs.botguy_pvc()
 		drive:fd{inches = 9}
+		grabs.botguy_pvc()
+		drive:fd{inches = 4}
 		drive:bk{inches = 2.5}
 		drive:rturn{degrees = 90}
 	else
 		drive:fd{inches = 8}
 		drive:bk{inches = 3}
-		drive:lturn{degrees = 198}
+		drive:lturn{degrees = 205}
 	end
 end
 
+--[[
 function go_under_island()
 	print("snow, final part")
 	print("going under the island")
@@ -180,7 +189,7 @@ function go_under_island()
 	drive:rturn{degrees = 90}
 	drive:scooch{xdist = -1}
 end
-
+]]--
 
 function go_home()
 	print("go home")
@@ -192,18 +201,23 @@ function go_home()
 	--drive:bk{inches = 1}
 	--drive:bk{inches = 8, speed = 400}
 	
-	motion.drive_sensor("left", "fd", "no_pvc", 900, 500)
-	drive:fd{inches = 6}
+	motion.drive_sensor("left", "fd", "no_pvc", 900, 400)
+	drive:fd{inches = 5}
 	drive:lturn{degrees = 95}
 	drive:bk{inches = 5, speed = 400}
+	print("going to sleep 102")
 	botball.game_time_sleep(102)
-	motion.drive_sensor("left", "fd", "pvc", 900, 400)
-	motion.drive_sensor("left", "fd", "no_pvc", 900, 350)
-	drive:fd{inches = 3}
-	
+	print("timeout sensor drives and forwards")
+	task.timeout(6, function ()
+		motion.drive_sensor("left", "fd", "pvc", 900, 400)
+		motion.drive_sensor("left", "fd", "no_pvc", 900, 350)
+		drive:fd{inches = 3}
+		print("finished sensor drive and didnt timeout")
+	end)
 	drive:lturn{degrees = 95}
-	botball.game_time_sleep(125)
-	drive:fd{inches = 30}
+	print("going to sleep 125")
+	botball.game_time_sleep(126)
+	drive:fd{inches = 29}
 	drive:rturn{degrees = 190}
 	--grabs.release()
 end
@@ -216,6 +230,7 @@ function summit()
 	go_home()
 end
 
+--[[
 function snow()
 	goto_pvc_island()
 	grab_our_leg(true)
@@ -241,3 +256,4 @@ function block(dist)
 	
 	door_servo:disable()
 end
+]]--
