@@ -34,6 +34,6 @@ HSVPixel::HSVPixel(const Pixel &pixel) {
 	else if (max == pixel.g)
 		h = 120 + (pixel.b - pixel.r)*60/diff;
 	else
-		h = 240 + (pixel.r - pixel.g)*43/diff;
+		h = 240 + (pixel.r - pixel.g)*60/diff;
 }
 

@@ -25,14 +25,22 @@ void BlobImageProcessor::processImage(const Image &image) {
 			
 			if (mainblob != activeblobs.end()) { // if the segment matches a blob
 				mainblob->h = y - mainblob->y; // extend its height down to the current row
-				if (segment->start < mainblob->x) // move its x position as needed
-					mainblob->x = segment->start;
-				if (segment->end > mainblob->x + mainblob->w) // recalculate its width as needed
-					mainblob->w = segment->end - mainblob->x;
+				if (segment->start < mainblob->x) { // if the segment starts before the current blob
+					mainblob->w += mainblob->x - segment->start; // extend the current blob
+					mainblob->x = segment->start; // shift it to match the new segment
+				}
+				
+				if (segment->end > mainblob->x + mainblob->w) // if the new segment ends after our current blob
+					mainblob->w = segment->end - mainblob->x; // extend the current blob
 			
 				BlobList::iterator mergeblob = mainblob+1;
 				while ((mergeblob = matchSegment(*segment, mergeblob, activeblobs.end())) != activeblobs.end()) { // continue looking for more blobs
 					 // if we match another blob
+					if (mainblob->x > mergeblob->x) { // and it starts before our current blob
+						mainblob->w += mainblob->x - mergeblob->x; // preserve our mergeblob's end point
+						mainblob->x = mergeblob->x; // move our current blob's start position
+					}
+					
 					if (mainblob->x + mainblob->w < mergeblob->x + mergeblob->w) // and it is wider than our main blob
 						mainblob->w = mergeblob->x + mergeblob->w - mainblob->x; // extend our main blob
 						
@@ -72,10 +80,10 @@ BlobImageProcessor::BlobList::iterator BlobImageProcessor::matchSegment(const Se
 	for (; blob != end; ++blob) {
 		if (segment.start <= blob->x) {
 			if (segment.end > blob->x)
-				return blob;
+				break;
 		} else {
 			if (segment.start <= blob->x + blob->w)
-				return blob;
+				break;
 		}
 	}
 	
